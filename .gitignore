@@ -43,3 +43,6 @@ libraries/
 
 # Ignore the examples
 examples/
+
+# Ignore directories that start with zz_. I use this when going through tutuorials.
+zz_*/
