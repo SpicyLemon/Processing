@@ -65,7 +65,13 @@ class Runner {
     return this;
   }
   
-  Runner Draw() {
+  Runner Draw(color headColor) {
+    Spot head = this.Hist[this.HistI];
+    if (head.Y > centerY) {
+      fill(headColor);
+      stroke(headColor);
+      circle(this.Hist[this.HistI].X, this.Hist[this.HistI].Y, this.SizeMax);
+    }
     stroke(this.Col);
     for (int i = this.Hist.length-2; i >= 0; i--) {
       int j = (this.HistI + i + 1) % this.Hist.length;

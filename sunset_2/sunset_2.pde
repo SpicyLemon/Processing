@@ -76,7 +76,8 @@ float runnerSizeMax = 15.0;
 boolean drawRunners = true;
 
 void setup() {
-  size(1400, 740, P2D);
+  // size(1400, 740, P2D);
+  size(600, 600, P2D);
   frameRate(30);
   centerX = width/2;
   centerY = height/2;
@@ -413,7 +414,7 @@ void draw() {
   
   // Draw the runners.
   for (Runner runner : runners) {
-    runner.Draw();
+    runner.Draw(sunPal.Get(colIsR[colIsR.length-1]).Value);
   }
   
   if (saveGif) {
