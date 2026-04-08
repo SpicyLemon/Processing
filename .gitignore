@@ -34,6 +34,11 @@ Thumbs.db
 
 # Compiled Processing.org stuff.
 windows-amd64/
+linux-aarch64/
+linux-amd64/
+linux-arm/
+macos-x86_64/
+macos-aarch64/
 
 # Libraries installed by Processing.
 libraries/
