@@ -58,7 +58,7 @@ float grassDSize = 0.2;
 boolean drawGrass = true;
 
 Palette flowerPal = new Palette(4, #FFFF00, #FF0000) // Yellow to Red.
-            .Append(new Palette(5, #FF0000, #0000FF)); // Red to Blue;
+            .Append(new Palette(5, #FF0000, #00FFFF)); // Red to Cyan;
 int flowerChances = 10;
 int flowerOdds = 10;
 float flowerSizeMax = 25;
