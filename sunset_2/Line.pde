@@ -104,9 +104,12 @@ class Ground implements Comparable<Ground> {
   }
   
   int compareTo(Ground other) {
-    int rv = Float.compare(this.Y, other.Y); // smallets first.
+    int rv = Float.compare(this.Y, other.Y); // back/top first first.
     if (rv != 0) {
       return rv;
+    }
+    if (this.X > centerX && other.X > centerX) {
+      return Float.compare(other.X, this.X); // Right side, so rightmost first.
     }
     return Float.compare(this.X, other.X); // leftmost first.
   }
