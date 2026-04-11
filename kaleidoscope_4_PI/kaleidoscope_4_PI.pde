@@ -1,9 +1,4 @@
-import gifAnimation.*;
-
-GifMaker gifExport;
-int gifFrameLimit = 1500;
-int gifFrameRate = 1000/30; // 30 fps
-boolean saveGif = false;
+boolean logTimes = false;
 
 // Value initialized in setup().
 PGraphics pg;
@@ -40,21 +35,21 @@ int entriesPerBackPal = 25;
 
 // Values governing the background ovals.
 int divs = 9;
-float dOffsetMax = 0.04;
-float ddOffsetMax = 0.0005;
+float dOffsetMax = 0.02;
+float ddOffsetMax = 0.0001;
 float backOvalBorder = 2.0;
 float backOvalOffsetMax = 100;
-float dBackOvalOffsetMax = 3.0;
-float ddBackOvalOffsetMax = 0.3;
+float dBackOvalOffsetMax = 2.0;
+float ddBackOvalOffsetMax = 0.2;
 float dBackOvalRotMax = 0.04;
-float ddBackOvalRotMax = 0.003;
+float ddBackOvalRotMax = 0.002;
 
 // Values governing the tracers.
-int tailLength = 10;
+int tailLength = 15;
 float maxStroke = 10.0;
 float headSize = 0.0;
-float maxSpeed = 12.0;
-float minSpeed = 6.0;
+float maxSpeed = 8.0;
+float minSpeed = 4.0;
 float minRadius = 15.0;
 // This dictates a) how many tracers there are, and b) how far forward (positive) 
 // or backwards (negative) in the palette (from the background) that the color is.
@@ -69,11 +64,8 @@ color runnerColor = #FFFFFF;
 float runnerSize = 10;
 
 void setup() {
-  fullScreen();
-  frameRate(10);
-  noSmooth();
-  pg = createGraphics(width/4, height/4);
-  pg.noSmooth();
+  fullScreen(P2D);
+  pg = createGraphics(width/2, height/2);
   
   // Calculate some screen bounds.
   xMax = pg.width/2;
@@ -85,8 +77,8 @@ void setup() {
   yLimMin = yMin * 0.95;
   yLimMax = yMax * 0.95;
  
-  backOvalWidth = xMax * 0.8;
-  backOvalHeight = yMax * 0.4;
+  backOvalWidth = xMax * 0.6;
+  backOvalHeight = yMax * 0.35;
   backOvalOffsetX = random(-backOvalOffsetMax, backOvalOffsetMax);
   backOvalOffsetY = random(-backOvalOffsetMax, backOvalOffsetMax);
 
@@ -117,16 +109,10 @@ void setup() {
     float y = backOvalHeight/2*sin(angle);
     runnerSpots[i] = new Spot(x, y);
   }
-  
-  // Set up the gif exporter.
-  if (saveGif) {
-    gifExport = new GifMaker(this, "kaleidoscope4.gif");
-    gifExport.setRepeat(0); // Loop forever.
-    gifExport.setDelay(gifFrameRate);
-  }
 }
 
 void draw() {
+  int t1 = millis();
   pg.beginDraw();
   pg.background(0);
   pg.translate(xMax, yMax);
@@ -194,6 +180,8 @@ void draw() {
     tracer.Move(forceDirChange);
   }
   
+  int t2 = millis();
+  
   // Draw the background ovals.
   for (int d = 0; d < divs; d++) {
     drawBack();
@@ -230,21 +218,12 @@ void draw() {
   
   pg.endDraw();
   
+  int t3 = millis();
   image(pg, 0, 0, width, height);
+  int t4 = millis();
   
-  // println("Draw: " + (t2-t1) + "ms, Scale: " + (t3-t2) + "ms, FPS: " + frameRate);
-  if (saveGif) {
-    // Add this frame to the gif.
-    if (frameCount <= gifFrameLimit) {
-      gifExport.addFrame();
-    }
-    
-    // Finish and save.
-    if (frameCount == gifFrameLimit) {
-      gifExport.finish();
-      println("GIF saved!");
-      exit();
-    }
+  if (logTimes) {
+    println("Move: " + (t2-t1) + "ms, Draw: " + (t3-t2) + "ms, Scale: " + (t4-t3) + "ms, Total: " + (t4-t1) + "ms, FPS: " + frameRate);
   }
 }
 
