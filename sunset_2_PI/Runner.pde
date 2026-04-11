@@ -47,7 +47,7 @@ class Runner {
     int x = int(cur.X);
     int m = -1; // Opposite of the grounds becasue we're going the other way.
     if (x > centerX) {
-      x = int(width - x);
+      x = int(pg.width - x);
       m = 1;
     }
     float dy = 0.0;
@@ -68,19 +68,19 @@ class Runner {
   Runner Draw(color headColor) {
     Spot head = this.Hist[this.HistI];
     if (head.Y > centerY) {
-      fill(headColor);
-      stroke(headColor);
-      circle(this.Hist[this.HistI].X, this.Hist[this.HistI].Y, this.SizeMax);
+      pg.fill(headColor);
+      pg.stroke(headColor);
+      pg.circle(this.Hist[this.HistI].X, this.Hist[this.HistI].Y, this.SizeMax);
     }
-    stroke(this.Col);
+    pg.stroke(this.Col);
     for (int i = this.Hist.length-2; i >= 0; i--) {
       int j = (this.HistI + i + 1) % this.Hist.length;
       int k = (j + 1) % this.Hist.length;
       if (this.Hist[k].Y < centerY) {
         continue;
       }
-      strokeWeight(map(i, 0, this.Hist.length-1, this.SizeMin, this.SizeMax));
-      line(this.Hist[j].X, this.Hist[j].Y, this.Hist[k].X, this.Hist[k].Y);
+      pg.strokeWeight(map(i, 0, this.Hist.length-1, this.SizeMin, this.SizeMax));
+      pg.line(this.Hist[j].X, this.Hist[j].Y, this.Hist[k].X, this.Hist[k].Y);
     }
     return this;
   }

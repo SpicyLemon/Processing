@@ -1,5 +1,7 @@
 import java.util.Collections;
 
+PGraphics pg;
+
 float centerX, centerY, sunRadius, sunDiameter, sunRadiusSq, focusY, skyRadius, skyDiameter;
 ArrayList<Line> lines = new ArrayList<>();
 float[] dys;
@@ -74,33 +76,34 @@ boolean drawDirt = true;
 Palette runnerPal = new Palette(sunPal).Append(skyPal);
 int runnerChances = 2;
 int runnerOdds = 20;
-int runnerLength = 30;
-float runnerSizeMin = 5.0;
-float runnerSizeMax = 15.0;
+int runnerLength = 20;
+float runnerSizeMin = 2.0;
+float runnerSizeMax = 8.0;
 boolean drawRunners = true;
 
 void setup() {
-  // size(1400, 740, P2D);
-  size(600, 600, P2D);
+  fullScreen(P2D);
   frameRate(30);
-  centerX = width/2;
-  centerY = height/2;
-  focusY = height*0.45;
-  sunDiameter = 0.6 * min(width, height);
+  pg = createGraphics(width/2, height/2);
+  
+  centerX = pg.width/2;
+  centerY = pg.height/2;
+  focusY = pg.height*0.45;
+  sunDiameter = 0.6 * min(pg.width, pg.height);
   sunRadius = sunDiameter / 2;
   sunRadiusSq = sunRadius * sunRadius;
   skyRadius = mag(centerX, centerY);
   skyDiameter = skyRadius*2;
-  grassLeftMax = width * grassCutoff;
-  grassRightMin = width - grassLeftMax;
-  dirtLeftMin = width * dirtCutoffMin;
-  dirtLeftMax = width * dirtCutoffMax;
-  dirtRightMin = width - dirtLeftMax;
-  dirtRightMax = width - dirtLeftMin;
+  grassLeftMax = pg.width * grassCutoff;
+  grassRightMin = pg.width - grassLeftMax;
+  dirtLeftMin = pg.width * dirtCutoffMin;
+  dirtLeftMax = pg.width * dirtCutoffMax;
+  dirtRightMin = pg.width - dirtLeftMax;
+  dirtRightMax = pg.width - dirtLeftMin;
   
   // Pre-calculate all the dys at each given y below the horizon.
   // index = 0 => horizon.
-  dys = new float[int(height-centerY)+1];
+  dys = new float[int(pg.height-centerY)+1];
   float lineStartDYSQ = lineStartDY * lineStartDY;
   for (int y = 0; y < dys.length; y++) {
     dys[y] = lineStartDY + sqrt(lineStartDYSQ + 2 * lineDDY * y);
@@ -139,10 +142,10 @@ void setup() {
   // This gets mirrored on the right.
   // This dictates the width of the horizontal line at the given distance
   // below the horizon.
-  leftXs = new float[height-int(centerY)+1];
+  leftXs = new float[pg.height-int(centerY)+1];
   for (float i = 0; i <= centerY; i++) {
-    float xa = width*vLineCuttoffs[0];
-    float ya = height;
+    float xa = pg.width*vLineCuttoffs[0];
+    float ya = pg.height;
     float xb = centerX;
     float yb = focusY;
     float m = (yb - ya) / (xb - xa);
@@ -153,8 +156,8 @@ void setup() {
   // Calculate all the VLines.
   vLines = new VLine[vLineCuttoffs.length];
   for (int i = 0; i < vLineCuttoffs.length; i++) {
-    float x1 = width * vLineCuttoffs[i];
-    float y1 = height;
+    float x1 = pg.width * vLineCuttoffs[i];
+    float y1 = pg.height;
     float x3 = centerX;
     float y3 = focusY;
     float y2 = centerY+1;
@@ -168,7 +171,8 @@ void setup() {
 }
 
 void draw() {
-  background(0);
+  pg.beginDraw();
+  pg.background(0);
   
   // Rotate the gradients every few frames.
   if (frameCount % framesPerSunPal == 0) {
@@ -183,7 +187,7 @@ void draw() {
   
   // Remove any lines that are too far down now.
   for (int i = lines.size()-1; i >= 0; i--) {
-    if (lines.get(i).Y > height) {
+    if (lines.get(i).Y > pg.height) {
       lines.remove(i);
     }
   }
@@ -211,7 +215,7 @@ void draw() {
       if (int(random(starOdds)) == 0) {
         float size = random(starSizeMin, starSizeMax);
         stars.add(new Star(
-          random(width), random(centerY-size),
+          random(pg.width), random(centerY-size),
           size,
           starPal.Random().Value,
           int(random(starLifeMin, starLifeMax))
@@ -226,7 +230,7 @@ void draw() {
     int x = int(grass.X);
     int m = 1;
     if (grass.X > centerX) {
-      x = int(width - grass.X);
+      x = int(pg.width - grass.X);
       m = -1;
     }
     // If it's inside the pre-calculated window, update the velocity.
@@ -252,7 +256,7 @@ void draw() {
         float size = random(grassSizeMin, grassSizeMax);
         float x = random(0, grassLeftMax - size/2);
         if (int(random(2)) == 0) {
-          x = width - x;
+          x = pg.width - x;
         }
         grasses.add(new Ground(x, centerY, size, grassPal.Random().Value));
       }
@@ -267,7 +271,7 @@ void draw() {
         float size = random(flowerSizeMin, flowerSizeMax);
         float x = random(0, grassLeftMax - size/2);
         if (int(random(2)) == 0) {
-          x = width - x;
+          x = pg.width - x;
         }
         grasses.add(new Ground(x, centerY, size, flowerPal.Random().Value));
       }
@@ -280,7 +284,7 @@ void draw() {
     int x = int(dirt.X);
     int m = 1;
     if (dirt.X > centerX) {
-      x = int(width - dirt.X);
+      x = int(pg.width - dirt.X);
       m = -1;
     }
     // If it's inside the pre-calculated window, update the velocity.
@@ -306,7 +310,7 @@ void draw() {
         float size = random(dirtSizeMin, dirtSizeMax);
         float x = random(dirtLeftMin, dirtLeftMax);
         if (int(random(2)) == 0) {
-          x = width - x;
+          x = pg.width - x;
         }
         dirts.add(new Ground(x, centerY, size, dirtPal.Random().Value));
       }
@@ -330,15 +334,15 @@ void draw() {
     for (int i = 0; i < runnerChances; i++) {
       if (mouseWasPressed || int(random(runnerOdds)) == 0) {
         float x = random(vLines[1].X1, vLines[vLines.length-2].X1);
-        float y = height;
+        float y = pg.height;
         float speed = 1.0;
         if (x < 0) {
-          y = height + ((focusY - height) / (centerX - x)) * (-x);
+          y = pg.height + ((focusY - pg.height) / (centerX - x)) * (-x);
           x = 0;
           speed = 3.0;
-        } else if (x > width) {
-          y = height + ((focusY - height) / (centerX - x)) * (width - x);
-          x = width;
+        } else if (x > pg.width) {
+          y = pg.height + ((focusY - pg.height) / (centerX - x)) * (pg.width - x);
+          x = pg.width;
           speed = 3.0;
         }
         runners.add(new Runner(x, y, runnerPal.Random().Value, runnerLength)
@@ -360,13 +364,13 @@ void draw() {
   }
   
   // Draw the sky (before the sun and stars).
-  noStroke();
+  pg.noStroke();
   for (float i = sunRadius; i >= 0; i -= 1) {
     float angle = angles[int(i)];
     if (!Float.isNaN(angle)) {
-      fill(skyPal.Get(colIsL[int(i)]).Value);
+      pg.fill(skyPal.Get(colIsL[int(i)]).Value);
       // The angle is 0 at i = sunRadius, and -PI/2 at i = 0.
-      arc(centerX, centerY, skyDiameter, skyDiameter, PI-angle, TWO_PI+angle);
+      pg.arc(centerX, centerY, skyDiameter, skyDiameter, PI-angle, TWO_PI+angle);
     }
   }
 
@@ -376,20 +380,20 @@ void draw() {
   }
   
   // Draw a black box on the bottom half to chop off any stars that dip below the horizon.
-  noStroke();
-  fill(0);
-  rect(0, centerY+1, width, height-centerY);
+  pg.noStroke();
+  pg.fill(0);
+  pg.rect(0, centerY+1, pg.width, pg.height-centerY);
   // Draw a black half-circle where the sun goes because for some reason,
   // in fullscreen, the stars behind the sun show through (and this fixes that).
-  arc(centerX, centerY, sunDiameter-1, sunDiameter-1, PI, TWO_PI);
+  pg.arc(centerX, centerY, sunDiameter-1, sunDiameter-1, PI, TWO_PI);
   
   // Draw the sun.
-  noStroke();
+  pg.noStroke();
   for (float i = 0; i <= sunRadius; i++) {
     float w = widths[int(i)]/2;
     if (!Float.isNaN(w)) {
-      fill(sunPal.Get(colIsR[int(i)]).Value);
-      rect(centerX - w/2, centerY - sunRadius + i, w, 1);
+      pg.fill(sunPal.Get(colIsR[int(i)]).Value);
+      pg.rect(centerX - w/2, centerY - sunRadius + i, w, 1);
     }
   }
   
@@ -406,16 +410,16 @@ void draw() {
   }
   
   // Draw the horizon line.
-  noFill();
-  stroke(#FFFFFF);
-  strokeWeight(2.0);
-  //arc(centerX, centerY, sunDiameter, sunDiameter, PI, TWO_PI);
-  line(0, centerY, width, centerY);
+  pg.noFill();
+  pg.stroke(#FFFFFF);
+  pg.strokeWeight(1.0);
+  //pg.arc(centerX, centerY, sunDiameter, sunDiameter, PI, TWO_PI);
+  pg.line(0, centerY, pg.width, centerY);
   
   // Draw the vertical lines.
-  noFill();
-  stroke(#FFFFFF);
-  strokeWeight(2.0);
+  pg.noFill();
+  pg.stroke(#FFFFFF);
+  pg.strokeWeight(1.0);
   for (VLine vLine : vLines) {
     vLine.Draw();
   }
@@ -423,13 +427,16 @@ void draw() {
   // Draw the advancing horizontal lines.
   for (Line line : lines) {
     float x = leftXs[int(line.Y-centerY)];
-    line(x, line.Y, width-x, line.Y);
+    pg.line(x, line.Y, pg.width-x, line.Y);
   }
   
   // Draw the runners.
   for (Runner runner : runners) {
     runner.Draw(sunPal.Get(colIsR[colIsR.length-1]).Value);
   }
+  
+  pg.endDraw();
+  image(pg, 0, 0, width, height);
 }
 
 void mousePressed() {

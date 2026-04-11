@@ -36,7 +36,7 @@ class VLine {
   }
   
   VLine Draw() {
-    line(this.X1, this.Y1, this.X2, this.Y2);
+    pg.line(this.X1, this.Y1, this.X2, this.Y2);
     return this;
   }
 }
@@ -75,9 +75,9 @@ class Star {
   }
   
   Star Draw() {
-    noStroke();
-    fill(this.Col.Value);
-    circle(this.X, this.Y, this.Size);
+    pg.noStroke();
+    pg.fill(this.Col.Value);
+    pg.circle(this.X, this.Y, this.Size);
     return this;
   }
 }
@@ -127,13 +127,13 @@ class Ground implements Comparable<Ground> {
   }
   
   boolean IsDead() {
-    return this.X < -this.Size || this.X > width+this.Size || this.Y > height;
+    return this.X < -this.Size || this.X > pg.width+this.Size || this.Y > pg.height;
   }
   
   Ground Draw() {
-    noStroke();
-    fill(this.Col);
-    circle(this.X, this.Y, this.Size);
+    pg.noStroke();
+    pg.fill(this.Col);
+    pg.circle(this.X, this.Y, this.Size);
     return this;
   }
 }
