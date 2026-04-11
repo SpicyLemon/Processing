@@ -82,7 +82,7 @@ class Star {
   }
 }
 
-class Ground {
+class Ground implements Comparable<Ground> {
   float X;
   float Y;
   float DX;
@@ -101,6 +101,14 @@ class Ground {
     this.DX = dx; 
     this.DY = dy;
     return this;
+  }
+  
+  int compareTo(Ground other) {
+    int rv = Float.compare(this.Y, other.Y); // smallets first.
+    if (rv != 0) {
+      return rv;
+    }
+    return Float.compare(this.X, other.X); // leftmost first.
   }
 
   Ground Accelerate(float ddx, float ddy) {

@@ -1,4 +1,5 @@
 import gifAnimation.*;
+import java.util.Collections;
 
 GifMaker gifExport;
 int gifFrameLimit = 500;
@@ -44,16 +45,25 @@ int starLifeMax = 300;
 int starLifeMin = 100;
 boolean drawStars = true;
 
-Palette grassPal = new Palette(10, #00FF00, #FFFF00).SetAlpha(50); // Green to Yellow.
+Palette grassPal = new Palette(10, #00FF00, #FFFF00) // Green to Yellow.
+           .SetAlpha(50); 
 ArrayList<Ground> grasses = new ArrayList<>();
 float grassLeftMax, grassRightMin;
 float grassCutoff = 0.37; // Percent of width on left side (mirrored for right).
 int grassChances = 100;
-int grassOdds = 2;
+int grassOdds = 5;
 float grassSizeMax = 25;
 float grassSizeMin = 10;
 float grassDSize = 0.2;
 boolean drawGrass = true;
+
+Palette flowerPal = new Palette(4, #FFFF00, #FF0000) // Yellow to Red.
+            .Append(new Palette(5, #FF0000, #0000FF)); // Red to Blue;
+int flowerChances = 10;
+int flowerOdds = 10;
+float flowerSizeMax = 25;
+float flowerSizeMin = 10;
+boolean drawFlowers = true;
 
 Palette dirtPal = new Palette(5, #995500, #CE2D00).SetAlpha(150); // Brown to dark red-orange.
 ArrayList<Ground> dirts = new ArrayList<>();
@@ -261,6 +271,21 @@ void draw() {
       }
     }
   }
+ 
+  
+  if (drawFlowers) {
+    // Add new grasses.
+    for (int i = 0; i < flowerChances; i++) {
+      if (int(random(flowerOdds)) == 0) {
+        float size = random(flowerSizeMin, flowerSizeMax);
+        float x = random(0, grassLeftMax - size/2);
+        if (int(random(2)) == 0) {
+          x = width - x;
+        }
+        grasses.add(new Ground(x, centerY, size, flowerPal.Random().Value));
+      }
+    }
+  }
   
   // Accelerate and move all the dirts.
   for (Ground dirt : dirts) {
@@ -382,11 +407,13 @@ void draw() {
   }
   
   // Draw the dirt.
+  Collections.sort(dirts);
   for (Ground dirt : dirts) {
     dirt.Draw();
   }
   
   // Draw the grass.
+  Collections.sort(grasses);
   for (Ground grass : grasses) {
     grass.Draw();
   }
