@@ -24,6 +24,7 @@ color[] colors = new color[]{#000000, #FFFFFF,
 
 void setup() {
   fullScreen();
+  frameRate(30);
   setVals();
   setPals();
   
@@ -64,18 +65,14 @@ void draw() {
     }
   }
   
-  if (mouseWasPressed || (saveGif && frameCount % 200 == 0)) {
+  if (mouseWasPressed || frameCount % 1000 == 0 || (saveGif && frameCount % 200 == 0)) {
     mouseWasPressed = false;
     setVals();
     setPals();
   }
   
-  frameCounter++;
-  if (frameCounter >= 3) {
-    frameCounter = 0;
-    pal1.RotateRight();
-    pal2.RotateLeft();
-  }
+  pal1.RotateRight();
+  pal2.RotateLeft();
   
   if (saveGif) {
     // Add this frame to the gif.
