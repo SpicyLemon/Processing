@@ -46,10 +46,10 @@ Palette grassPal = new Palette(10, #00FF00, #FFFF00) // Green to Yellow.
 ArrayList<Ground> grasses = new ArrayList<>();
 float grassLeftMax, grassRightMin;
 float grassCutoff = 0.37; // Percent of width on left side (mirrored for right).
-int grassChances = 100;
-int grassOdds = 5;
-float grassSizeMax = 25;
-float grassSizeMin = 10;
+int grassChances = 150;
+int grassOdds = 3;
+float grassSizeMax = 12;
+float grassSizeMin = 4;
 float grassDSize = 0.2;
 boolean drawGrass = true;
 
@@ -57,8 +57,8 @@ Palette flowerPal = new Palette(4, #FFFF00, #FF0000) // Yellow to Red.
             .Append(new Palette(5, #FF0000, #00FFFF)); // Red to Cyan;
 int flowerChances = 10;
 int flowerOdds = 10;
-float flowerSizeMax = 25;
-float flowerSizeMin = 10;
+float flowerSizeMax = 18;
+float flowerSizeMin = 8;
 boolean drawFlowers = true;
 
 Palette dirtPal = new Palette(5, #995500, #CE2D00).SetAlpha(150); // Brown to dark red-orange.
@@ -66,25 +66,25 @@ ArrayList<Ground> dirts = new ArrayList<>();
 float dirtLeftMin, dirtLeftMax, dirtRightMin, dirtRightMax;
 float dirtCutoffMin = 0.36; // Percent of width on left side (mirrored for right).
 float dirtCutoffMax = 0.42; // Percent of width on left side (mirrored for right).
-int dirtChances = 50;
+int dirtChances = 75;
 int dirtOdds = 5;
-float dirtSizeMax = 10;
-float dirtSizeMin = 5;
+float dirtSizeMax = 5;
+float dirtSizeMin = 2.5;
 float dirtDSize = 0.1;
 boolean drawDirt = true;
 
 Palette runnerPal = new Palette(sunPal).Append(skyPal);
 int runnerChances = 2;
 int runnerOdds = 20;
-int runnerLength = 20;
-float runnerSizeMin = 2.0;
-float runnerSizeMax = 8.0;
+int runnerLength = 15;
+float runnerSizeMin = 1.5;
+float runnerSizeMax = 6.0;
 boolean drawRunners = true;
 
 void setup() {
   fullScreen(P2D);
   frameRate(30);
-  pg = createGraphics(width/2, height/2);
+  pg = createGraphics(width/3, height/3);
   
   centerX = pg.width/2;
   centerY = pg.height/2;
