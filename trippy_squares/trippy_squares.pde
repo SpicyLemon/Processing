@@ -65,7 +65,7 @@ void draw() {
     }
   }
   
-  if (mouseWasPressed || frameCount % 1000 == 0 || (saveGif && frameCount % 200 == 0)) {
+  if (mouseWasPressed || frameCount % 900 == 0 || (saveGif && frameCount % 200 == 0)) {
     mouseWasPressed = false;
     setVals();
     setPals();
