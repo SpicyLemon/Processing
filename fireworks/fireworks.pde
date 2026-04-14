@@ -15,6 +15,9 @@ ArrayList<Dot> dots = new ArrayList<>();
 ArrayList<Rocket> rockets = new ArrayList<>();
 boolean mouseWasPressed = false;
 
+int rocketChances = 5;
+int rocketOdds = 50;
+
 void setup() {
   fullScreen();
 }
@@ -38,6 +41,15 @@ void draw() {
   } else if (int(random(1000)) == 0) {
     for (int i = 0; i < 50; i++) {
       AddDotsAtRandom();
+    }
+  }
+  
+  for (int i = 0; i < rocketChances; i++) {
+    if (int(random(rocketOdds)) == 0) {
+      Rocket rocket = new Rocket(palLaunch, random(width), height)
+                        .WithVelocity(random(-0.5, 0.5), -5.0 - random(10.0))
+                        .WithExplosion(GetNextExplosionPal());
+      rockets.add(rocket);    
     }
   }
   
