@@ -21,7 +21,8 @@ float centerMaxD = 2.5;
 float otherMaxD = 5;
 
 void setup() {
-  fullScreen(); // size(600, 600);
+  fullScreen(P2D); // size(600, 600);
+  frameRate(30);
   xLimMin = width*edgeLim;
   xLimMax = width*(1-edgeLim);
   yLimMin = height*edgeLim;
