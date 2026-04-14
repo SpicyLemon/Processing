@@ -26,7 +26,7 @@ int tracersPerColor = 3;
 int changeOdds = 2;
 float radius = 50;
 float speedDiv = 18.0; // Must be divisible by 6.
-float tailLen = 2.0 * TWO_PI;
+float tailLen = 1.5 * TWO_PI;
 float tracerSize = 15.0;
 
 void setup() {
