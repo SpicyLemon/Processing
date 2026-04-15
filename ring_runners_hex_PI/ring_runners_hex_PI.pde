@@ -5,6 +5,7 @@ int hCount;
 int vCount;
 Palette[] pals;
 Tracer[] tracers;
+PGraphics pg;
 
 float PI_1_3 = PI / 3;     // lower right intersection angle.
 float PI_2_3 = PI * 2 / 3; // lower left intersection angle.
@@ -23,15 +24,17 @@ color[] tracerColors = new color[]{
 };
 color tracerColorEnd = #FFFFFF;
 int tracersPerColor = 3;
-int changeOdds = 2;
+int changeOdds = 3;
 float radius = 50;
 float speedDiv = 18.0; // Must be divisible by 6.
-float tailLen = 1.75 * TWO_PI;
-float tracerSize = 15.0;
+float tailLen = 1.5 * TWO_PI;
+float tracerSize = 7.0;
 int wedgeAlpha = 75;
 
 void setup() {
   fullScreen(P2D);
+  pg = createGraphics(width/2, height/2);
+  
   // sqrt(3/4) is important here because:
   // 1. A hex can be thought of as six equaliateral triangles.
   // 2. An equilateral triangle cut in half is a 30-60-90 triangle.
@@ -41,8 +44,8 @@ void setup() {
   sqrt34 = sqrt(3.0/4.0);
   
   // Taking 10 out of the width and height to ensure that there's at least some padding.
-  hCount = int((width-10)/(radius*2));
-  vCount = int((height-2*radius-10)/(sqrt34*radius*2))+1;
+  hCount = int((pg.width-10)/(radius*2));
+  vCount = int((pg.height-2*radius-10)/(sqrt34*radius*2))+1;
   centers = new Spot[vCount][hCount];
   for (int v = 0; v < vCount; v++) {
     // The y for this row is radius + 2*sqrt(3/4)*radius*<row number>.
@@ -68,8 +71,8 @@ void setup() {
   // we remove one from the row count.
   // So vertically, we occupy 2*radius + (<num circles>-1)*sqrt(3/4)*radius*2.
   float fullHeight = 2 * radius + (vCount-1)*sqrt34*radius*2;
-  offsetX = (width - fullWidth) / 2;
-  offsetY = (height - fullHeight) / 2;
+  offsetX = (pg.width - fullWidth) / 2;
+  offsetY = (pg.height - fullHeight) / 2;
   
   pals = new Palette[tracerColors.length];
   for (int i = 0; i < tracerColors.length ; i++) {
@@ -85,23 +88,24 @@ void setup() {
 }
 
 void draw() {
-  background(0);
-  translate(offsetX, offsetY);
+  pg.beginDraw();
+  pg.background(0);
+  pg.translate(offsetX, offsetY);
   
   if (drawCircles) {
-    noFill();
-    stroke(#FFFFFF);
-    strokeWeight(2.0);
+    pg.noFill();
+    pg.stroke(#FFFFFF);
+    pg.strokeWeight(2.0);
     for (Spot[] spots : centers) {
       for (Spot spot : spots) {
         if (spot != null) {
-          circle(spot.X, spot.Y, radius*2);
+          pg.circle(spot.X, spot.Y, radius*2);
         }
       }
     }
   }
 
-  noFill();
+  pg.noFill();
   for (Tracer tracer : tracers) {
     tracer.Move();
   }
@@ -109,6 +113,9 @@ void draw() {
   for (Tracer tracer : tracers) {
     tracer.Draw();
   }
+  
+  pg.endDraw();
+  image(pg, 0, 0, width, height);
 }
 
 Tracer newTracer(int palI) {

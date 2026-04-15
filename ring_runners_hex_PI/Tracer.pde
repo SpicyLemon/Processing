@@ -127,8 +127,8 @@ class ArchToDraw {
   }
   
   void Draw() {
-    stroke(this.Col);
-    strokeWeight(this.StrokeWeight);
+    pg.stroke(this.Col);
+    pg.strokeWeight(this.StrokeWeight);
     drawArch(this.Center.X, this.Center.Y, radius*2, this.Start, this.Stop, this.Dir);
   }
 }
@@ -264,23 +264,12 @@ class Tracer {
   }
   
   Tracer Draw() {
-    // strokeWeight(this.Stroke);
-    //stroke(#FFFFFF);
-    //Spot curSpot = this.Cur();
-    //circle(curSpot.X, curSpot.Y, this.Stroke);
-    //Spot cen = this.Center();
-    //stroke(this.Col.Value);
-    //strokeWeight(1);
-    //line(curSpot.X, curSpot.Y, cen.X, cen.Y);
-    
-    strokeWeight(this.Stroke);
-    
     Arch cur = this.history;
     float lenLeft = this.TailLen;
     float lenPerPal = this.TailLen / this.TailPal.Size();
     int palI = 0;
-    strokeWeight(this.Stroke);
-    stroke(this.TailPal.Get(palI).Value);
+    pg.strokeWeight(this.Stroke);
+    pg.stroke(this.TailPal.Get(palI).Value);
     float curStart = cur.Start;
     float curStop = cur.Stop;
     float palLenLeft = lenPerPal;
@@ -328,7 +317,7 @@ class Tracer {
       cur.Next = null;
     }
     
-    fill(setAlpha(this.TailPal.Get(0).Value, wedgeAlpha));
+    pg.fill(setAlpha(this.TailPal.Get(0).Value, wedgeAlpha));
     for (int i = toDraw.size()-1; i >= 0; i--) {
       toDraw.get(i).Draw();
     }
@@ -375,15 +364,15 @@ void drawArch(float x, float y, float radius, float start, float stop, CircleDir
   }
   if (dir == CW) {
     if (start < stop) {
-      arc(x, y, radius, radius, start, stop);
+      pg.arc(x, y, radius, radius, start, stop);
     } else {
-      arc(x, y, radius, radius, start, stop+TWO_PI);
+      pg.arc(x, y, radius, radius, start, stop+TWO_PI);
     }
   } else {
     if (start < stop) {
-      arc(x, y, radius, radius, stop, start+TWO_PI);
+      pg.arc(x, y, radius, radius, stop, start+TWO_PI);
     } else {
-      arc(x, y, radius, radius, stop, start);
+      pg.arc(x, y, radius, radius, stop, start);
     }
   }
 }
