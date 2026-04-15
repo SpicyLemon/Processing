@@ -11,10 +11,10 @@ class Spot {
     this.Y = y;
   }
   
-  Spot WithRadius(float rad, float dMinRadius) {
+  Spot WithRadius(float rad) {
     this.MaxRadius = rad;
     this.MinRadius = float(int(random(rad)));
-    this.DMinRadius = dMinRadius;
+    this.DMinRadius = random(minDRadius, maxDRadius);
     if (int(random(2)) == 0) {
       this.DMinRadius *= -1;
     }
@@ -39,17 +39,20 @@ class Spot {
     return new Spot(this);
   }
   
-  Spot Move() {
+  Spot Iterate() {
     this.MinRadius += this.DMinRadius;
     if (this.MinRadius >= this.MaxRadius) {
       this.MinRadius = this.MaxRadius;
-      this.Col = randomFadedColor();
-      this.DMinRadius *= -1;
+      this.DMinRadius = 0;
+      if (int(random(changeOdds)) == 0) {
+        this.Col = randomFadedColor();
+        this.DMinRadius = -random(minDRadius, maxDRadius);
+      }
     } else if (this.MinRadius <= 0) {
       this.MinRadius = 0;
       this.DMinRadius = 0;
       if (int(random(changeOdds)) == 0) {
-        this.DMinRadius = random(maxDRadius);
+        this.DMinRadius = random(minDRadius, maxDRadius);
       }
     }
     return this;

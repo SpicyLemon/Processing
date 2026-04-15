@@ -6,7 +6,8 @@ int vCount;
 
 boolean drawCircles = false;
 float radius = 50;
-float maxDRadius = 1;
+float minDRadius = 0.1;
+float maxDRadius = 2;
 color[] colors = new color[]{
   #FF0000, // Red 
   #00FF00, // Green
@@ -62,7 +63,7 @@ void setup() {
   // Set up the rest of the spot properties.
   for (Spot[] spots : centers) {
     for (Spot spot : spots) {
-      spot.WithRadius(radius, random(maxDRadius))
+      spot.WithRadius(radius)
           .WithColor(randomFadedColor());
     }
   }
@@ -87,7 +88,7 @@ void draw() {
   
   for (Spot[] spots : centers) {
     for (Spot spot : spots) {
-      spot.Move();
+      spot.Iterate();
     }
   }
   
