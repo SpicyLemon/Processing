@@ -328,6 +328,7 @@ class Tracer {
       cur.Next = null;
     }
     
+    fill(setAlpha(this.TailPal.Get(0).Value, 50));
     for (int i = toDraw.size()-1; i >= 0; i--) {
       toDraw.get(i).Draw();
     }
@@ -385,4 +386,8 @@ void drawArch(float x, float y, float radius, float start, float stop, CircleDir
       arc(x, y, radius, radius, stop, start);
     }
   }
+}
+
+color setAlpha(color col, int alpha) {
+  return (col & 0x00FFFFFF) | ((alpha & 0xFF) << 24);
 }
