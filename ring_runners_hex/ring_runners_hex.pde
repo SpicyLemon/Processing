@@ -1,3 +1,10 @@
+import gifAnimation.*;
+
+GifMaker gifExport;
+int gifFrameLimit = 500;
+int gifFrameRate = 1000/30; // 30 fps
+boolean saveGif = false;
+
 Spot[][] centers;
 float sqrt34;
 float offsetX, offsetY;
@@ -24,7 +31,7 @@ color[] tracerColors = new color[]{
 color tracerColorEnd = #FFFFFF;
 int tracersPerColor = 3;
 int changeOdds = 2;
-float radius = 70;
+float radius = 80;
 float speedDiv = 18.0; // Must be divisible by 6.
 float tailLen = 2 * TWO_PI;
 float tracerSize = 15.0;
@@ -81,6 +88,13 @@ void setup() {
       tracers[p*tracersPerColor+i] = newTracer(p);
     }
   }
+  
+  // Set up the gif exporter.
+  if (saveGif) {
+    gifExport = new GifMaker(this, "ring_runners_hex.gif");
+    gifExport.setRepeat(0); // Loop forever.
+    gifExport.setDelay(gifFrameRate);
+  }
 }
 
 void draw() {
@@ -107,6 +121,20 @@ void draw() {
   
   for (Tracer tracer : tracers) {
     tracer.Draw();
+  }
+  
+  if (saveGif) {
+    // Add this frame to the gif.
+    if (frameCount <= gifFrameLimit) {
+      gifExport.addFrame();
+    }
+    
+    // Finish and save.
+    if (frameCount == gifFrameLimit) {
+      gifExport.finish();
+      println("GIF saved!");
+      exit();
+    }
   }
 }
 
