@@ -45,7 +45,7 @@ float dBackOvalRotMax = 0.04;
 float ddBackOvalRotMax = 0.002;
 
 // Values governing the tracers.
-int tailLength = 15;
+int tailLength = 20;
 float maxStroke = 10.0;
 float headSize = 0.0;
 float maxSpeed = 8.0;
@@ -59,7 +59,7 @@ int[] tracerShift = new int[]{
 
 // Values governing the runners.
 int spotCount = 150;
-int runnerLength = 15;
+int runnerLength = 25;
 color runnerColor = #FFFFFF;
 float runnerSize = 10;
 
