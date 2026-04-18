@@ -17,12 +17,13 @@ class Tracer {
   float Radius;
   float Angle;
   float Speed;
-  Color Col;
+  color Col;
   float Stroke;
   float Size;
   Spot[] history;
   int histInd;
   Palette histPal;
+  float strokeMult;
   
   Tracer(float x, float y) {
     this.Center = new Spot(x, y);
@@ -51,17 +52,27 @@ class Tracer {
     for (int i = 0; i < this.history.length; i++) {
       this.history[i] = cur.Copy();
     }
+    if (len > 0) {
+      this.strokeMult = this.Stroke/(float)this.history.length;
+    } else {
+      this.strokeMult = 0;
+    }
     return this;
   }
   
-  Tracer WithColor(Color col) {
+  Tracer WithColor(color col) {
     this.Col = col;
-    this.histPal = new Palette(this.history.length, #000000, this.Col.Value);
+    this.histPal = new Palette(this.history.length, #000000, this.Col);
     return this;
   }
   
   Tracer WithStroke(float stroke) {
     this.Stroke = stroke;
+    if (this.history != null && this.history.length > 0) {
+      this.strokeMult = this.Stroke/(float)this.history.length;
+    } else {
+      this.strokeMult = 0;
+    }
     return this;
   }
   
@@ -86,7 +97,7 @@ class Tracer {
     }
   }
   
-  Tracer Move() {
+  Tracer Move(boolean forceDirChange) {
     // Move the current spot along the arc in the amount of the speed.
     // arc length = radius * angle, so angle = length / radius.
     this.Angle = this.Angle + this.Speed / this.Radius;
@@ -96,7 +107,7 @@ class Tracer {
     this.histInd = (this.histInd + 1) % this.history.length;
     this.history[this.histInd] = this.Cur();
     
-    if (int(random(TWO_PI*2)) == 0 || mouseWasPressed) {
+    if (forceDirChange || int(random(TWO_PI*3)) == 0) {
       // Pick a new center on the opposite side.
       float r = randomRadius();
       Spot cen = new Spot(
@@ -104,7 +115,7 @@ class Tracer {
         this.Center.Y + (this.Radius+r)*sin(this.Angle)
       );
       // Only switch if the whole circle fits on the screen.
-      if (cen.X > r && cen.X < width-r && cen.Y > r && cen.Y < height-r) {
+      if (cen.X - r >= xLimMin && cen.X + r <= xLimMax && cen.Y - r > yLimMin && cen.Y + r <= yLimMax) {
         this.Center = cen;
         this.Radius = r;
         this.Speed *= -1;
@@ -116,24 +127,34 @@ class Tracer {
   }
   
   Tracer Draw() {
-    stroke(this.Col.Value);
+    stroke(this.Col);
     
     // Draw the history lines
-    float strokeMult = this.Stroke/(float)this.history.length;
     for (int i = 0; i < this.history.length-1; i++) {
-      int pos1 = (this.histInd + i + 1) % this.history.length;
-      int pos2 = (this.histInd + i + 2) % this.history.length;
-      Spot s1 = this.history[pos1];
-      Spot s2 = this.history[pos2];
-      stroke(this.histPal.Get(i+1).Value);
-      strokeWeight(strokeMult * (float)i + 1.0);
-      line(s1.X, s1.Y, s2.X, s2.Y);
+      this.DrawI(i);
     }
     
     // Draw the current dot.
+    this.DrawDot();
+    
+    return this;
+  }
+  
+  Tracer DrawI(int i) {
+    int pos1 = (this.histInd + i + 1) % this.history.length;
+    int pos2 = (this.histInd + i + 2) % this.history.length;
+    Spot s1 = this.history[pos1];
+    Spot s2 = this.history[pos2];
+    stroke(this.histPal.Get(i+1).Value);
+    strokeWeight(this.strokeMult * (float)i + 1.0);
+    line(s1.X, s1.Y, s2.X, s2.Y);
+    return this;
+  }
+  
+  Tracer DrawDot() {
     if (this.Size > 0.0001) {
       noStroke();
-      fill(this.Col.Value);
+      fill(this.Col);
       Spot cur = this.Cur();
       circle(cur.X, cur.Y, this.Size);
     }

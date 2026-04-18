@@ -5,6 +5,8 @@ int gifFrameLimit = 500;
 int gifFrameRate = 1000/30; // 30 fps
 boolean saveGif = false;
 
+float xMin, xMax, yMin, yMax;
+float xLimMin, xLimMax, yLimMin, yLimMax;
 Palette[] palettes;
 int palettesIndex = 2;
 Tracer[] tracers;
@@ -20,6 +22,16 @@ float minRadius = 5.0;
 
 void setup() {
   fullScreen();
+  
+  xMin = 0.0;
+  xMax = width;
+  yMin = 0.0;
+  yMax = height;
+  xLimMin = xMin * 0.95;
+  xLimMax = xMax * 0.95;
+  yLimMin = yMin * 0.95;
+  yLimMax = yMax * 0.95;  
+  
   // These all need to have exactly 20 total entries.
   palettes = new Palette[]{
     // [0]: Dark-Red to Blue.
@@ -46,15 +58,25 @@ void setup() {
 
 void draw() {
   background(0);
-  for (Tracer tracer : tracers) {
-    tracer.Move().Draw();
-  }
-  
+  boolean forceDirChange = false;
   if (mouseWasPressed) {
     mouseWasPressed = false;
+    forceDirChange = true;
     rotateColors();
   }
+  for (Tracer tracer : tracers) {
+    tracer.Move(forceDirChange);
+  }
   
+  for (int i = 0; i < tailLength-1; i++) {
+   for (Tracer tracer : tracers) {
+      tracer.DrawI(i);
+    }
+  }
+  for (Tracer tracer : tracers) {
+    tracer.DrawDot();
+  }      
+     
   if (saveGif) {
     // Add this frame to the gif.
     if (frameCount <= gifFrameLimit) {
@@ -97,7 +119,7 @@ Tracer newRandomTracer(Color col) {
               .WithSpeed(speed)
               .WithAngle(random(TWO_PI))
               .WithTail(tailLength)
-              .WithColor(col)
+              .WithColor(col.Value)
               .WithStroke(maxStroke)
               .WithSize(headSize);
 }
@@ -107,7 +129,7 @@ void rotateColors() {
   Palette colors = palettes[palettesIndex];
   for (int i = 0; i < colors.Size(); i++) {
     for (int j = 0; j < palCountMult; j++) {
-      tracers[i*palCountMult+j].WithColor(colors.Get(i));
+      tracers[i*palCountMult+j].WithColor(colors.Get(i).Value);
     }
   }
 }
