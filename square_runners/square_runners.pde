@@ -13,9 +13,10 @@ color[] dotColors = new color[]{
   #FF00FF, // Magenta
 };
 color runnerEndColor = #000000;
-int dotSize = 4;
-int dotSpace = 6;
+int dotSize = 6;
+int dotSpace = 9;
 int trailLength = 6;
+int changeDirOdds = 5;
 
 void setup() {
   size(800, 600);
@@ -69,7 +70,8 @@ void setup() {
   
   int r = 0;
   int col = 0;
-  runners = new Runner[perimeter/4];
+  int runnerCount = perimeter/4 + (perimeter%4 == 0 ? 0 : 1);
+  runners = new Runner[runnerCount];
   for (int x = xResMin; x < xResMax; x++) {
     if (col % 4 == 0) {
       runners[r] = new Runner(x, yResMin, dotPal.Get(col).Value, trailLength);
