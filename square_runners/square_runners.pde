@@ -40,8 +40,6 @@ void setup() {
   xRes = int((xLimMax-xLimMin)/float(dotSpace)) + 1;
   yRes = int((yLimMax-yLimMin)/float(dotSpace)) + 1;
   int perimeter = xRes*2 + yRes*2 - 4;
-  println("Resolution:", xRes, yRes);
-  println("Perimeter: ", perimeter);
   xResMin = 0;
   xResMax = xRes - 1;
   yResMin = 0;
@@ -68,7 +66,6 @@ void setup() {
     dotPal = dotPal.Append(new Palette(colsInThisPal, dotColors[i], dotColors[j]));
   }
   dotPal = dotPal.WithoutLast();
-  println("dotPal length:", dotPal.Size());
   
   int r = 0;
   int col = 0;
@@ -117,6 +114,15 @@ void draw() {
     for (Runner runner : runners) {
       runner.DrawI(i);
     }
+  }
+}
+
+void mousePressed() {
+  if (mouseButton == LEFT) {
+    noLoop();
+    redraw();
+  } else if (mouseButton == RIGHT) {
+    loop();
   }
 }
 
