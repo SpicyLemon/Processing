@@ -20,6 +20,10 @@ class Cell {
     this.X = x;
     this.Y = y;
   }
+  
+  Cell Copy() {
+    return new Cell(this.X, this.Y);
+  }
  
   Spot Spot() {
     return new Spot(xLimMin + float(this.X) * dotSpace,
@@ -38,6 +42,7 @@ class Runner {
   boolean homing;
   int dX;
   int dY;
+  Cell Target;
  
   Runner(int x, int y, color col, int len) {
     this.Cur = new Cell(x, y);
@@ -164,21 +169,16 @@ class Runner {
     }
   }
   
-  int DistanceHome() {
-    return abs(this.Cur.X - this.Home.X) + abs(this.Cur.Y - this.Home.Y);
+  int DistanceCurToTarget() {
+    return TaxiDistance(this.Cur, this.Target);
+  }
+  
+  int DistanceHomeToTarget() {
+    return EdgeDistance(this.Home, this.Target);
   }
   
   boolean AtHome() {
     return this.Cur.X == this.Home.X && this.Cur.Y == this.Home.Y;
-  }
-  
-  // EdgeDistance returns the number of Move()s required to get from
-  // (this.HomeX, this.HomeY) to (x, y), traveling clockwise around the
-  // perimeter defined by xResMin, xResMax, yResMin, yResMax.
-  int EdgeDistance(int x, int y) {
-    int f = perimeterPos(this.Home.X, this.Home.Y, xRes, yRes);
-    int t = perimeterPos(x, y, xRes, yRes);
-    return ((t - f) % perimeter + perimeter) % perimeter;
   }
   
   Runner DrawI(int i) {
@@ -192,21 +192,65 @@ class Runner {
   }
 }
 
-// perimeterPos returns the clockwise position along the perimeter,
+// TaxiDistance returns the number of steps needed to get from
+// (x1, y1) to (x2, y2) moving only up/down/left/right.
+int TaxiDistance(int x1, int y1, int x2, int y2) {
+  return abs(x1 - x2) + abs(y1 - y2);
+}
+int TaxiDistance(Cell a, Cell b) {
+  return TaxiDistance(a.X, a.Y, b.X, b.Y);
+}
+
+// EdgeDistance returns the number of Move()s required to get from
+// (x1, y1) to (x2, y2), traveling clockwise around the
+// perimeter defined by xResMin, xResMax, yResMin, yResMax
+int EdgeDistance(int x1, int y1, int x2, int y2) {
+  int a = PerimeterPos(x1, y1);
+  int b = PerimeterPos(x2, y2);
+  return ((b - a) % perimeter + perimeter) % perimeter;
+}
+int EdgeDistance(Cell a, Cell b) {
+  return EdgeDistance(a.X, a.Y, b.X, b.Y);
+}
+
+// PerimeterPos returns the clockwise position along the perimeter,
 // measured from (xResMin, yResMin). Assumes (px, py) is on the perimeter.
-int perimeterPos(int px, int py, int w, int h) {
+int PerimeterPos(int px, int py) {
   if (py == yResMin) {
     // Top edge: 0 .. w
     return px - xResMin;
   }
   if (px == xResMax) {
     // Right edge: w .. w + h
-    return w + (py - yResMin);
+    return xRes + (py - yResMin);
   }
   if (py == yResMax) {
     // Bottom edge: w + h .. 2w + h
-    return w + h + (xResMax - px);
+    return xRes + yRes + (xResMax - px);
   }
   // Left edge: 2w + h .. 2w + 2h
-  return 2 * w + h + (yResMax - py);
+  return 2 * xRes + yRes + (yResMax - py);
+}
+
+// CellFromPerimeterPos returns the Cell at the given clockwise position
+// along the perimeter, measured from (xResMin, yResMin).
+// This is the inverse of perimeterPos. Position 0 => (xResMin, yResMin).
+Cell CellFromPerimeterPos(int pos) {
+  // Normalize into [0, perimeter) so negatives and overflows wrap correctly.
+  int p = ((pos % perimeter) + perimeter) % perimeter;
+  
+  if (p < xRes) {
+    // Top edge: 0 .. w-1
+    return new Cell(xResMin + p, yResMin);
+  }
+  if (p < xRes + yRes) {
+    // Right edge: w .. w+h-1
+    return new Cell(xResMax, yResMin + (p - xRes));
+  }
+  if (p < 2 * xRes + yRes) {
+    // Bottom edge: w+h .. 2w+h-1
+    return new Cell(xResMax - (p - xRes - yRes), yResMax);
+  }
+  // Left edge: 2w+h .. 2w+2h-1
+  return new Cell(xResMin, yResMax - (p - 2 * xRes - yRes));
 }
