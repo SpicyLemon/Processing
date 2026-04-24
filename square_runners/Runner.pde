@@ -12,11 +12,24 @@ class Spot {
   }
 }
 
-class Runner {
+class Cell {
   int X;
   int Y;
-  int HomeX;
-  int HomeY;
+  
+  Cell(int x, int y) {
+    this.X = x;
+    this.Y = y;
+  }
+ 
+  Spot Spot() {
+    return new Spot(xLimMin + float(this.X) * dotSpace,
+                    yLimMin + float(this.Y) * dotSpace);
+  }
+}
+
+class Runner {
+  Cell Cur;
+  Cell Home;
   Spot[] history;
   int histInd;
   Palette histPal;
@@ -25,17 +38,13 @@ class Runner {
   boolean homing;
   int dX;
   int dY;
-  int targetX;
-  int targetY;
  
   Runner(int x, int y, color col, int len) {
-    this.X = x;
-    this.Y = y;
-    this.HomeX = x;
-    this.HomeY = y;
+    this.Cur = new Cell(x, y);
+    this.Home = new Cell(x, y);
     this.history = new Spot[len];
     this.histPal = new Palette(len, runnerEndColor, col);
-    this.history[0] = this.Cur();
+    this.history[0] = this.Cur.Spot();
   }
   
   Runner Move() {
@@ -47,46 +56,54 @@ class Runner {
         // Note: If this is on a corner, the dx and dy will
         // move it to the next spot clockwise. Then next time
         // it'll go through this again to break free of the wall.
-        if (this.Y == yResMin && this.X > xResMin) {
+        if (this.Cur.Y == yResMin && this.Cur.X > xResMin) {
           // Top side
           this.dY = 1;
-        } else if (this.X == xResMax && this.Y > yResMin) {
+        } else if (this.Cur.X == xResMax && this.Cur.Y > yResMin) {
           // Right Side
           this.dX = -1;
-        } else if (this.Y == yResMax && this.X < yResMax) {
+        } else if (this.Cur.Y == yResMax && this.Cur.X < yResMax) {
           // Bottom
           this.dY = -1;
-        } else if (this.X == xResMin && this.Y < yResMax) {
+        } else if (this.Cur.X == xResMin && this.Cur.Y < yResMax) {
           // Left
           this.dX = 1;
         }
       } else {
         boolean changeDir = int(random(changeDirOdds)) == 0
-                            || (this.X == xResMin+1 && this.dX < 0)
-                            || (this.X == xResMax-1 && this.dX > 0)
-                            || (this.Y == yResMin+1 && this.dY < 0)
-                            || (this.Y == yResMax-1 && this.dY > 0);
+                            || (this.Cur.X == xResMin+1 && this.dX < 0)
+                            || (this.Cur.X == xResMax-1 && this.dX > 0)
+                            || (this.Cur.Y == yResMin+1 && this.dY < 0)
+                            || (this.Cur.Y == yResMax-1 && this.dY > 0);
         if (changeDir) {
           if (this.dX != 0) {
             this.dX = 0;
-            if (int(random(2)) == 0) {
-              this.dY = -1;
-            } else {
+            if (this.Cur.Y <= yResMin+1) {
               this.dY = 1;
+            } else if (this.Cur.Y >= yResMax-1) {
+              this.dY = -1;
+            } else if (int(random(2)) == 0) {
+              this.dY = 1;
+            } else {
+              this.dY = -1;
             }
           } else {
             this.dY = 0;
-            if (int(random(2)) == 0) {
+            if (this.Cur.X <= xResMin+1) {
+              this.dX = 1;
+            } else if (this.Cur.X >= xResMax-1) {
               this.dX = -1;
+            } else if (int(random(2)) == 0) {
+              this.dX = 1;
             } else {
-              this.dY = 1;
+              this.dY = -1;
             }
           }
         }
       }
       
-      this.X += this.dX;
-      this.Y += this.dY;
+      this.Cur.X += this.dX;
+      this.Cur.Y += this.dY;
 
       this.toRoam--;
       if (this.toRoam <= 0) {
@@ -94,12 +111,12 @@ class Runner {
         this.homing = true;
       }
     } else {
-      this.X = HomeX;
-      this.Y = HomeY;
+      this.Cur.X = this.Home.X;
+      this.Cur.Y = this.Home.Y;
     }
     
     this.histInd = (this.histInd + 1) % this.history.length;
-    this.history[this.histInd] = this.Cur();
+    this.history[this.histInd] = this.Cur.Spot();
     return this;
   }
   
@@ -120,55 +137,47 @@ class Runner {
   }
   
   void MoveHome() {
-    if (this.HomeY == yResMin) {
-      if (this.HomeX < xResMax) {
-        this.HomeX++;
+    if (this.Home.Y == yResMin) {
+      if (this.Home.X < xResMax) {
+        this.Home.X++;
       } else {
-        this.HomeY++;
+        this.Home.Y++;
       }
-    } else if (this.HomeX == xResMax) {
-      if (this.HomeY < yResMax) {
-        this.HomeY++;
+    } else if (this.Home.X == xResMax) {
+      if (this.Home.Y < yResMax) {
+        this.Home.Y++;
       } else {
-        this.HomeX--;
+        this.Home.X--;
       }
-    } else if (this.HomeY == yResMax) {
-      if (this.HomeX > xResMin) {
-        this.HomeX--;
+    } else if (this.Home.Y == yResMax) {
+      if (this.Home.X > xResMin) {
+        this.Home.X--;
       } else {
-        this.HomeY--;
+        this.Home.Y--;
       }
-    } else if (this.HomeX == xResMin) {
-      if (this.HomeY > yResMin) {
-        this.HomeY--;
+    } else if (this.Home.X == xResMin) {
+      if (this.Home.Y > yResMin) {
+        this.Home.Y--;
       } else {
-        this.HomeX++;
+        this.Home.X++;
       }
     }
   }
   
-  Spot Cur() {
-    return new Spot(xLimMin + float(this.X) * dotSpace,
-                    yLimMin + float(this.Y) * dotSpace);
-  }
-  
   int DistanceHome() {
-    return abs(this.X - this.HomeX) + abs(this.Y - this.HomeY);
+    return abs(this.Cur.X - this.Home.X) + abs(this.Cur.Y - this.Home.Y);
   }
   
   boolean AtHome() {
-    return this.X == this.HomeX && this.Y == this.HomeY;
+    return this.Cur.X == this.Home.X && this.Cur.Y == this.Home.Y;
   }
   
   // EdgeDistance returns the number of Move()s required to get from
   // (this.HomeX, this.HomeY) to (x, y), traveling clockwise around the
   // perimeter defined by xResMin, xResMax, yResMin, yResMax.
   int EdgeDistance(int x, int y) {
-    int w = xResMax - xResMin;
-    int h = yResMax - yResMin;
-    int perimeter = 2 * w + 2 * h;
-    int f = perimeterPos(this.HomeX, this.HomeY, w, h);
-    int t = perimeterPos(x, y, w, h);
+    int f = perimeterPos(this.Home.X, this.Home.Y, xRes, yRes);
+    int t = perimeterPos(x, y, xRes, yRes);
     return ((t - f) % perimeter + perimeter) % perimeter;
   }
   
