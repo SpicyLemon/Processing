@@ -1,6 +1,6 @@
 float xMin, xMax, yMin, yMax;
 float xLimMin, xLimMax, yLimMin, yLimMax;
-int xRes, yRes, xResMin, xResMax, yResMin, yResMax;
+int xRes, yRes, xResMin, xResMax, yResMin, yResMax, perimeter;
 
 Runner[] runners;
 Palette dotPal;
@@ -38,13 +38,13 @@ void setup() {
     yLimMax--;
   }
   
-  xRes = int((xLimMax-xLimMin)/float(dotSpace)) + 1;
-  yRes = int((yLimMax-yLimMin)/float(dotSpace)) + 1;
-  int perimeter = xRes*2 + yRes*2 - 4;
+  xRes = int((xLimMax-xLimMin)/float(dotSpace));
+  yRes = int((yLimMax-yLimMin)/float(dotSpace));
+  perimeter = xRes*2 + yRes*2;
   xResMin = 0;
-  xResMax = xRes - 1;
+  xResMax = xRes;
   yResMin = 0;
-  yResMax = yRes - 1;
+  yResMax = yRes;
   
   int colsPerPal = perimeter / dotColors.length;
   int perPalLeftovers = perimeter % dotColors.length;
