@@ -17,6 +17,7 @@ int dotSize = 6;
 int dotSpace = 9;
 int trailLength = 6;
 int changeDirOdds = 5;
+boolean drawTheGrid = true;
 
 void setup() {
   size(800, 600);
@@ -106,7 +107,9 @@ void draw() {
   background(0);
   strokeCap(PROJECT); // Make the points square.
   strokeWeight(dotSize);
-  drawGrid();
+  if (drawTheGrid) {
+    drawGrid();
+  }
   
   for (Runner runner : runners) {
     runner.Move();
