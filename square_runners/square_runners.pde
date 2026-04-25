@@ -1,3 +1,12 @@
+import gifAnimation.*;
+
+GifMaker gifExport;
+int gifFrameRate = 1000/15; // 15 fps
+boolean saveGif = false;
+boolean stopping = false;
+int extraFrames = 2;
+float loops;
+
 float xMin, xMax, yMin, yMax;
 float xLimMin, xLimMax, yLimMin, yLimMax;
 int xRes, yRes, xResMin, xResMax, yResMin, yResMax, perimeter;
@@ -21,8 +30,9 @@ int changeDirOdds = 8;
 int newRoamingChances = 3;
 int newRoamingOdds = 50;
 boolean drawTheGrid = false;
+color gridColor = #222222;
 int framesToFirst = 25;
-int framesToMore = 100;
+int framesToMore = 50;
 
 void setup() {
   fullScreen(); //size(800, 600);
@@ -52,6 +62,10 @@ void setup() {
   yResMin = 0;
   yResMax = yRes;
   
+  if (drawTheGrid) {
+    runnerEndColor = gridColor;
+  }
+
   int colsPerPal = perimeter / dotColors.length;
   int perPalLeftovers = perimeter % dotColors.length;
   int colsInThisPal = colsPerPal;
@@ -106,6 +120,18 @@ void setup() {
     }
     col++;
   }
+  
+  for (Runner runner : runners) {
+    runner.Move().Move();
+  }
+  
+  // Set up the gif exporter.
+  if (saveGif) {
+    //loops = -0.25;
+    gifExport = new GifMaker(this, "square-runners.gif");
+    gifExport.setRepeat(0); // Loop forever.
+    gifExport.setDelay(gifFrameRate);
+  }
 }
 
 void draw() {
@@ -120,6 +146,18 @@ void draw() {
     if (roaming.get(i).AtHome()) {
       roaming.remove(i);
       framesToMore = -1;
+    }
+  }
+
+  if (saveGif) {
+    if (IsCorner(runners[0].Home)) {
+      loops += 0.25;
+      println("loops:", loops);
+      if (RoughlyEqual(loops, 1.00)) {
+        newRoamingChances = 0;
+      } else if (loops > 0.25 && RoughlyEqual(loops, int(loops)) && roaming.size() == 0) {
+        stopping = true;
+      }
     }
   }
   
@@ -152,6 +190,22 @@ void draw() {
       runner.DrawI(i);
     }
   }
+  
+  if (saveGif) {
+    if (stopping) {
+      extraFrames--;
+    }
+    // Finish and save.
+    if (stopping && extraFrames <= 0) {
+      gifExport.finish();
+      println("GIF saved!");
+      exit();
+    }
+    // Doing this last to not save the last frame.
+    // The last frame has the 0th runner in the corner, just like the first.
+    // So, by not saving the last frame, it'll loop perfectly.
+    gifExport.addFrame();
+  }
 }
 
 void mousePressed() {
@@ -164,7 +218,7 @@ void mousePressed() {
 }
 
 void drawGrid() {
-  stroke(#222222);
+  stroke(gridColor);
   for (int x = xResMin; x <= xResMax; x++) {
     for (int y = yResMin; y <= yResMax; y++) {
       point(xLimMin + x*dotSpace, yLimMin + y*dotSpace);
@@ -178,4 +232,8 @@ Cell RandomTarget() {
     return rv;
   }
   return RandomTarget();
+}
+
+boolean RoughlyEqual(float a, float b) {
+  return abs(a - b) < 0.001;
 }
