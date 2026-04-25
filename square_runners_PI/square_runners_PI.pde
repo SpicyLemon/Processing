@@ -1,6 +1,7 @@
 float xMin, xMax, yMin, yMax;
 float xLimMin, xLimMax, yLimMin, yLimMax;
 int xRes, yRes, xResMin, xResMax, yResMin, yResMax, perimeter;
+int pauseNewFor;
 
 Runner[] runners;
 ArrayList<Runner> roaming = new ArrayList<>();
@@ -21,8 +22,11 @@ int changeDirOdds = 8;
 int newRoamingChances = 3;
 int newRoamingOdds = 50;
 boolean drawTheGrid = false;
+color gridColor = #222222;
 int framesToFirst = 25;
 int framesToMore = 100;
+int framesToPause = 15;
+int pauseAtRoamingCount = 12;
 
 void setup() {
   fullScreen(P2D);
@@ -51,6 +55,10 @@ void setup() {
   xResMax = xRes;
   yResMin = 0;
   yResMax = yRes;
+  
+  if (drawTheGrid) {
+    runnerEndColor = gridColor;
+  }
   
   int colsPerPal = perimeter / dotColors.length;
   int perPalLeftovers = perimeter % dotColors.length;
@@ -106,6 +114,10 @@ void setup() {
     }
     col++;
   }
+  
+  for (Runner runner : runners) {
+    runner.Move().Move();
+  }
 }
 
 void draw() {
@@ -123,6 +135,12 @@ void draw() {
     }
   }
   
+  if (roaming.size() == pauseAtRoamingCount) {
+    pauseNewFor = framesToPause;
+  } else if (pauseNewFor > 0 && roaming.size() == 0) {
+    pauseNewFor--;
+  }
+  
   if (framesToFirst >= 0) {
     framesToFirst--;
     if (framesToFirst == 0) {
@@ -132,12 +150,14 @@ void draw() {
   } else if (framesToMore >= 0) {
     framesToMore--;
   } else if (framesToMore < 0 || roaming.size() == 0) {
-    for (int i = 0; i < newRoamingChances; i++) {
-      if (roaming.size() == 0 || int(random(newRoamingOdds)) == 0) {
-        int r = int(random(runners.length));
-        if (runners[r].AtHome()) {
-          runners[r].StartRoaming(RandomTarget());
-          roaming.add(runners[r]);
+    if (pauseNewFor <= 0) {
+      for (int i = 0; i < newRoamingChances; i++) {
+        if (roaming.size() == 0 || int(random(newRoamingOdds)) == 0) {
+          int r = int(random(runners.length));
+          if (runners[r].AtHome()) {
+            runners[r].StartRoaming(RandomTarget());
+            roaming.add(runners[r]);
+          }
         }
       }
     }

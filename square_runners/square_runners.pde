@@ -10,6 +10,7 @@ float loops;
 float xMin, xMax, yMin, yMax;
 float xLimMin, xLimMax, yLimMin, yLimMax;
 int xRes, yRes, xResMin, xResMax, yResMin, yResMax, perimeter;
+int pauseNewFor;
 
 Runner[] runners;
 ArrayList<Runner> roaming = new ArrayList<>();
@@ -33,6 +34,8 @@ boolean drawTheGrid = false;
 color gridColor = #222222;
 int framesToFirst = 25;
 int framesToMore = 50;
+int framesToPause = 15;
+int pauseAtRoamingCount = 15;
 
 void setup() {
   fullScreen(); //size(800, 600);
@@ -161,6 +164,12 @@ void draw() {
     }
   }
   
+  if (roaming.size() == pauseAtRoamingCount) {
+    pauseNewFor = framesToPause;
+  } else if (pauseNewFor > 0 && roaming.size() == 0) {
+    pauseNewFor--;
+  }
+  
   if (framesToFirst >= 0) {
     framesToFirst--;
     if (framesToFirst == 0) {
@@ -170,12 +179,14 @@ void draw() {
   } else if (framesToMore >= 0) {
     framesToMore--;
   } else if (framesToMore < 0 || roaming.size() == 0) {
-    for (int i = 0; i < newRoamingChances; i++) {
-      if (roaming.size() == 0 || int(random(newRoamingOdds)) == 0) {
-        int r = int(random(runners.length));
-        if (runners[r].AtHome()) {
-          runners[r].StartRoaming(RandomTarget());
-          roaming.add(runners[r]);
+    if (pauseNewFor <= 0) {
+      for (int i = 0; i < newRoamingChances; i++) {
+        if (roaming.size() == 0 || int(random(newRoamingOdds)) == 0) {
+          int r = int(random(runners.length));
+          if (runners[r].AtHome()) {
+            runners[r].StartRoaming(RandomTarget());
+            roaming.add(runners[r]);
+          }
         }
       }
     }
