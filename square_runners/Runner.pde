@@ -38,7 +38,6 @@ class Runner {
   int histInd;
   Palette histPal;
   boolean roaming;
-  int toRoam;
   boolean homing;
   int dX;
   int dY;
@@ -56,30 +55,32 @@ class Runner {
     this.MoveHome();
     if (this.homing) {
     } else if (this.roaming) {
-      if (this.AtHome()) {
-        // Just starting. Set dX or dY based on side.
-        // Note: If this is on a corner, the dx and dy will
-        // move it to the next spot clockwise. Then next time
-        // it'll go through this again to break free of the wall.
-        if (this.Cur.Y == yResMin && this.Cur.X > xResMin) {
-          // Top side
-          this.dY = 1;
-        } else if (this.Cur.X == xResMax && this.Cur.Y > yResMin) {
-          // Right Side
-          this.dX = -1;
-        } else if (this.Cur.Y == yResMax && this.Cur.X < yResMax) {
-          // Bottom
-          this.dY = -1;
-        } else if (this.Cur.X == xResMin && this.Cur.Y < yResMax) {
-          // Left
-          this.dX = 1;
-        }
+      // Just starting. Set dX or dY based on side.
+      // Note: If this is on a corner, the dx and dy will
+      // move it to the next spot clockwise. Then next time
+      // it'll go through this again to break free of the wall.
+      if (this.Cur.Y == yResMin && this.Cur.X > xResMin) {
+        // Top side
+        this.dY = 1;
+        this.dX = 0;
+      } else if (this.Cur.X == xResMax && this.Cur.Y > yResMin) {
+        // Right Side
+        this.dX = -1;
+        this.dY = 0;
+      } else if (this.Cur.Y == yResMax && this.Cur.X < xResMax) {
+        // Bottom
+        this.dY = -1;
+        this.dX = 0;
+      } else if (this.Cur.X == xResMin && this.Cur.Y < yResMax) {
+        // Left
+        this.dX = 1;
+        this.dY = 0;
       } else {
         boolean changeDir = int(random(changeDirOdds)) == 0
-                            || (this.Cur.X == xResMin+1 && this.dX < 0)
-                            || (this.Cur.X == xResMax-1 && this.dX > 0)
-                            || (this.Cur.Y == yResMin+1 && this.dY < 0)
-                            || (this.Cur.Y == yResMax-1 && this.dY > 0);
+                            || (this.Cur.X <= xResMin+1 && this.dX < 0)
+                            || (this.Cur.X >= xResMax-1 && this.dX > 0)
+                            || (this.Cur.Y <= yResMin+1 && this.dY < 0)
+                            || (this.Cur.Y >= yResMax-1 && this.dY > 0);
         if (changeDir) {
           if (this.dX != 0) {
             this.dX = 0;
@@ -101,7 +102,7 @@ class Runner {
             } else if (int(random(2)) == 0) {
               this.dX = 1;
             } else {
-              this.dY = -1;
+              this.dX = -1;
             }
           }
         }
@@ -110,8 +111,7 @@ class Runner {
       this.Cur.X += this.dX;
       this.Cur.Y += this.dY;
 
-      this.toRoam--;
-      if (this.toRoam <= 0) {
+      if (this.DistanceHomeToTarget() == this.DistanceCurToTarget()) {
         this.roaming = false;
         this.homing = true;
       }
@@ -125,10 +125,10 @@ class Runner {
     return this;
   }
   
-  Runner StartRoaming(int steps) {
+  Runner StartRoaming(Cell target) {
     this.homing = false;
     this.roaming = true;
-    this.toRoam = steps;
+    this.Target = target;
     return this;
   }
   
@@ -186,6 +186,15 @@ class Runner {
     Spot spot = this.history[pos];
     if (spot != null) {
       stroke(this.histPal.Get(i).Value);
+      point(spot.X, spot.Y);
+    }
+    return this;
+  }
+  
+  Runner DrawTarget() {
+    if (this.Target != null) {
+      stroke(#FFFFFF);
+      Spot spot = this.Target.Spot();
       point(spot.X, spot.Y);
     }
     return this;

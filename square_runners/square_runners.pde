@@ -16,7 +16,7 @@ color runnerEndColor = #000000;
 int dotSize = 6;
 int dotSpace = 9;
 int trailLength = 6;
-int changeDirOdds = 5;
+int changeDirOdds = 10;
 boolean drawTheGrid = true;
 
 void setup() {
@@ -111,6 +111,10 @@ void draw() {
     drawGrid();
   }
   
+  if (frameCount == 25) {
+    runners[0].StartRoaming(CellFromPerimeterPos(int(random(perimeter))));
+  }
+  
   for (Runner runner : runners) {
     runner.Move();
   }
@@ -119,6 +123,10 @@ void draw() {
     for (Runner runner : runners) {
       runner.DrawI(i);
     }
+  }
+  
+  for (Runner runner : runners) {
+    runner.DrawTarget();
   }
 }
 
