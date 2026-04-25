@@ -11,6 +11,7 @@ float xLimMin, xLimMax, yLimMin, yLimMax;
 float backOvalWidth, backOvalHeight;
 float backOvalOffsetX, backOvalOffsetY;
 Palette backPal;
+Palette tracerPal;
 Tracer[] tracers;
 Spot[] runnerSpots;
 int runnerI;
@@ -90,18 +91,14 @@ void setup() {
   for (int i = 0; i < backColors.length; i++) {
     colors[i] = lerpColor(backColors[i], #000000, 0.2);
   }
-  backPal = new Palette(entriesPerBackPal, colors[0], colors[1]);
-  for (int i = 1; i < colors.length; i++) {
-    int j = (i + 1) % colors.length;
-    backPal = backPal.Append(new Palette(entriesPerBackPal+1, colors[i], colors[j]));
-  }
-  backPal = backPal.WithoutLast();
+  backPal = NewCircularPalette(entriesPerBackPal, colors);
   backPal = backPal.SetAlpha(100);
+  tracerPal = NewCircularPalette(entriesPerBackPal, backColors);
   
   // Create the tracers
   tracers = new Tracer[tracerShift.length];
   for (int i = 0; i < tracerShift.length; i++) {
-    tracers[i] = newRandomTracer(backLineColor(tracerShift[i]));
+    tracers[i] = newRandomTracer(tracerColor(tracerShift[i]));
   }
   
   // Calculate all the points that will be used for the runners.
@@ -175,7 +172,7 @@ void draw() {
   
   // Adjust the colors of the tracers
   for (int i = 0; i < tracers.length; i++) {
-    tracers[i].WithColor(backLineColor(tracerShift[i]));
+    tracers[i].WithColor(tracerColor(tracerShift[i]));
   }
   
   // Move the tracers.
@@ -302,6 +299,16 @@ color backLineColor(int shift) {
     i += backPal.Size();
   }
   return backPal.Get(i).Copy().SetAlpha(255).Value;
+}
+
+color tracerColor(int shift) {
+  int i = int(backPalI) + shift;
+  if (i >= tracerPal.Size()) {
+    i -= tracerPal.Size();
+  } else if (i < 0) {
+    i += tracerPal.Size();
+  }
+  return tracerPal.Get(i).Value;
 }
 
 float adjustSpeed(float cur, float dMax, float ddMax) {

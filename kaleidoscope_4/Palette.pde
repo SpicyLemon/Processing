@@ -264,3 +264,13 @@ class Palette {
     return this;
   }
 }
+
+Palette NewCircularPalette(int entriesPerShift, color[] colors) {
+  Palette rv = new Palette(entriesPerShift, colors[0], colors[1]);
+  for (int i = 1; i < colors.length; i++) {
+    int j = (i + 1) % colors.length;
+    rv = rv.Append(new Palette(entriesPerShift+1, colors[i], colors[j]));
+  }
+  rv = rv.WithoutLast();
+  return rv;
+}
