@@ -3,6 +3,7 @@ float xLimMin, xLimMax, yLimMin, yLimMax;
 int xRes, yRes, xResMin, xResMax, yResMin, yResMax, perimeter;
 
 Runner[] runners;
+ArrayList<Runner> roaming = new ArrayList<>();
 Palette dotPal;
 color[] dotColors = new color[]{
   #FF0000, // Red
@@ -16,8 +17,12 @@ color runnerEndColor = #000000;
 int dotSize = 6;
 int dotSpace = 9;
 int trailLength = 6;
-int changeDirOdds = 10;
-boolean drawTheGrid = true;
+int changeDirOdds = 8;
+int newRoamingChances = 3;
+int newRoamingOdds = 50;
+boolean drawTheGrid = false;
+int framesToFirst = 25;
+int framesToMore = 100;
 
 void setup() {
   size(800, 600);
@@ -111,8 +116,31 @@ void draw() {
     drawGrid();
   }
   
-  if (frameCount == 25) {
-    runners[0].StartRoaming(RandomTarget());
+  for (int i = roaming.size()-1; i >= 0; i--) {
+    if (roaming.get(i).AtHome()) {
+      roaming.remove(i);
+      framesToMore = -1;
+    }
+  }
+  
+  if (framesToFirst >= 0) {
+    framesToFirst--;
+    if (framesToFirst == 0) {
+      runners[0].StartRoaming(RandomTarget());
+      roaming.add(runners[0]);
+    }
+  } else if (framesToMore >= 0) {
+    framesToMore--;
+  } else if (framesToMore < 0 || roaming.size() == 0) {
+    for (int i = 0; i < newRoamingChances; i++) {
+      if (roaming.size() == 0 || int(random(newRoamingOdds)) == 0) {
+        int r = int(random(runners.length));
+        if (runners[r].AtHome()) {
+          runners[r].StartRoaming(RandomTarget());
+          roaming.add(runners[r]);
+        }
+      }
+    }
   }
   
   for (Runner runner : runners) {
@@ -123,10 +151,6 @@ void draw() {
     for (Runner runner : runners) {
       runner.DrawI(i);
     }
-  }
-  
-  for (Runner runner : runners) {
-    runner.DrawTarget();
   }
 }
 
