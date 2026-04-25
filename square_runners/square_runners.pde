@@ -112,7 +112,7 @@ void draw() {
   }
   
   if (frameCount == 25) {
-    runners[0].StartRoaming(CellFromPerimeterPos(int(random(perimeter))));
+    runners[0].StartRoaming(RandomTarget());
   }
   
   for (Runner runner : runners) {
@@ -146,4 +146,12 @@ void drawGrid() {
       point(xLimMin + x*dotSpace, yLimMin + y*dotSpace);
     }
   }
+}
+
+Cell RandomTarget() {
+  Cell rv = CellFromPerimeterPos(int(random(perimeter)));
+  if (!IsCorner(rv)) {
+    return rv;
+  }
+  return RandomTarget();
 }

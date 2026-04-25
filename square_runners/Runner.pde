@@ -54,63 +54,9 @@ class Runner {
   Runner Move() {
     this.MoveHome();
     if (this.homing) {
+      this.MoveToTarget();
     } else if (this.roaming) {
-      // Just starting. Set dX or dY based on side.
-      // Note: If this is on a corner, the dx and dy will
-      // move it to the next spot clockwise. Then next time
-      // it'll go through this again to break free of the wall.
-      if (this.Cur.Y == yResMin && this.Cur.X > xResMin) {
-        // Top side
-        this.dY = 1;
-        this.dX = 0;
-      } else if (this.Cur.X == xResMax && this.Cur.Y > yResMin) {
-        // Right Side
-        this.dX = -1;
-        this.dY = 0;
-      } else if (this.Cur.Y == yResMax && this.Cur.X < xResMax) {
-        // Bottom
-        this.dY = -1;
-        this.dX = 0;
-      } else if (this.Cur.X == xResMin && this.Cur.Y < yResMax) {
-        // Left
-        this.dX = 1;
-        this.dY = 0;
-      } else {
-        boolean changeDir = int(random(changeDirOdds)) == 0
-                            || (this.Cur.X <= xResMin+1 && this.dX < 0)
-                            || (this.Cur.X >= xResMax-1 && this.dX > 0)
-                            || (this.Cur.Y <= yResMin+1 && this.dY < 0)
-                            || (this.Cur.Y >= yResMax-1 && this.dY > 0);
-        if (changeDir) {
-          if (this.dX != 0) {
-            this.dX = 0;
-            if (this.Cur.Y <= yResMin+1) {
-              this.dY = 1;
-            } else if (this.Cur.Y >= yResMax-1) {
-              this.dY = -1;
-            } else if (int(random(2)) == 0) {
-              this.dY = 1;
-            } else {
-              this.dY = -1;
-            }
-          } else {
-            this.dY = 0;
-            if (this.Cur.X <= xResMin+1) {
-              this.dX = 1;
-            } else if (this.Cur.X >= xResMax-1) {
-              this.dX = -1;
-            } else if (int(random(2)) == 0) {
-              this.dX = 1;
-            } else {
-              this.dX = -1;
-            }
-          }
-        }
-      }
-      
-      this.Cur.X += this.dX;
-      this.Cur.Y += this.dY;
-
+      this.Roam();
       if (this.DistanceHomeToTarget() == this.DistanceCurToTarget()) {
         this.roaming = false;
         this.homing = true;
@@ -130,15 +76,6 @@ class Runner {
     this.roaming = true;
     this.Target = target;
     return this;
-  }
-  
-  // StartHoming returns true if a suitable home target is found and homing can start.
-  boolean StartHoming() {
-    this.roaming = false;
-    // TODO: Identify a target (x, y) to move towards.
-    //       The target will be the same distance away from
-    //       both (X, Y) and (HomeX, HomeY).
-    return true;
   }
   
   void MoveHome() {
@@ -167,6 +104,83 @@ class Runner {
         this.Home.X++;
       }
     }
+  }
+  
+  void Roam() {
+    // Just starting. Set dX or dY based on side.
+    // Note: If this is on a corner, the dx and dy will
+    // move it to the next spot clockwise. Then next time
+    // it'll go through this again to break free of the wall.
+    if (this.Cur.Y == yResMin && this.Cur.X > xResMin) {
+      // Top side
+      this.dY = 1;
+      this.dX = 0;
+    } else if (this.Cur.X == xResMax && this.Cur.Y > yResMin) {
+      // Right Side
+      this.dX = -1;
+      this.dY = 0;
+    } else if (this.Cur.Y == yResMax && this.Cur.X < xResMax) {
+      // Bottom
+      this.dY = -1;
+      this.dX = 0;
+    } else if (this.Cur.X == xResMin && this.Cur.Y < yResMax) {
+      // Left
+      this.dX = 1;
+      this.dY = 0;
+    } else {
+      boolean changeDir = int(random(changeDirOdds)) == 0
+                          || (this.Cur.X <= xResMin+1 && this.dX < 0)
+                          || (this.Cur.X >= xResMax-1 && this.dX > 0)
+                          || (this.Cur.Y <= yResMin+1 && this.dY < 0)
+                          || (this.Cur.Y >= yResMax-1 && this.dY > 0);
+      if (changeDir) {
+        if (this.dX != 0) {
+          this.dX = 0;
+          if (this.Cur.Y <= yResMin+1) {
+            this.dY = 1;
+          } else if (this.Cur.Y >= yResMax-1) {
+            this.dY = -1;
+          } else if (int(random(2)) == 0) {
+            this.dY = 1;
+          } else {
+            this.dY = -1;
+          }
+        } else {
+          this.dY = 0;
+          if (this.Cur.X <= xResMin+1) {
+            this.dX = 1;
+          } else if (this.Cur.X >= xResMax-1) {
+            this.dX = -1;
+          } else if (int(random(2)) == 0) {
+            this.dX = 1;
+          } else {
+            this.dX = -1;
+          }
+        }
+      }
+    }
+    
+    this.Cur.X += this.dX;
+    this.Cur.Y += this.dY;  
+  }
+  
+  void MoveToTarget() {
+    if (this.Cur.X == this.Target.X) {
+      this.dX = 0;
+      if (this.Cur.Y < this.Target.Y) {
+        this.dY = 1;
+      } else {
+        this.dY = -1;
+      }
+    } else if (this.Cur.Y == this.Target.Y) {
+      this.dY = 0;
+      if (this.Cur.X < this.Target.X) {
+        this.dX = 1;
+      } else {
+        this.dX = -1;
+      }
+    }
+    // TODO: Finish MoveToTarget.
   }
   
   int DistanceCurToTarget() {
@@ -262,4 +276,11 @@ Cell CellFromPerimeterPos(int pos) {
   }
   // Left edge: 2w+h .. 2w+2h-1
   return new Cell(xResMin, yResMax - (p - 2 * xRes - yRes));
+}
+
+boolean IsCorner(Cell cell) {
+  return (cell.X == xResMin && cell.Y == yResMin)
+      || (cell.X == xResMin && cell.Y == yResMax)
+      || (cell.X == xResMax && cell.Y == yResMin)
+      || (cell.X == xResMax && cell.Y == yResMax);
 }
