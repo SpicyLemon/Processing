@@ -52,16 +52,29 @@ class Runner {
   }
   
   Runner Move() {
+    // Keep track of where the cell's home is.
     this.MoveHome();
+    
     if (this.homing) {
+      // Homing: Move towards the target. The cell should get to the
+      //         target at the same time as the home does.
       this.MoveToTarget();
+      if (this.AtHome()) {
+        this.homing = false;
+        this.Target = null;
+      }
     } else if (this.roaming) {
+      // Roaming: Just move around at random.
       this.Roam();
+      // If the edge distance from home to target equals the taxi distance
+      // from current to target, then it's time to head home.
+      // As long as we head straight there, we'll get there when home does too.
       if (this.DistanceHomeToTarget() == this.DistanceCurToTarget()) {
         this.roaming = false;
         this.homing = true;
       }
     } else {
+      // Running along the edge, just keep the current at home.
       this.Cur.X = this.Home.X;
       this.Cur.Y = this.Home.Y;
     }
@@ -165,22 +178,48 @@ class Runner {
   }
   
   void MoveToTarget() {
-    if (this.Cur.X == this.Target.X) {
+    int dxTot = this.Target.X - this.Cur.X;
+    int dyTot = this.Target.Y - this.Cur.Y;
+    int dxOne = Sign(dxTot);
+    int dyOne = Sign(dyTot);
+    if (dxTot == 0) {
+      // We're at the correct X, just need to head directly up or down.
       this.dX = 0;
-      if (this.Cur.Y < this.Target.Y) {
-        this.dY = 1;
-      } else {
-        this.dY = -1;
-      }
-    } else if (this.Cur.Y == this.Target.Y) {
+      this.dY = dyOne;
+    } else if (dyTot == 0) {
+      // We're at the correct Y, just need to head directly left or right.
       this.dY = 0;
-      if (this.Cur.X < this.Target.X) {
-        this.dX = 1;
+      this.dX = dxOne;
+    } else if ((this.Cur.X <= xResMin+1 && dxOne == -1) || (this.Cur.X >= xResMax-1 && dxOne == 1)) {
+      // Not quite at the left/right, move in the Y direction.
+      this.dX = 0;
+      this.dY = dyOne;
+    } else if ((this.Cur.Y <= yResMin+1 && dyOne == -1) || (this.Cur.Y >= yResMax-1 && dyOne == 1)) {
+      // Not quite at the top/bottom, move in the X direction.
+      this.dY = 0;
+      this.dX = dxOne;
+    } else if (dxOne == -1 * this.dX) {
+      // We're going the wrong left/right direction, head the correct up/down way.
+      this.dX = 0;
+      this.dY = dyOne;
+    } else if (dyOne == -1 * this.dY) {
+      // We're going the wrong up/down direction, head the correct left/right way.
+      this.dY = 0;
+      this.dX = dxOne;
+    } else if (int(random(changeDirOdds)) == 0) {
+      // Random direction change. If we're currently heading 
+      // left/right, switch to up/down, or vice versa.
+      if (this.dX == 0) {
+        this.dX = dxOne;
+        this.dY = 0;
       } else {
-        this.dX = -1;
+        this.dX = 0;
+        this.dY = dyOne;
       }
-    }
-    // TODO: Finish MoveToTarget.
+    } // Else stay the current course.
+    
+    this.Cur.X += this.dX;
+    this.Cur.Y += this.dY;  
   }
   
   int DistanceCurToTarget() {
@@ -207,7 +246,11 @@ class Runner {
   
   Runner DrawTarget() {
     if (this.Target != null) {
-      stroke(#FFFFFF);
+      if (this.homing) {
+        stroke(#FFFFFF);
+      } else {
+        stroke(#AAAAAA);
+      }
       Spot spot = this.Target.Spot();
       point(spot.X, spot.Y);
     }
@@ -283,4 +326,13 @@ boolean IsCorner(Cell cell) {
       || (cell.X == xResMin && cell.Y == yResMax)
       || (cell.X == xResMax && cell.Y == yResMin)
       || (cell.X == xResMax && cell.Y == yResMax);
+}
+
+int Sign(int val) {
+  if (val < 0) {
+    return -1;
+  } else if (val > 0) {
+    return 1;
+  }
+  return 0;
 }
