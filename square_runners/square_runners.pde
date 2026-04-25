@@ -14,9 +14,9 @@ color[] dotColors = new color[]{
   #FF00FF, // Magenta
 };
 color runnerEndColor = #000000;
-int dotSize = 6;
-int dotSpace = 9;
-int trailLength = 6;
+int dotSize = 8;
+int dotSpace = 10;
+int trailLength =7;
 int changeDirOdds = 8;
 int newRoamingChances = 3;
 int newRoamingOdds = 50;
@@ -25,7 +25,7 @@ int framesToFirst = 25;
 int framesToMore = 100;
 
 void setup() {
-  size(800, 600);
+  fullScreen(); //size(800, 600);
   frameRate(15);
   xMin = 0;
   xMax = width;
