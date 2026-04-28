@@ -40,8 +40,8 @@ int entriesPerBackPal = 25;
 
 // Values governing the background ovals.
 int divs = 9;
-float dOffsetMax = 0.02;
-float ddOffsetMax = 0.0001;
+float dOffsetMax = 0.03;
+float ddOffsetMax = 0.0005;
 float backOvalBorder = 2.0;
 float backOvalOffsetMax = 150;
 float dBackOvalOffsetMax = 2.0;
@@ -50,7 +50,7 @@ float dBackOvalRotMax = 0.04;
 float ddBackOvalRotMax = 0.002;
 
 // Values governing the tracers.
-int tailLength = 30;
+int tailLength = 40;
 float maxStroke = 30.0;
 float headSize = 0.0;
 float maxSpeed = 8.0;
