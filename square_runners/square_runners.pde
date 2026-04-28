@@ -24,18 +24,18 @@ color[] dotColors = new color[]{
   #FF00FF, // Magenta
 };
 color runnerEndColor = #000000;
-int dotSize = 8;
-int dotSpace = 10;
+int dotSize = 15;
+int dotSpace = 20;
 int trailLength = 8;
 int changeDirOdds = 8;
-int newRoamingChances = 3;
-int newRoamingOdds = 50;
+int newRoamingChances = 5;
+int newRoamingOdds = 20;
 boolean drawTheGrid = false;
 color gridColor = #222222;
 int framesToFirst = 25;
-int framesToMore = 50;
-int framesToPause = 15;
-int pauseAtRoamingCount = 15;
+int framesToMore = 75;
+int framesToPause = 25;
+int pauseAtRoamingCount = 30;
 
 void setup() {
   fullScreen(); //size(800, 600);
@@ -169,7 +169,7 @@ void draw() {
     }
   }
   
-  if (roaming.size() == pauseAtRoamingCount) {
+  if (roaming.size() >= pauseAtRoamingCount) {
     pauseNewFor = framesToPause;
   } else if (pauseNewFor > 0 && roaming.size() == 0) {
     pauseNewFor--;

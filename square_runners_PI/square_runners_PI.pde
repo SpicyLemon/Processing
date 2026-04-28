@@ -19,14 +19,14 @@ int dotSize = 20;
 int dotSpace = 24;
 int trailLength = 8;
 int changeDirOdds = 8;
-int newRoamingChances = 3;
-int newRoamingOdds = 50;
+int newRoamingChances = 5;
+int newRoamingOdds = 15;
 boolean drawTheGrid = false;
 color gridColor = #222222;
 int framesToFirst = 25;
 int framesToMore = 100;
 int framesToPause = 30;
-int pauseAtRoamingCount = 14;
+int pauseAtRoamingCount = 25;
 
 void setup() {
   fullScreen(P2D);
@@ -141,7 +141,7 @@ void draw() {
     }
   }
   
-  if (roaming.size() == pauseAtRoamingCount) {
+  if (roaming.size() >= pauseAtRoamingCount) {
     pauseNewFor = framesToPause;
   } else if (pauseNewFor > 0 && roaming.size() == 0) {
     pauseNewFor--;
