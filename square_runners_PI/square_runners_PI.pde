@@ -25,8 +25,8 @@ boolean drawTheGrid = false;
 color gridColor = #222222;
 int framesToFirst = 25;
 int framesToMore = 100;
-int framesToPause = 15;
-int pauseAtRoamingCount = 12;
+int framesToPause = 30;
+int pauseAtRoamingCount = 14;
 
 void setup() {
   fullScreen(P2D);
