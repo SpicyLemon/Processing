@@ -2,7 +2,7 @@ import gifAnimation.*;
 
 GifMaker gifExport;
 int gifFrameLimit = 1500;
-int gifFrameRate = 1000/30; // 30 fps
+int gifFrameRate = 30; // fps
 boolean saveGif = false;
 
 // Value initialized in setup().
@@ -40,21 +40,21 @@ int entriesPerBackPal = 25;
 
 // Values governing the background ovals.
 int divs = 9;
-float dOffsetMax = 0.04;
-float ddOffsetMax = 0.0005;
+float dOffsetMax = 0.02;
+float ddOffsetMax = 0.0001;
 float backOvalBorder = 2.0;
 float backOvalOffsetMax = 150;
-float dBackOvalOffsetMax = 4.0;
-float ddBackOvalOffsetMax = 0.4;
-float dBackOvalRotMax = 0.06;
-float ddBackOvalRotMax = 0.005;
+float dBackOvalOffsetMax = 2.0;
+float ddBackOvalOffsetMax = 0.2;
+float dBackOvalRotMax = 0.04;
+float ddBackOvalRotMax = 0.002;
 
 // Values governing the tracers.
 int tailLength = 30;
 float maxStroke = 30.0;
 float headSize = 0.0;
-float maxSpeed = 15.0;
-float minSpeed = 8.0;
+float maxSpeed = 8.0;
+float minSpeed = 4.0;
 float minRadius = 15.0;
 // This dictates a) how many tracers there are, and b) how far forward (positive) 
 // or backwards (negative) in the palette (from the background) that the color is.
@@ -114,7 +114,7 @@ void setup() {
   if (saveGif) {
     gifExport = new GifMaker(this, "kaleidoscope4.gif");
     gifExport.setRepeat(0); // Loop forever.
-    gifExport.setDelay(gifFrameRate);
+    gifExport.setDelay(1000/gifFrameRate);
   }
 }
 
