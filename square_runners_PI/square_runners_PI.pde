@@ -51,6 +51,12 @@ void setup() {
   xRes = int((xLimMax-xLimMin)/float(dotSpace));
   yRes = int((yLimMax-yLimMin)/float(dotSpace));
   perimeter = xRes*2 + yRes*2;
+  perimeter = xRes*2 + yRes*2;
+  if (perimeter % 4 != 0) {
+    xRes--;
+    perimeter = xRes*2 + yRes*2;
+    xLimMin += dotSpace/2;
+  }
   xResMin = 0;
   xResMax = xRes;
   yResMin = 0;
