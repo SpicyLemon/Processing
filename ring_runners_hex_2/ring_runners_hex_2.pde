@@ -18,7 +18,7 @@ float PI_2_3 = PI * 2 / 3; // lower left intersection angle.
 float PI_4_3 = PI * 4 / 3; // upper left intersection angle.
 float PI_5_3 = PI * 5 / 3; // upper right inteersection angle.
 
-boolean drawCircles = false;
+boolean drawCircles = true;
 color[] tracerColors = new color[]{
   #FF0000, // Red 
   //#00FF00, // Green
@@ -29,9 +29,9 @@ color[] tracerColors = new color[]{
   //#FFAA00, // Orange
 };
 color tracerColorEnd = #FFFFFF;
-int tracersPerColor = 1;
+int tracersPerColor = 10;
 int changeOdds = 2;
-float radius = 50;
+float radius = 75;
 float speedDiv = 18.0; // Must be divisible by 6.
 float tailLen = 2 * TWO_PI;
 float tracerSize = 15.0;
@@ -60,6 +60,7 @@ void setup() {
     for (int h = -1; h < hCount-1; h++) {
       // The x for this circle is <start> + 2 * radius * <circle number>.
       centers[v+1][h+1] = new Spot(s + 2 * radius * h, y);
+      println("centers[" + (v+1) + "][" + (h+1) + "] = ", centers[v+1][h+1].X, centers[v+1][h+1].Y);
     }
   }
   
@@ -78,6 +79,24 @@ void setup() {
       centers[v][hCount-1].IsRight = true;
     } else {
       centers[v][hCount-2].IsRight = true;
+    }
+  }
+  
+  // Mark the centers that are on the inside edge.
+  for (int h = 1; h < hCount-1; h++) {
+    if (centers[1][h] != null) {
+      centers[1][h].IsInsideTop = true;
+    }
+    if (centers[vCount-2][h] != null) {
+      centers[vCount-2][h].IsInsideBottom = true;
+    }
+  }
+  for (int v = 1; v < vCount-1; v++) {
+    centers[v][1].IsInsideLeft = true;
+    if (centers[v][hCount-1] != null) {
+      centers[v][hCount-2].IsInsideRight = true;
+    } else {
+      centers[v][hCount-3].IsInsideRight = true;
     }
   }
   
@@ -120,12 +139,18 @@ void draw() {
   translate(offsetX, offsetY);
   
   if (drawCircles) {
-    noFill();
     stroke(#FFFFFF);
     strokeWeight(2.0);
     for (Spot[] spots : centers) {
       for (Spot spot : spots) {
         if (spot != null) {
+          if (spot.IsEdge()) {
+            fill(#FFFFFF);
+          } else if (spot.IsInsideEdge()) {
+            fill(#555555);
+          } else {
+            noFill();
+          }
           circle(spot.X, spot.Y, radius*2);
         }
       }
@@ -166,11 +191,11 @@ void mousePressed() {
 }
 
 Tracer newTracer(int palI) {
-  int cx = int(random(hCount));
-  int cy = int(random(vCount));
+  int cx = int(random(hCount-2))+1;
+  int cy = int(random(vCount-2))+1;
   while (centers[cy][cx] == null) {
-    cx = int(random(hCount));
-    cy = int(random(vCount));
+    cx = int(random(hCount-2))+1;
+    cy = int(random(vCount-2))+1;
   }
   
   float speed = PI/speedDiv;
