@@ -58,6 +58,10 @@ class CenterSpot {
     return GetNextCenter(this.IndexX, this.IndexY, cc);
   }
   
+  Spot AsSpot() {
+    return new Spot(this.X, this.Y);
+  }
+  
   CenterSpot Draw() {
     if (this.IsEdge) {
       stroke(#AAAAAA);

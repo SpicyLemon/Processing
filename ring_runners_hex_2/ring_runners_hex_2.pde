@@ -6,8 +6,7 @@ int gifFrameLimit = 500;
 int gifFrameRate = 1000/30; // 30 fps
 boolean saveGif = false;
 
-Spot[][] centers;
-CenterSpot[][] centersNew;
+CenterSpot[][] centers;
 float sqrt34;
 float offsetX, offsetY;
 int hCount;
@@ -20,21 +19,20 @@ static float PI_2_3 = PI * 2 / 3; // lower left intersection angle.
 static float PI_4_3 = PI * 4 / 3; // upper left intersection angle.
 static float PI_5_3 = PI * 5 / 3; // upper right inteersection angle.
 
-boolean drawNewCircles = true;
 boolean drawCircles = false;
 color[] tracerColors = new color[]{
   #FF0000, // Red 
-  //#00FF00, // Green
-  //#FF00FF, // Magenta
-  //#00FFFF, // Cyan
-  //#FFFF00, // Yellow
-  //#AA00FF, // Purple
-  //#FFAA00, // Orange
+  #00FF00, // Green
+  #FF00FF, // Magenta
+  #00FFFF, // Cyan
+  #FFFF00, // Yellow
+  #AA00FF, // Purple
+  #FFAA00, // Orange
 };
 color tracerColorEnd = #FFFFFF;
-int tracersPerColor = 1;
+int tracersPerColor = 3;
 int changeOdds = 2;
-float radius = 75;
+float radius = 40;
 float speedDiv = 18.0; // Must be divisible by 6.
 float tailLen = 2 * TWO_PI;
 float tracerSize = 15.0;
@@ -52,8 +50,7 @@ void setup() {
   // Taking 10 out of the width and height to ensure that there's at least some padding.
   hCount = int((width-10-radius)/(radius*2))+2;
   vCount = int((height-2*radius-10)/(sqrt34*radius*2))+3;
-  centers = new Spot[vCount][hCount];
-  centersNew = new CenterSpot[vCount][hCount];
+  centers = new CenterSpot[vCount][hCount];
   for (int v = -1; v < vCount-1; v++) {
     // The y for this row is radius + 2*sqrt(3/4)*radius*<row number>.
     float y = radius + 2 * sqrt34 * radius * v;
@@ -63,8 +60,7 @@ void setup() {
     float s = (v % 2 == 0) ? radius : 2 * radius;
     for (int h = -1; h < hCount-1; h++) {
       // The x for this circle is <start> + 2 * radius * <circle number>.
-      centers[v+1][h+1] = new Spot(s + 2 * radius * h, y);
-      centersNew[v+1][h+1] = new CenterSpot(s + 2 * radius * h, y).WithIndex(h+1, v+1);
+      centers[v+1][h+1] = new CenterSpot(s + 2 * radius * h, y).WithIndex(h+1, v+1);
       println("centers[" + (v+1) + "][" + (h+1) + "] = ", centers[v+1][h+1].X, centers[v+1][h+1].Y);
     }
   }
@@ -75,20 +71,20 @@ void setup() {
   for (int h = 0; h < hCount; h++) {
     for (CircleCrossing cc : CircleCrossing.values()) {
       for (CircleDir cd : CircleDir.values()) {
-        centersNew[0][h].SetCannotChange(cc, cd, true).SetIsEdge(true);
-        centersNew[vCount-1][h].SetCannotChange(cc, cd, true).SetIsEdge(true);
+        centers[0][h].SetCannotChange(cc, cd, true).SetIsEdge(true);
+        centers[vCount-1][h].SetCannotChange(cc, cd, true).SetIsEdge(true);
       }
     }
   }
   
   // Do the same for the sides.
   for (int v = 1; v < vCount-1; v++) {
-    centersNew[v][0].SetIsEdge(true);
-    centersNew[v][hCount-1].SetIsEdge(true);
+    centers[v][0].SetIsEdge(true);
+    centers[v][hCount-1].SetIsEdge(true);
     for (CircleCrossing cc : CircleCrossing.values()) {
       for (CircleDir cd : CircleDir.values()) {
-        centersNew[v][0].SetCannotChange(cc, cd, true);
-        centersNew[v][hCount-1].SetCannotChange(cc, cd, true);
+        centers[v][0].SetCannotChange(cc, cd, true);
+        centers[v][hCount-1].SetCannotChange(cc, cd, true);
       }
     }
   }
@@ -100,7 +96,7 @@ void setup() {
     CenterSpot bl = GetNextCenter(h, 0, CircleCrossing.BottomLeft);
     CenterSpot br = GetNextCenter(h, 0, CircleCrossing.BottomRight);
     if (bl != null && br != null && !bl.IsEdge && !br.IsEdge) {
-      centersNew[0][h].SetCannotChange(CircleCrossing.BottomLeft, CW, false)
+      centers[0][h].SetCannotChange(CircleCrossing.BottomLeft, CW, false)
                       .SetCannotChange(CircleCrossing.BottomLeft, CCW, false)
                       .SetMustChange(CircleCrossing.BottomLeft, true)
                       .SetCannotChange(CircleCrossing.BottomRight, CW, false)
@@ -122,7 +118,7 @@ void setup() {
     CenterSpot tr = GetNextCenter(h, vCount-1, CircleCrossing.TopRight);
     CenterSpot tl = GetNextCenter(h, vCount-1, CircleCrossing.TopLeft);
     if (tr != null && tl != null && !tr.IsEdge && !tl.IsEdge) {
-      centersNew[vCount-1][h].SetCannotChange(CircleCrossing.TopRight, CW, false)
+      centers[vCount-1][h].SetCannotChange(CircleCrossing.TopRight, CW, false)
                              .SetCannotChange(CircleCrossing.TopRight, CCW, false)
                              .SetMustChange(CircleCrossing.TopRight, true)
                              .SetCannotChange(CircleCrossing.TopLeft, CW, false)
@@ -161,8 +157,9 @@ void setup() {
                    .SetCannotChange(CircleCrossing.BottomRight, CW, false)
                    .SetCannotChange(CircleCrossing.BottomRight, CCW, false);
     }
-    // And right side if needed.
-    CenterSpot rightInnerEdge = centersNew[v][hCount-2];
+
+    // And right side as needed.
+    CenterSpot rightInnerEdge = centers[v][hCount-2];
     if (v == 1) {
       rightInnerEdge.SetCannotChange(CircleCrossing.Right, CCW, true);
       rightInnerEdge.GetNext(CircleCrossing.Right)
@@ -202,11 +199,9 @@ void setup() {
                     .SetCannotChange(CircleCrossing.BottomLeft, CW, false)
                     .SetCannotChange(CircleCrossing.BottomLeft, CCW, false);
     }
-    
-    
-    
-    // And right side if needed.
-    CenterSpot leftInnerEdge = centersNew[v][1];
+
+    // And right side as needed.
+    CenterSpot leftInnerEdge = centers[v][1];
     if (v == 1) {
       leftInnerEdge.SetCannotChange(CircleCrossing.Left, CW, true);
       leftInnerEdge.GetNext(CircleCrossing.Left)
@@ -225,44 +220,7 @@ void setup() {
                    .SetCannotChange(CircleCrossing.Right, CCW, false);
     }
   }
-  
 
-  // Mark the centers that are on the edge.
-  for (int h = 0; h < hCount; h++) {
-    if (centers[0][h] != null) {
-      centers[0][h].IsTop = true;
-    }
-    if (centers[vCount-1][h] != null) {
-      centers[vCount-1][h].IsBottom = true;
-    }
-  }
-  for (int v = 0; v < vCount; v++) {
-    centers[v][0].IsLeft = true;
-    if (centers[v][hCount-1] != null) {
-      centers[v][hCount-1].IsRight = true;
-    } else {
-      centers[v][hCount-2].IsRight = true;
-    }
-  }
-  
-  // Mark the centers that are on the inside edge.
-  for (int h = 1; h < hCount-1; h++) {
-    if (centers[1][h] != null) {
-      centers[1][h].IsInsideTop = true;
-    }
-    if (centers[vCount-2][h] != null) {
-      centers[vCount-2][h].IsInsideBottom = true;
-    }
-  }
-  for (int v = 1; v < vCount-1; v++) {
-    centers[v][1].IsInsideLeft = true;
-    if (centers[v][hCount-1] != null) {
-      centers[v][hCount-2].IsInsideRight = true;
-    } else {
-      centers[v][hCount-3].IsInsideRight = true;
-    }
-  }
-  
   // Calculate the full width and height of the space that the circles occupy.
   // Each circle is 2 * radius to the left of the next.
   // Same in the row below which is offset by the radius.
@@ -302,32 +260,13 @@ void draw() {
   translate(offsetX, offsetY);
   
   if (drawCircles) {
-    stroke(#FFFFFF);
-    strokeWeight(2.0);
-    for (Spot[] spots : centers) {
-      for (Spot spot : spots) {
-        if (spot != null) {
-          if (spot.IsEdge()) {
-            fill(#FFFFFF);
-          } else if (spot.IsInsideEdge()) {
-            fill(#555555);
-          } else {
-            noFill();
-          }
-          circle(spot.X, spot.Y, radius*2);
-        }
-      }
-    }
-  }
-  if (drawNewCircles) {
-    for (CenterSpot[] spots : centersNew) {
+    for (CenterSpot[] spots : centers) {
       for (CenterSpot spot : spots) {
         spot.Draw();
       }
     }
   }
 
-  noFill();
   for (Tracer tracer : tracers) {
     tracer.Move();
   }
@@ -410,8 +349,8 @@ CenterSpot GetNextCenter(int curX, int curY, CircleCrossing cc) {
     newY = curY - 1;
     break;
   }
-  if (newX < 0 || newY < 0 || newY >= centersNew.length || newX >= centersNew[newY].length) {
+  if (newX < 0 || newY < 0 || newY >= centers.length || newX >= centers[newY].length) {
     return null;
   }
-  return centersNew[newY][newX];
+  return centers[newY][newX];
 }

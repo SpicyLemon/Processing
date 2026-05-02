@@ -1,15 +1,7 @@
 class Spot {
   float X;
   float Y;
-  boolean IsTop;
-  boolean IsBottom;
-  boolean IsLeft;
-  boolean IsRight;
-  boolean IsInsideTop;
-  boolean IsInsideBottom;
-  boolean IsInsideLeft;
-  boolean IsInsideRight;
-  
+
   Spot(float x, float y) {
     this.X = x;
     this.Y = y;
@@ -22,14 +14,6 @@ class Spot {
   
   Spot Copy() {
     return new Spot(this);
-  }
-  
-  boolean IsEdge() {
-    return this.IsTop || this.IsBottom || this.IsLeft || this.IsRight;
-  }
-  
-  boolean IsInsideEdge() {
-    return this.IsInsideTop || this.IsInsideBottom || this.IsInsideLeft || this.IsInsideRight;
   }
 }
 
@@ -204,9 +188,9 @@ class Tracer {
   Palette TailPal;
   float TailLen;
   
-  Tracer(int centersX, int centersY) {
-    this.CenterX = centersX;
-    this.CenterY = centersY;
+  Tracer(int centerX, int centerY) {
+    this.CenterX = centerX;
+    this.CenterY = centerY;
     this.Stroke = 15.0;
   }
    
@@ -237,7 +221,7 @@ class Tracer {
   }
   
   Spot Cur() {
-    Spot center = centers[this.CenterY][this.CenterX];
+    CenterSpot center = centers[this.CenterY][this.CenterX];
     return new Spot(
       center.X + radius/2 * cos(this.Angle),
       center.Y + radius/2 * sin(this.Angle)
@@ -245,6 +229,10 @@ class Tracer {
   }
   
   Spot Center() {
+    return centers[this.CenterY][this.CenterX].AsSpot();
+  }
+  
+  CenterSpot CenterSpot() {
     return centers[this.CenterY][this.CenterX];
   }
   
@@ -253,143 +241,30 @@ class Tracer {
   }
   
   Tracer Move() {
-    int dx = 0;
-    int dy = 0;
     CircleCrossing crossing = AtCrossing(this.Angle);
-    boolean atCrossing = false;
-    boolean canCrossToEdge = false;
-    CircleDir curDir = this.Dir();
-    Spot curCenter = this.Center();
     
     if (crossing != null) {
-      atCrossing = true;
-      switch(crossing) {
-        case Right:
-          this.Angle = 0;
-          dx = 1;
-          if (this.CenterY % 2 != 0) {
-            canCrossToEdge = true;
-            if (curCenter.IsInsideTop && curDir == CCW) {
-              canCrossToEdge = false;
-            } else if (curCenter.IsInsideBottom && curDir == CW) {
-              canCrossToEdge = false;
-            }
-          }
-          break;
-        case BottomRight:
-          this.Angle = PI_1_3;
-          dy = 1;
-          if (this.CenterY % 2 == 0) {
-            dx = 1;
-          }
-          if (curDir == CCW) {
-            canCrossToEdge = true;
-            if (curCenter.IsInsideRight) {
-              canCrossToEdge = false;
-            }
-          }
-          break;
-        case BottomLeft:
-          this.Angle = PI_2_3;
-          dy = 1;
-          if (this.CenterY % 2 != 0) {
-            dx = -1;
-          }
-          if (curDir == CW) {
-            canCrossToEdge = true;
-            if (curCenter.IsInsideLeft) {
-              canCrossToEdge = false;
-            }
-          }
-          break;
-        case Left:
-          this.Angle = PI;
-          dx = -1;
-          if (this.CenterY % 2 == 0) {
-            canCrossToEdge = true;
-            if (curCenter.IsInsideTop && curDir == CW) {
-              canCrossToEdge = false;
-            } else if (curCenter.IsInsideBottom && curDir == CCW) {
-              canCrossToEdge = false;
-            }
-          }
-          break;
-        case TopLeft:
-          this.Angle = PI_4_3;
-          dy = -1;
-          if (this.CenterY % 2 != 0) {
-            dx = -1;
-          }
-          if (curDir == CCW) {
-            canCrossToEdge = true;
-            if (curCenter.IsInsideLeft) {
-              canCrossToEdge = false;
-            }
-          }
-          break;
-        case TopRight:
-          this.Angle = PI_5_3;
-          dy = -1;
-          if (this.CenterY % 2 == 0) {
-            dx = 1;
-          }
-          if (curDir == CW) {
-            canCrossToEdge = true;
-            if (curCenter.IsInsideRight) {
-              canCrossToEdge = false;
-            }
-          }
-          break;
-      }
-    }
-    
-    if (atCrossing) {
-      boolean doChange = int(random(changeOdds)) == 0;
-      if (!doChange) {
-        // If we're on a top or bottom circle, we MUST change.
-        doChange = curCenter.IsTop || curCenter.IsBottom;
-      }
-      if (!doChange && curCenter.IsLeft) {
-        // If we're on the left, and at the top right or bottom right, we MUST change.
-        if (crossing == CircleCrossing.TopRight || crossing == CircleCrossing.BottomRight) {
-          doChange = true;
-        }
-      }
-      if (!doChange && curCenter.IsRight) {
-        // If we're on the right, and at the top left or bottom left, we MUST change.
-        if (crossing == CircleCrossing.TopLeft || crossing == CircleCrossing.BottomLeft) {
-          doChange = true;
-        }
-      }
-
-      if (!doChange) {
-        dx = 0;
-        dy = 0;
+      CenterSpot center = this.CenterSpot();
+      boolean doChange = center.IsMustChange(crossing);
+      if (!doChange && center.CanChange(crossing, this.Dir())) {
+        doChange = int(random(changeOdds)) == 0;
       }
       
-      if (dx != 0 || dy != 0) {
-        int cx = this.CenterX + dx;
-        int cy = this.CenterY + dy;
-        Spot newCenter = null;
-        if (cy >= 0 && cy < centers.length && cx >= 0 && cx < centers[cy].length && centers[cy][cx] != null) {
-          newCenter = centers[cy][cx];
-          if (newCenter.IsEdge() && !canCrossToEdge) {
-            newCenter = null;
-          }
-        }
-        
+      if (doChange) {
+        CenterSpot newCenter = center.GetNext(crossing);
         if (newCenter != null) {
-          this.CenterX = cx;
-          this.CenterY = cy;
+          this.CenterX = newCenter.IndexX;
+          this.CenterY = newCenter.IndexY;
           this.Speed *= -1;
           this.Angle = normalizeAngle(this.Angle+PI);
         }
       }
+      
       Arch newHist = new Arch(this.Center(), this.Angle, this.Angle, this.Dir().Rev())
-                          .WithNext(this.history);
+                        .WithNext(this.history);
       this.history = newHist;
     }
-    
+
     if (this.history == null) {
       this.history = new Arch(this.Center(), this.Angle, this.Angle, this.Dir().Rev());
     }
@@ -398,19 +273,8 @@ class Tracer {
     
     return this;
   }
-  
+
   Tracer Draw() {
-    // strokeWeight(this.Stroke);
-    //stroke(#FFFFFF);
-    //Spot curSpot = this.Cur();
-    //circle(curSpot.X, curSpot.Y, this.Stroke);
-    //Spot cen = this.Center();
-    //stroke(this.Col.Value);
-    //strokeWeight(1);
-    //line(curSpot.X, curSpot.Y, cen.X, cen.Y);
-    
-    strokeWeight(this.Stroke);
-    
     Arch cur = this.history;
     float lenLeft = this.TailLen;
     float lenPerPal = this.TailLen / this.TailPal.Size();
