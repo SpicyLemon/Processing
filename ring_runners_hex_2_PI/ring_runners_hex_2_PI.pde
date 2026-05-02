@@ -59,7 +59,6 @@ void setup() {
     for (int h = -1; h < hCount-1; h++) {
       // The x for this circle is <start> + 2 * radius * <circle number>.
       centers[v+1][h+1] = new CenterSpot(s + 2 * radius * h, y).WithIndex(h+1, v+1);
-      println("centers[" + (v+1) + "][" + (h+1) + "] = ", centers[v+1][h+1].X, centers[v+1][h+1].Y);
     }
   }
   
