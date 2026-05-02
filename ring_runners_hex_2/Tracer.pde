@@ -88,6 +88,18 @@ enum CircleCrossing {
     }
     return null;
   }
+  
+  float Radians() {
+    switch(this) {
+      case Right: return 0.0;
+      case BottomRight: return PI_1_3;
+      case BottomLeft: return PI_2_3;
+      case Left: return PI;
+      case TopLeft: return PI_4_3;
+      case TopRight: return PI_5_3;
+    }
+    return 0;
+  }
 }
   
     
