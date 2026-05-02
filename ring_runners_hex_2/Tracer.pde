@@ -244,6 +244,15 @@ class Tracer {
     CircleCrossing crossing = AtCrossing(this.Angle);
     
     if (crossing != null) {
+      // The AtCrossing check returns true when the angle is in a set
+      // of ranges. At first it'll be in the middle of the ranges, but 
+      // it'll end up drifting one way or the other. After 5-10 minutes,
+      // it'll drift too far and miss a crossing. Once it misses one, it'll
+      // continue to miss all crossings forever. Visually, it'll look like 
+      // it's glitching. To fix that we normalize the angle at every crossing
+      // to equal exactly the crossing angle.
+      this.Angle = crossing.Radians();
+
       CenterSpot center = this.CenterSpot();
       boolean doChange = center.IsMustChange(crossing);
       if (!doChange && center.CanChange(crossing, this.Dir())) {
