@@ -64,19 +64,19 @@ class CenterSpot {
   
   CenterSpot Draw() {
     if (this.IsEdge) {
-      stroke(#AAAAAA);
+      pg.stroke(#AAAAAA);
     } else {
-      stroke(#FFFFFF);
+      pg.stroke(#FFFFFF);
     }
     strokeWeight(2.0);
     if (this.IsEdge || !this.MustChange.isEmpty()) {
-      fill(#FFFFFF);
+      pg.fill(#FFFFFF);
     } else if (!this.CannotChange.isEmpty()) {
-      fill(#555555);
+      pg.fill(#555555);
     } else {
-      noFill();
+      pg.noFill();
     }
-    circle(this.X, this.Y, radius*2);
+    pg.circle(this.X, this.Y, radius*2);
 
     // Draw red marks where we cannot change.
     for (Map.Entry<CircleCrossing, HashMap<CircleDir, Boolean>> outerEntry : this.CannotChange.entrySet()) {
@@ -87,16 +87,16 @@ class CenterSpot {
           float x2 = this.X + (radius*0.99)*cos(angle);
           float y1 = this.Y + (radius*0.70)*sin(angle);
           float y2 = this.Y + (radius*0.99)*sin(angle);
-          stroke(#FF0000);
-          line(x1, y1, x2, y2);
+          pg.stroke(#FF0000);
+          pg.line(x1, y1, x2, y2);
           
           angle += (innerEntry.getKey() == CW) ? -.1 : .1;
           x1 = this.X + (radius*0.85)*cos(angle);
           x2 = this.X + (radius*0.99)*cos(angle);
           y1 = this.Y + (radius*0.85)*sin(angle);
           y2 = this.Y + (radius*0.99)*sin(angle);
-          stroke(#AA0000);
-          line(x1, y1, x2, y2);       
+          pg.stroke(#AA0000);
+          pg.line(x1, y1, x2, y2);       
         }
       }
     }
@@ -109,8 +109,8 @@ class CenterSpot {
         float x2 = this.X + (radius*0.99)*cos(angle);
         float y1 = this.Y + (radius*0.80)*sin(angle);
         float y2 = this.Y + (radius*0.99)*sin(angle);
-        stroke(#0000FF);
-        line(x1, y1, x2, y2);
+        pg.stroke(#0000FF);
+        pg.line(x1, y1, x2, y2);
       }
     }
     
