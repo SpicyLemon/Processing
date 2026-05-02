@@ -32,13 +32,13 @@ color[] tracerColors = new color[]{
 color tracerColorEnd = #FFFFFF;
 int tracersPerColor = 3;
 int changeOdds = 2;
-float radius = 40;
+float radius = 80;
 float speedDiv = 18.0; // Must be divisible by 6.
 float tailLen = 2 * TWO_PI;
 float tracerSize = 15.0;
 
 void setup() {
-  size(800, 600); //fullScreen();
+  fullScreen();
   // sqrt(3/4) is important here because:
   // 1. A hex can be thought of as six equaliateral triangles.
   // 2. An equilateral triangle cut in half is a 30-60-90 triangle.
