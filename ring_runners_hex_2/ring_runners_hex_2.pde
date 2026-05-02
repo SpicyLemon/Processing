@@ -39,6 +39,7 @@ float tracerSize = 15.0;
 
 void setup() {
   fullScreen();
+  frameRate(30);
   // sqrt(3/4) is important here because:
   // 1. A hex can be thought of as six equaliateral triangles.
   // 2. An equilateral triangle cut in half is a 30-60-90 triangle.

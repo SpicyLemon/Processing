@@ -35,6 +35,7 @@ int wedgeAlpha = 75;
 
 void setup() {
   fullScreen(P2D);
+  frameRate(30);
   pg = createGraphics(width/2, height/2);
 
   // sqrt(3/4) is important here because:
