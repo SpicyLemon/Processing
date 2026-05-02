@@ -64,7 +64,7 @@ void setup() {
     for (int h = -1; h < hCount-1; h++) {
       // The x for this circle is <start> + 2 * radius * <circle number>.
       centers[v+1][h+1] = new Spot(s + 2 * radius * h, y);
-      centersNew[v+1][h+1] = new CenterSpot(s + 2 * radius * h, y).WithIndex(v+1, h+1);
+      centersNew[v+1][h+1] = new CenterSpot(s + 2 * radius * h, y).WithIndex(h+1, v+1);
       println("centers[" + (v+1) + "][" + (h+1) + "] = ", centers[v+1][h+1].X, centers[v+1][h+1].Y);
     }
   }
@@ -141,11 +141,92 @@ void setup() {
     }
   }
   
-  // Now fix the sides too force a change where applicable.
-  for (int v = 0; v < vCount; v++) {
-    
+  // Now, do stuff with left and right ends on the rows that are left-shifted.
+  for (int v = 1; v < vCount-1; v += 2) {
+    // Start with the left side.
+    CenterSpot leftInnerEdge = GetNextCenter(0, v, CircleCrossing.Right);
+    leftInnerEdge.SetCannotChange(CircleCrossing.Left, CW, true)
+                 .SetCannotChange(CircleCrossing.Left, CCW, true)
+                 .SetCannotChange(CircleCrossing.TopLeft, CCW, true)
+                 .SetCannotChange(CircleCrossing.BottomLeft, CW, true);
+    if (v <= vCount - 2) {
+      leftInnerEdge.GetNext(CircleCrossing.BottomLeft)
+                   .SetMustChange(CircleCrossing.TopRight, true)
+                   .SetCannotChange(CircleCrossing.TopRight, CW, false)
+                   .SetCannotChange(CircleCrossing.TopRight, CCW, false);
+    }
+    if (v >= 2) {
+      leftInnerEdge.GetNext(CircleCrossing.TopLeft)
+                   .SetMustChange(CircleCrossing.BottomRight, true)
+                   .SetCannotChange(CircleCrossing.BottomRight, CW, false)
+                   .SetCannotChange(CircleCrossing.BottomRight, CCW, false);
+    }
+    // And right side if needed.
+    CenterSpot rightInnerEdge = centersNew[v][hCount-2];
+    if (v == 1) {
+      rightInnerEdge.SetCannotChange(CircleCrossing.Right, CCW, true);
+      rightInnerEdge.GetNext(CircleCrossing.Right)
+                    .SetMustChange(CircleCrossing.Left, true)
+                    .SetCannotChange(CircleCrossing.Left, CW, false)
+                    .SetCannotChange(CircleCrossing.Left, CCW, false);
+    } else if (v == vCount-2) {
+      rightInnerEdge.SetCannotChange(CircleCrossing.Right, CW, true);
+      rightInnerEdge.GetNext(CircleCrossing.Right)
+                    .SetMustChange(CircleCrossing.Left, true)
+                    .SetCannotChange(CircleCrossing.Left, CW, false)
+                    .SetCannotChange(CircleCrossing.Left, CCW, false);
+    } else {
+      rightInnerEdge.GetNext(CircleCrossing.Right)
+                    .SetCannotChange(CircleCrossing.Left, CW, false)
+                    .SetCannotChange(CircleCrossing.Left, CCW, false);
+    }
   }
   
+  // And now, stuff with the left and right ends on the rows that are right-shifted.
+  for (int v = 2; v < vCount-1; v += 2) {
+    // Start with the right side.
+    CenterSpot rightInnerEdge = GetNextCenter(hCount-1, v, CircleCrossing.Left);
+    rightInnerEdge.SetCannotChange(CircleCrossing.Right, CW, true)
+                  .SetCannotChange(CircleCrossing.Right, CCW, true)
+                  .SetCannotChange(CircleCrossing.TopRight, CW, true)
+                  .SetCannotChange(CircleCrossing.BottomRight, CCW, true);
+    if (v <= vCount - 3) {
+      rightInnerEdge.GetNext(CircleCrossing.BottomRight)
+                    .SetMustChange(CircleCrossing.TopLeft, true)
+                    .SetCannotChange(CircleCrossing.TopLeft, CW, false)
+                    .SetCannotChange(CircleCrossing.TopLeft, CCW, false);
+    }
+    if (v >= 2) {
+      rightInnerEdge.GetNext(CircleCrossing.TopRight)
+                    .SetMustChange(CircleCrossing.BottomLeft, true)
+                    .SetCannotChange(CircleCrossing.BottomLeft, CW, false)
+                    .SetCannotChange(CircleCrossing.BottomLeft, CCW, false);
+    }
+    
+    
+    
+    // And right side if needed.
+    CenterSpot leftInnerEdge = centersNew[v][1];
+    if (v == 1) {
+      leftInnerEdge.SetCannotChange(CircleCrossing.Left, CW, true);
+      leftInnerEdge.GetNext(CircleCrossing.Left)
+                   .SetMustChange(CircleCrossing.Right, true)
+                   .SetCannotChange(CircleCrossing.Right, CW, false)
+                   .SetCannotChange(CircleCrossing.Right, CCW, false);
+    } else if (v == vCount-2) {
+      leftInnerEdge.SetCannotChange(CircleCrossing.Left, CCW, true);
+      leftInnerEdge.GetNext(CircleCrossing.Left)
+                   .SetMustChange(CircleCrossing.Right, true)
+                   .SetCannotChange(CircleCrossing.Right, CW, false)
+                   .SetCannotChange(CircleCrossing.Right, CCW, false);
+    } else {
+      leftInnerEdge.GetNext(CircleCrossing.Left)
+                   .SetCannotChange(CircleCrossing.Right, CW, false)
+                   .SetCannotChange(CircleCrossing.Right, CCW, false);
+    }
+  }
+  
+
   // Mark the centers that are on the edge.
   for (int h = 0; h < hCount; h++) {
     if (centers[0][h] != null) {

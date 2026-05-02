@@ -54,6 +54,10 @@ class CenterSpot {
     return this;
   }
   
+  CenterSpot GetNext(CircleCrossing cc) {
+    return GetNextCenter(this.IndexX, this.IndexY, cc);
+  }
+  
   CenterSpot Draw() {
     if (this.IsEdge) {
       stroke(#AAAAAA);
