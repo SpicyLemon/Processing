@@ -1,16 +1,30 @@
 import java.util.Collections;
 
 Spot[][] centers;
-SparseGrid<Spot> vertices;
+SparseGrid<Spot> vertexSpots;
+Vertex[][] vertexGrid;
 float sqrt34, sqrt3;
 float offsetX, offsetY;
 int hCount, vCount;
 float xLimMin, xLimMax, yLimMin, yLimMax;
 
-static float PI_1_3 = PI / 3;     // lower right intersection angle.
-static float PI_2_3 = PI * 2 / 3; // lower left intersection angle.
-static float PI_4_3 = PI * 4 / 3; // upper left intersection angle.
-static float PI_5_3 = PI * 5 / 3; // upper right inteersection angle.
+// Angles corresponding to where the circles intersect to form the corners
+// of the primary hexes that make up the grid.
+// Directly right is just 0.0.
+static float PI_1_3 = PI / 3;     // top right
+static float PI_2_3 = PI * 2 / 3; // top left
+// Directly left is just PI.
+static float PI_4_3 = PI * 4 / 3; // bottom left
+static float PI_5_3 = PI * 5 / 3; // bpttom right
+
+// Angles corresponding to hex corners when the hex is rotated 90 degrees
+// to the primary hexes that make up the grid.
+static float PI_1_6 = PI / 6.0;         // bottom right corner
+// The bottom is just HALF_PI.
+static float PI_5_6 = PI * 5.0 / 6.0;   // bottom left corner
+static float PI_7_6 = PI * 7.0 / 6.0;   // top left corner
+static float PI_3_2 = PI + HALF_PI;     // top
+static float PI_11_6 = PI * 11.0 / 6.0; // top right corner
 
 boolean DEBUG = true;
 boolean drawCircles = true;
@@ -67,20 +81,20 @@ void setup() {
   }
   
   // Calculcate all of the hex vertices.
-  vertices = new SparseGrid<>();
+  vertexSpots = new SparseGrid<>();
   for (Spot[] spots : centers) {
     for (Spot center : spots) {
       for (CircleCrossing dir : CircleCrossing.values()) { 
-        Spot v = CalculateVertex(center, dir);
+        Spot v = CalculateVertexSpot(center, dir);
         if (IsVisable(v)) {
-          vertices.Set(v.IndexX, v.IndexY, v);
+          vertexSpots.Set(v.IndexX, v.IndexY, v);
         }
       }
     }
   }
   if (DEBUG) {
-    for (Spot vertex : vertices.GetAll()) {
-      println("vertices["+vertex.IndexY+"]["+vertex.IndexX+"]: ("+vertex.X+", "+vertex.Y+")");
+    for (Spot vertex : vertexSpots.GetAll()) {
+      println("vertexSpots["+vertex.IndexY+"]["+vertex.IndexX+"]: ("+vertex.X+", "+vertex.Y+")");
     }
   }
 }
@@ -104,7 +118,7 @@ void draw() {
   
   stroke(#00FF00);
   if (drawVertices) {
-    for (Spot vertex : vertices.GetAll()) {
+    for (Spot vertex : vertexSpots.GetAll()) {
       circle(vertex.X, vertex.Y, 10);
     }
   }
@@ -112,7 +126,7 @@ void draw() {
   noLoop();
 }
 
-Spot CalculateVertex(Spot center, CircleCrossing dir) {
+Spot CalculateVertexSpot(Spot center, CircleCrossing dir) {
   float angle = dir.Radians();
   Spot rv = new Spot(center.X + radius * cos(angle), center.Y + radius * sin(angle));
   return rv.WithIndex(int(rv.X+0.5), int(rv.Y+0.5));

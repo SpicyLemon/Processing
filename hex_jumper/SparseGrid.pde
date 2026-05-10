@@ -35,4 +35,20 @@ class SparseGrid<T extends Comparable<T>> {
     Collections.sort(rv);
     return rv;
   }
+  
+  ArrayList<Integer> GetYs() {
+    ArrayList<Integer> rv = new ArrayList<Integer>(this.grid.keySet());
+    Collections.sort(rv);
+    return rv;
+  }
+  
+  ArrayList<Integer> GetXs(Integer y) {
+    HashMap<Integer, T> hm = this.grid.get(y);
+    if (hm == null) {
+      return new ArrayList<Integer>();
+    }
+    ArrayList<Integer> rv = new ArrayList<Integer>(hm.keySet());
+    Collections.sort(rv);
+    return rv;
+  }
 }

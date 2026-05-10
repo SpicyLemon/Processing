@@ -3,10 +3,17 @@ class Spot implements Comparable<Spot> {
   float Y;
   int IndexX;
   int IndexY;
-  
+
   Spot(float x, float y) {
     this.X = x;
     this.Y = y;
+  }
+  
+  Spot(Spot orig) {
+    this.X = orig.X;
+    this.Y = orig.Y;
+    this.IndexX = orig.IndexX;
+    this.IndexY = orig.IndexY;
   }
   
   Spot WithIndex(int indexX, int indexY) {
@@ -43,5 +50,79 @@ enum CircleCrossing {
       case TopRight: return PI_5_3;
     }
     return 0;
+  }
+  
+  CircleCrossing Opposite() {
+    switch(this) {
+      case Right: return Left;
+      case BottomRight: return TopLeft;
+      case BottomLeft: return TopRight;
+      case Left: return Right;
+      case TopLeft: return BottomRight;
+      case TopRight: return BottomLeft;
+    }
+    return null;
+  }
+}
+
+enum HexCornerRotated {
+  Top,
+  TopRight,
+  BottomRight,
+  Bottom,
+  BottomLeft,
+  TopLeft;
+  
+  float Radians() {
+    switch(this) {
+      case Top: return PI_3_2;
+      case TopRight: return PI_11_6;
+      case BottomRight: return PI_1_6;
+      case Bottom: return HALF_PI;
+      case BottomLeft: return PI_5_6;
+      case TopLeft: return PI_7_6;
+    }
+    return 0;
+  }
+  
+  HexCornerRotated Opposite() {
+    switch(this) {
+      case Top: return Bottom;
+      case TopRight: return BottomLeft;
+      case BottomRight: return TopLeft;
+      case Bottom: return Top;
+      case BottomLeft: return TopRight;
+      case TopLeft: return BottomRight;
+    }
+    return null;
+  }
+}
+
+class Vertex extends Spot {
+  HashMap<CircleCrossing, Vertex> Neighbors;
+
+  Vertex(Spot spot) {
+    super(spot);
+    Neighbors = new HashMap<CircleCrossing, Vertex>();
+  }
+  
+  Vertex(float x, float y) {
+    super(x, y);
+    Neighbors = new HashMap<CircleCrossing, Vertex>();
+  }
+  
+  @Override
+  Vertex WithIndex(int indexX, int indexY) {
+    super.WithIndex(indexX, indexY);
+    return this;
+  }
+  
+  Vertex WithNeighbor(CircleCrossing cc, Vertex neighbor) {
+    this.Neighbors.put(cc, neighbor);
+    return this;
+  }
+  
+  Vertex Go(CircleCrossing cc) {
+    return this.Neighbors.get(cc);
   }
 }
