@@ -10,15 +10,15 @@ Cross[] crosses;
 int palLen = 16;
 Palette[] crossPals = new Palette[]{
   new Palette(palLen, #FF00AA, #000000), // Pink
-  new Palette(palLen, #FF0000, #000000), // Red
   new Palette(palLen, #00FF00, #000000), // Green
   new Palette(palLen, #AA00FF, #000000), // Purple
   new Palette(palLen, #FFFF00, #000000), // Yellow
+  new Palette(palLen, #00FFFF, #000000), // Cyan
 };
 
 float edgeLim = 0.05;
-float centerMaxD = 2.5;
-float otherMaxD = 5;
+float centerMaxD = 4;
+float otherMaxD = 6;
 
 void setup() {
   fullScreen(P2D); // size(600, 600);
