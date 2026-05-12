@@ -30,6 +30,10 @@ class Spot implements Comparable<Spot> {
     }
     return Integer.compare(this.IndexX, other.IndexX);
   }
+  
+  Vertex AsVertex() {
+    return new Vertex(this);
+  }
 }
 
 enum CircleCrossing {
@@ -98,22 +102,30 @@ enum HexCornerRotated {
   }
 }
 
-class Vertex extends Spot {
+class Vertex implements Comparable<Vertex> {
+  float X;
+  float Y;
+  int IndexX;
+  int IndexY;
   HashMap<CircleCrossing, Vertex> Neighbors;
 
   Vertex(Spot spot) {
-    super(spot);
+    this.X = spot.X;
+    this.Y = spot.Y;
+    this.IndexX = spot.IndexX;
+    this.IndexY = spot.IndexY;
     Neighbors = new HashMap<CircleCrossing, Vertex>();
   }
   
   Vertex(float x, float y) {
-    super(x, y);
+    this.X = x;
+    this.Y = y;
     Neighbors = new HashMap<CircleCrossing, Vertex>();
   }
   
-  @Override
   Vertex WithIndex(int indexX, int indexY) {
-    super.WithIndex(indexX, indexY);
+    this.IndexX = indexX;
+    this.IndexY = indexY;
     return this;
   }
   
@@ -124,5 +136,18 @@ class Vertex extends Spot {
   
   Vertex Go(CircleCrossing cc) {
     return this.Neighbors.get(cc);
+  }
+  
+  Spot AsSpot() {
+    return new Spot(this.X, this.Y).WithIndex(this.IndexX, this.IndexY);
+  }
+  
+  @Override
+  public int compareTo(Vertex other) {
+    int rv = Integer.compare(this.IndexY, other.IndexY);
+    if (rv != 0) {
+      return rv;
+    }
+    return Integer.compare(this.IndexX, other.IndexX);
   }
 }

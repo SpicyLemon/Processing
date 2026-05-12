@@ -1,8 +1,8 @@
 import java.util.Collections;
 
 Spot[][] centers;
-SparseGrid<Spot> vertexSpots;
-Vertex[][] vertexGrid;
+SparseGrid<Vertex> vertexGrid;
+ArrayList<Vertex> vertices;
 float sqrt34, sqrt3;
 float offsetX, offsetY;
 int hCount, vCount;
@@ -81,22 +81,40 @@ void setup() {
   }
   
   // Calculcate all of the hex vertices.
-  vertexSpots = new SparseGrid<>();
+  vertexGrid = new SparseGrid<>();
   for (Spot[] spots : centers) {
     for (Spot center : spots) {
       for (CircleCrossing dir : CircleCrossing.values()) { 
-        Spot v = CalculateVertexSpot(center, dir);
-        if (IsVisable(v)) {
-          vertexSpots.Set(v.IndexX, v.IndexY, v);
+        Spot s = CalculateVertexSpot(center, dir);
+        if (IsVisable(s)) {
+          vertexGrid.Set(s.IndexX, s.IndexY, new Vertex(s));
         }
       }
     }
   }
   if (DEBUG) {
-    for (Spot vertex : vertexSpots.GetAll()) {
-      println("vertexSpots["+vertex.IndexY+"]["+vertex.IndexX+"]: ("+vertex.X+", "+vertex.Y+")");
+    for (Vertex vertex : vertexGrid.GetAll()) {
+      println("vertexGrid["+vertex.IndexY+"]["+vertex.IndexX+"]: ("+vertex.X+", "+vertex.Y+")");
     }
   }
+  
+  // Wire all the Vertices together.
+  for (Integer y : vertexGrid.GetYs()) {
+    for (Integer x : vertexGrid.GetXs(y)) {
+      Vertex primary = vertexGrid.Get(x, y);
+      Spot pSpot = primary.AsSpot();
+      for (CircleCrossing cc : CircleCrossing.values()) {
+        Spot oSpot = CalculateVertexSpot(pSpot, cc);
+        Vertex other = vertexGrid.Get(int(oSpot.X+0.5), int(oSpot.Y+0.5));
+        if (other != null) {
+          primary.WithNeighbor(cc, other);
+          other.WithNeighbor(cc.Opposite(), primary);
+        }
+      }
+    }
+  }
+  
+  vertices = vertexGrid.GetAll();
 }
 
 void draw() {
@@ -116,10 +134,22 @@ void draw() {
     }
   }
   
-  stroke(#00FF00);
   if (drawVertices) {
-    for (Spot vertex : vertexSpots.GetAll()) {
+    for (Vertex vertex : vertices) {
+      stroke(#00FF00);
       circle(vertex.X, vertex.Y, 10);
+      stroke(#FF0000);
+      for (CircleCrossing cc : CircleCrossing.values()) {
+        Vertex other = vertex.Go(cc);
+        if (other != null) {
+          float angle = cc.Radians();
+          float x1 = vertex.X + 10 * cos(angle);
+          float y1 = vertex.Y + 10 * sin(angle);
+          float x2 = vertex.X + 20 * cos(angle);
+          float y2 = vertex.Y + 20 * sin(angle);
+          line(x1, y1, x2, y2);
+        }
+      }
     }
   }
   
