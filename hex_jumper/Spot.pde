@@ -93,6 +93,37 @@ enum CircleCrossing {
     }
     return null;
   }
+  
+  CircleCrossing Next(CircleDir dir) {
+    switch(dir) {
+      case CW:
+        switch(this) {
+          case Right: return BottomRight;
+          case BottomRight: return BottomLeft;
+          case BottomLeft: return Left;
+          case Left: return TopLeft;
+          case TopLeft: return TopRight;
+          case TopRight: return Right;
+        }
+        break;
+      case CCW:
+        switch(this) {
+          case Right: return TopRight;
+          case BottomRight: return Right;
+          case BottomLeft: return BottomRight;
+          case Left: return BottomLeft;
+          case TopLeft: return Left;
+          case TopRight: return TopLeft;
+        }
+        break;
+      }
+    return null;
+  }
+}
+
+CircleCrossing RandomCircleCrossing() {
+  CircleCrossing[] vals = CircleCrossing.values();
+  return vals[int(random(vals.length))];
 }
 
 enum HexCornerRotated {
@@ -146,12 +177,43 @@ enum HexCornerRotated {
           case BottomRight: return CircleCrossing.TopRight;
           case Bottom: return CircleCrossing.Right;
           case BottomLeft: return CircleCrossing.BottomRight;
-          case TopLeft: return CircleCrossing.TopRight;
+          case TopLeft: return CircleCrossing.BottomLeft;
         }
         break;
     }
     return null;
   }
+  
+  HexCornerRotated Next(CircleDir dir) {
+    switch(dir) {
+      case CW:
+        switch(this) {
+          case Top: return TopRight;
+          case TopRight: return BottomRight;
+          case BottomRight: return Bottom;
+          case Bottom: return BottomLeft;
+          case BottomLeft: return TopLeft;
+          case TopLeft: return Top;
+        }
+        break;
+      case CCW:
+        switch(this) {
+          case Top: return TopLeft;
+          case TopRight: return Top;
+          case BottomRight: return TopRight;
+          case Bottom: return BottomRight;
+          case BottomLeft: return Bottom;
+          case TopLeft: return BottomLeft;
+        }
+        break;
+    }
+    return null;
+  }
+}
+
+HexCornerRotated RandomHexCornerRotated() {
+  HexCornerRotated[] vals = HexCornerRotated.values();
+  return vals[int(random(vals.length))];
 }
 
 enum CircleDir {
@@ -161,6 +223,11 @@ enum CircleDir {
   CircleDir Reverse() {
     return this == CW ? CCW : CW;
   }
+}
+
+CircleDir RandomCircleDir() {
+  CircleDir[] vals = CircleDir.values();
+  return vals[int(random(vals.length))];
 }
 
 
@@ -213,6 +280,10 @@ class Vertex implements Comparable<Vertex> {
       this.BorderSpots.put(corner, CalculateRadialSpot(this.X, this.Y, corner.Radians(), vertexRadius));
     }
     return this;
+  }
+  
+  Spot GetBorderSpot(HexCornerRotated corner) {
+    return this.BorderSpots.get(corner);
   }
   
   Vertex DrawBorder() {

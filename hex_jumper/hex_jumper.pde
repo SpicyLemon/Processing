@@ -7,6 +7,7 @@ float sqrt34, sqrt3;
 float offsetX, offsetY;
 int hCount, vCount;
 float xLimMin, xLimMax, yLimMin, yLimMax;
+Jumper[] jumpers;
 
 // Angles corresponding to where the circles intersect to form the corners
 // of the primary hexes that make up the grid.
@@ -28,14 +29,15 @@ static float PI_11_6 = PI * 11.0 / 6.0; // top right corner
 
 boolean DEBUG = true;
 boolean drawCircles = false;
-boolean drawVertices = true;
+boolean drawVertices = false;
 boolean drawVertexPaths = true;
 float hexRadius = 70;
 float vertexRadius = 10;
+int changeVertexOdds = 2;
 
 void setup() {
   size(800, 600);
-  frameRate(30);
+  frameRate(20);
   // sqrt(3/4) is important here because:
   // 1. A hex can be thought of as six equaliateral triangles.
   // 2. An equilateral triangle cut in half is a 30-60-90 triangle.
@@ -117,11 +119,18 @@ void setup() {
   }
   
   vertices = vertexGrid.GetAll();
+  
+  jumpers = new Jumper[1];
+  jumpers[0] = newRandomJumper();
 }
 
 void draw() {
   background(0);
   translate(offsetX, offsetY);
+  
+  for (Jumper jumper : jumpers) {
+    jumper.Move();
+  }
   
   noFill();
   strokeWeight(1);
@@ -160,7 +169,18 @@ void draw() {
     }
   }
   
-  noLoop();
+  for (Jumper jumper : jumpers) {
+    jumper.Draw();
+  }
+}
+
+void mousePressed() {
+  if (mouseButton == LEFT) {
+    noLoop();
+    redraw();
+  } else if (mouseButton == RIGHT) {
+    loop();
+  }
 }
 
 Spot CalculateVertexSpot(Spot center, CircleCrossing dir) {
@@ -175,4 +195,12 @@ Spot CalculateRadialSpot(float x, float y, float angle, float radius) {
 boolean IsVisable(Spot spot) {
   return xLimMin <= spot.X && spot.X <= xLimMax 
       && yLimMin <= spot.Y && spot.Y <= yLimMax;
+}
+
+Jumper newRandomJumper() {
+  Vertex home = vertices.get(int(random(vertices.size())));
+  return new Jumper(home, 5)
+            .WithColor(#AA00FF, #FF0000)
+            .WithCorner(RandomHexCornerRotated())
+            .WithRotDir(RandomCircleDir());
 }
