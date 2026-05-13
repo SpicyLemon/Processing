@@ -27,6 +27,14 @@ class SparseGrid<T extends Comparable<T>> {
     return this.grid.containsKey(y) && this.grid.get(y).containsKey(x);
   }
   
+  SparseGrid Delete(int x, int y) {
+    HashMap<Integer, T> s = this.grid.get(y);
+    if (s != null) {
+      s.remove(x);
+    }
+    return this;
+  }
+  
   ArrayList<T> GetAll() {
     ArrayList<T> rv = new ArrayList<T>();
     for (HashMap<Integer, T> s : this.grid.values()) {

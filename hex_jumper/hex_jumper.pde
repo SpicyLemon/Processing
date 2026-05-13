@@ -31,7 +31,7 @@ boolean DEBUG = true;
 boolean drawCircles = false;
 boolean drawVertices = false;
 boolean drawVertexPaths = true;
-float hexRadius = 70;
+float hexRadius = 60;
 float vertexRadius = 10;
 int changeVertexOdds = 2;
 
@@ -118,6 +118,20 @@ void setup() {
     }
   }
   
+  // Remove any vertices that have fewer than 2 neighbors.
+  for (Vertex vertex : vertexGrid.GetAll()) {
+    if (vertex.Neighbors.size() < 2) {
+      vertexGrid.Delete(vertex.IndexX, vertex.IndexY);
+      for (CircleCrossing cc : CircleCrossing.values()) {
+        Vertex other = vertex.Go(cc);
+        if (other != null) {
+          vertex.Neighbors.remove(cc);
+          other.Neighbors.remove(cc.Opposite());
+        }
+      }
+    }
+  }
+
   vertices = vertexGrid.GetAll();
   
   jumpers = new Jumper[1];
