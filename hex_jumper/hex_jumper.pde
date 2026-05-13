@@ -27,8 +27,9 @@ static float PI_3_2 = PI + HALF_PI;     // top
 static float PI_11_6 = PI * 11.0 / 6.0; // top right corner
 
 boolean DEBUG = true;
-boolean drawCircles = true;
+boolean drawCircles = false;
 boolean drawVertices = true;
+boolean drawVertexPaths = true;
 float hexRadius = 70;
 float vertexRadius = 10;
 
@@ -136,10 +137,15 @@ void draw() {
   }
   
   if (drawVertices) {
+    stroke(#00FF00);
     for (Vertex vertex : vertices) {
-      stroke(#00FF00);
       vertex.DrawBorder();
-      stroke(#FF0000);
+    }
+  }
+  
+  if (drawVertexPaths) {
+    stroke(#FF0000);
+    for (Vertex vertex : vertices) {
       for (CircleCrossing cc : CircleCrossing.values()) {
         Vertex other = vertex.Go(cc);
         if (other != null) {
