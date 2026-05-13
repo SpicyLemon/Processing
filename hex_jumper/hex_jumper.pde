@@ -134,8 +134,10 @@ void setup() {
 
   vertices = vertexGrid.GetAll();
   
-  jumpers = new Jumper[1];
-  jumpers[0] = newRandomJumper();
+  jumpers = new Jumper[100];
+  for (int i = 0; i < jumpers.length; i++) {
+    jumpers[i] = newRandomJumper();
+  }
 }
 
 void draw() {
