@@ -67,6 +67,32 @@ enum CircleCrossing {
     }
     return null;
   }
+  
+  HexCornerRotated Rot90(CircleDir dir) {
+    switch(dir) {
+      case CW:
+        switch(this) {
+          case Right: return HexCornerRotated.Bottom;
+          case BottomRight: return HexCornerRotated.BottomLeft;
+          case BottomLeft: return HexCornerRotated.TopLeft;
+          case Left: return HexCornerRotated.Top;
+          case TopLeft: return HexCornerRotated.TopRight;
+          case TopRight: return HexCornerRotated.BottomRight;
+        }
+        break;
+      case CCW:
+        switch(this) {
+          case Right: return HexCornerRotated.Top;
+          case BottomRight: return HexCornerRotated.TopRight;
+          case BottomLeft: return HexCornerRotated.BottomRight;
+          case Left: return HexCornerRotated.Bottom;
+          case TopLeft: return HexCornerRotated.BottomLeft;
+          case TopRight: return HexCornerRotated.TopLeft;
+        }
+        break;
+    }
+    return null;
+  }
 }
 
 enum HexCornerRotated {
@@ -100,7 +126,43 @@ enum HexCornerRotated {
     }
     return null;
   }
+  
+  CircleCrossing Rot90(CircleDir dir) {
+    switch(dir) {
+      case CW:
+        switch(this) {
+          case Top: return CircleCrossing.Right;
+          case TopRight: return CircleCrossing.BottomRight;
+          case BottomRight: return CircleCrossing.BottomLeft;
+          case Bottom: return CircleCrossing.Left;
+          case BottomLeft: return CircleCrossing.TopLeft;
+          case TopLeft: return CircleCrossing.TopRight;
+        }
+        break;
+      case CCW:
+        switch(this) {
+          case Top: return CircleCrossing.Left;
+          case TopRight: return CircleCrossing.TopLeft;
+          case BottomRight: return CircleCrossing.TopRight;
+          case Bottom: return CircleCrossing.Right;
+          case BottomLeft: return CircleCrossing.BottomRight;
+          case TopLeft: return CircleCrossing.TopRight;
+        }
+        break;
+    }
+    return null;
+  }
 }
+
+enum CircleDir {
+  CW,
+  CCW;
+  
+  CircleDir Reverse() {
+    return this == CW ? CCW : CW;
+  }
+}
+
 
 class Vertex implements Comparable<Vertex> {
   float X;
@@ -108,6 +170,7 @@ class Vertex implements Comparable<Vertex> {
   int IndexX;
   int IndexY;
   HashMap<CircleCrossing, Vertex> Neighbors;
+  HashMap<HexCornerRotated, Spot> BorderSpots;
 
   Vertex(Spot spot) {
     this.X = spot.X;
@@ -115,12 +178,14 @@ class Vertex implements Comparable<Vertex> {
     this.IndexX = spot.IndexX;
     this.IndexY = spot.IndexY;
     Neighbors = new HashMap<CircleCrossing, Vertex>();
+    this.SetBorderSpots();
   }
   
   Vertex(float x, float y) {
     this.X = x;
     this.Y = y;
     Neighbors = new HashMap<CircleCrossing, Vertex>();
+    this.SetBorderSpots();
   }
   
   Vertex WithIndex(int indexX, int indexY) {
@@ -140,6 +205,24 @@ class Vertex implements Comparable<Vertex> {
   
   Spot AsSpot() {
     return new Spot(this.X, this.Y).WithIndex(this.IndexX, this.IndexY);
+  }
+  
+  Vertex SetBorderSpots() {
+    this.BorderSpots = new HashMap<HexCornerRotated, Spot>();
+    for (HexCornerRotated corner : HexCornerRotated.values()) {
+      this.BorderSpots.put(corner, CalculateRadialSpot(this.X, this.Y, corner.Radians(), vertexRadius));
+    }
+    return this;
+  }
+  
+  Vertex DrawBorder() {
+    beginShape();
+    for (HexCornerRotated corner : HexCornerRotated.values()) {
+      Spot c = this.BorderSpots.get(corner);
+      vertex(c.X, c.Y);
+    }
+    endShape(CLOSE);
+    return this;
   }
   
   @Override

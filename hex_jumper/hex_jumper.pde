@@ -29,7 +29,8 @@ static float PI_11_6 = PI * 11.0 / 6.0; // top right corner
 boolean DEBUG = true;
 boolean drawCircles = true;
 boolean drawVertices = true;
-float radius = 70;
+float hexRadius = 70;
+float vertexRadius = 10;
 
 void setup() {
   size(800, 600);
@@ -43,18 +44,18 @@ void setup() {
   
   // Taking 10 out of the width and height to ensure that there's some padding.
   // Adding two to each count so that the padding is still covered by a hex.
-  hCount = int((2.0*(width-10)-radius)/(3.0*radius))+2;
-  vCount = int((height-10-sqrt34*radius)/(sqrt3*radius))+2;
+  hCount = int((2.0*(width-10)-hexRadius)/(3.0*hexRadius))+2;
+  vCount = int((height-10-sqrt34*hexRadius)/(sqrt3*hexRadius))+2;
   if (DEBUG) {
     println("Dimensions:", hCount, "x", vCount);
   }
   centers = new Spot[vCount][hCount];
   for (int h = -1; h < hCount-1; h++) {
-    float x = radius + radius * 3 / 2 * h;
-    float s = (h % 2 == 0) ? sqrt34*radius : sqrt3 * radius;
+    float x = hexRadius + hexRadius * 3 / 2 * h;
+    float s = (h % 2 == 0) ? sqrt34*hexRadius : sqrt3 * hexRadius;
     for (int v = -1; v < vCount-1; v++) {
-      // The y for this center is <start> + 2 * radius * <center number>.
-      centers[v+1][h+1] = new Spot(x, s + sqrt3 * radius * v).WithIndex(h+1, v+1);
+      // The y for this center is <start> + 2 * hexRadius * <center number>.
+      centers[v+1][h+1] = new Spot(x, s + sqrt3 * hexRadius * v).WithIndex(h+1, v+1);
       if (DEBUG) {
         println("centers["+(v+1)+"]["+(h+1)+"] = (" + 
             centers[v+1][h+1].X + ", " + centers[v+1][h+1].Y + ")");
@@ -63,8 +64,8 @@ void setup() {
   }
   
   // Calculcate the full width and height of the space that the hexes occupy.
-  float fullWidth = radius/2 + (hCount-2)*3*radius/2;
-  float fullHeight = (vCount-2)*radius*sqrt3 + radius*sqrt34;
+  float fullWidth = hexRadius/2 + (hCount-2)*3*hexRadius/2;
+  float fullHeight = (vCount-2)*hexRadius*sqrt3 + hexRadius*sqrt34;
   if (DEBUG) {
     println("Hexes fill:", fullWidth, "x", fullHeight);
   }
@@ -127,7 +128,7 @@ void draw() {
     for (Spot[] spots : centers) {
       for (Spot spot : spots) {
         stroke(#FFFFFF);
-        circle(spot.X, spot.Y, radius*2);
+        circle(spot.X, spot.Y, hexRadius*2);
         stroke(#0000FF);
         circle(spot.X, spot.Y, 10);
       }
@@ -137,7 +138,7 @@ void draw() {
   if (drawVertices) {
     for (Vertex vertex : vertices) {
       stroke(#00FF00);
-      circle(vertex.X, vertex.Y, 10);
+      vertex.DrawBorder();
       stroke(#FF0000);
       for (CircleCrossing cc : CircleCrossing.values()) {
         Vertex other = vertex.Go(cc);
@@ -157,9 +158,12 @@ void draw() {
 }
 
 Spot CalculateVertexSpot(Spot center, CircleCrossing dir) {
-  float angle = dir.Radians();
-  Spot rv = new Spot(center.X + radius * cos(angle), center.Y + radius * sin(angle));
+  Spot rv = CalculateRadialSpot(center.X, center.Y, dir.Radians(), hexRadius);
   return rv.WithIndex(int(rv.X+0.5), int(rv.Y+0.5));
+}
+
+Spot CalculateRadialSpot(float x, float y, float angle, float radius) {
+  return new Spot(x + radius * cos(angle), y + radius * sin(angle));
 }
 
 boolean IsVisable(Spot spot) {
