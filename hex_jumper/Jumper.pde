@@ -7,19 +7,19 @@ class Jumper {
   color[] Gradient;
   float strokeMult;
 
-  Jumper(Vertex home, int tailLength) {
+  Jumper(Vertex home, int jumperTailLength) {
     this.Home = home;
-    this.History = new Spot[tailLength+1];
-    this.Gradient = new color[tailLength+1];
-    this.strokeMult = headStroke/float(tailLength+1);
+    this.History = new Spot[jumperTailLength+1];
+    this.Gradient = new color[jumperTailLength+1];
+    this.strokeMult = (jumperHeadStroke-jumperTailStroke)/float(jumperTailLength+1);
   }
   
   Jumper WithColor(color headColor, color tailColor) {
-    int tailLength = this.Gradient.length;
-    this.Gradient[0] = tailColor;
-    this.Gradient[tailLength-1] = headColor;
-    for (int i = 1; i < tailLength-1; i++) {
-      this.Gradient[i] = lerpColor(tailColor, headColor, (float)i / (float)(tailLength-1));
+    this.Gradient[0] = setAlpha(tailColor, jumperHeadAlpha);
+    this.Gradient[jumperTailLength-1] = headColor;
+    for (int i = 1; i < jumperTailLength-1; i++) {
+      this.Gradient[i] = lerpColor(tailColor, headColor, (float)i / (float)(jumperTailLength-1));
+      this.Gradient[i] = setAlpha(this.Gradient[i], int(map(i, 0, jumperTailLength-1, jumperHeadAlpha, jumperTailAlpha)));
     }
     return this;
   }
@@ -77,12 +77,16 @@ class Jumper {
     Spot s2 = this.History[pos2];
     if (jumperHeadFirst) {
       stroke(this.Gradient[i+1]);
-      strokeWeight(this.strokeMult*(float)(i) + 1.0);
+      strokeWeight(this.strokeMult*(float)(i) + jumperTailStroke);
     } else {
       stroke(this.Gradient[i]);
-      strokeWeight(this.strokeMult*(float)(this.History.length-i-1) + 1.0);
+      strokeWeight(this.strokeMult*(float)(this.History.length-i-1) + jumperTailStroke);
     }
     line(s1.X, s1.Y, s2.X, s2.Y);
     return this;
   }
+}
+
+color setAlpha(color col, int alpha) {
+  return (col & 0x00FFFFFF) | ((alpha & 0xFF) << 24);
 }

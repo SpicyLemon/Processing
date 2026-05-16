@@ -27,25 +27,34 @@ static float PI_7_6 = PI * 7.0 / 6.0;   // top left corner
 static float PI_3_2 = PI + HALF_PI;     // top
 static float PI_11_6 = PI * 11.0 / 6.0; // top right corner
 
-boolean DEBUG = true;
-boolean drawCircles = true;
+boolean DEBUG = false;
+
+boolean drawCircles = false;
 color drawCirclesColor = #222222;
+
 boolean drawCircleCenters = false;
 color drawCircleCentersColor = #0000FF;
+
 boolean drawVertices = true;
 color drawVerticesColor = #444444;
+
 boolean drawVertexPaths = false;
 color drawVertexPathsColor = #FF0000;
 float drawVertexPathsLength = 10;
 float drawVerexPathsStart = 10;
+
 float hexRadius = 80;
-float vertexRadius = 10;
-int changeVertexOdds = 1;
-int changeRotDirOdds = 5;
-int jumperCount = 60;
+float vertexRadius = 25;
+int changeVertexOdds = 2;
+int changeRotDirOdds = 15;
+
+int jumperCount = 18;
 boolean jumperHeadFirst = false;
-float headStroke = 100;
-int tailLength = 17;
+float jumperHeadStroke = 100;
+float jumperTailStroke = 5;
+int jumperHeadAlpha = 255;
+int jumperTailAlpha = 50;
+int jumperTailLength = 17;
 color[] colors = new color[]{#FFFFFF, 
   #FF0000, #0000FF, #00FF00, #FFFF00, #FF00FF, #00FFFF,
   #AA0000, #0000AA, #00AA00, #AAAA00, #AA00AA, #00AAAA,
@@ -156,9 +165,9 @@ void setup() {
   jumpers = new Jumper[jumperCount];
   for (int i = 0; i < jumpers.length; i++) {
     // Pick a random first color (that isn't black).
-    int c1 = int(random(colors.length-1));
+    int c1 = 0; //int(random(colors.length-1));
     // Pick a random second color by adding a random number to the first.
-    int c2 = (c1 + int(random(colors.length-1)) + 1) % colors.length;
+    int c2 = (i % (colors.length - 2)) + 1; // (c1 + int(random(colors.length-1)) + 1) % colors.length;
     jumpers[i] = newRandomJumper(colors[c1], colors[c2]);
   }
 }
@@ -216,7 +225,7 @@ void draw() {
   }
   
   strokeWeight(20.0);
-  for (int i = 0; i < tailLength; i++) {
+  for (int i = 0; i < jumperTailLength; i++) {
     for (Jumper jumper : jumpers) {
       jumper.DrawI(i);
     }
@@ -248,7 +257,7 @@ boolean IsVisable(Spot spot) {
 
 Jumper newRandomJumper(color headColor, color tailColor) {
   Vertex home = vertices.get(int(random(vertices.size())));
-  return new Jumper(home, tailLength)
+  return new Jumper(home, jumperTailLength)
             .WithColor(headColor, tailColor)
             .WithCorner(RandomHexCornerRotated())
             .WithRotDir(RandomCircleDir());
