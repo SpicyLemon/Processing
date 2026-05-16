@@ -5,11 +5,13 @@ class Jumper {
   Spot[] History;
   int HistoryI;
   color[] Gradient;
-  
+  float strokeMult;
+
   Jumper(Vertex home, int tailLength) {
     this.Home = home;
     this.History = new Spot[tailLength+1];
     this.Gradient = new color[tailLength+1];
+    this.strokeMult = headStroke/float(tailLength+1);
   }
   
   Jumper WithColor(color headColor, color tailColor) {
@@ -49,7 +51,7 @@ class Jumper {
     Vertex neighbor = this.Home.Go(this.Corner.Rot90(this.RotDir));
     if (neighbor != null && int(random(changeVertexOdds)) == 0) {
       this.Home = neighbor;
-      if (int(random(2)) == 0) {
+      if (int(random(changeRotDirOdds)) == 0) {
         this.Corner = this.Corner.Opposite();
         this.RotDir = this.RotDir.Reverse();
       }
@@ -73,7 +75,13 @@ class Jumper {
     int pos2 = (this.HistoryI + i + 2) % this.History.length;
     Spot s1 = this.History[pos1];
     Spot s2 = this.History[pos2];
-    stroke(this.Gradient[i+1]);
+    if (jumperHeadFirst) {
+      stroke(this.Gradient[i+1]);
+      strokeWeight(this.strokeMult*(float)(i) + 1.0);
+    } else {
+      stroke(this.Gradient[i]);
+      strokeWeight(this.strokeMult*(float)(this.History.length-i-1) + 1.0);
+    }
     line(s1.X, s1.Y, s2.X, s2.Y);
     return this;
   }

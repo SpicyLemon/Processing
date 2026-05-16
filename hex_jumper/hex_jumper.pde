@@ -28,12 +28,30 @@ static float PI_3_2 = PI + HALF_PI;     // top
 static float PI_11_6 = PI * 11.0 / 6.0; // top right corner
 
 boolean DEBUG = true;
-boolean drawCircles = false;
-boolean drawVertices = false;
-boolean drawVertexPaths = true;
+boolean drawCircles = true;
+color drawCirclesColor = #222222;
+boolean drawCircleCenters = false;
+color drawCircleCentersColor = #0000FF;
+boolean drawVertices = true;
+color drawVerticesColor = #444444;
+boolean drawVertexPaths = false;
+color drawVertexPathsColor = #FF0000;
+float drawVertexPathsLength = 10;
+float drawVerexPathsStart = 10;
 float hexRadius = 60;
 float vertexRadius = 10;
-int changeVertexOdds = 2;
+int changeVertexOdds = 1;
+int changeRotDirOdds = 5;
+int jumperCount = 25;
+boolean jumperHeadFirst = false;
+float headStroke = 50;
+int tailLength = 17;
+color[] colors = new color[]{#FFFFFF, 
+  #FF0000, #0000FF, #00FF00, #FFFF00, #FF00FF, #00FFFF,
+  #AA0000, #0000AA, #00AA00, #AAAA00, #AA00AA, #00AAAA,
+  #FFAA00, #AAFF00, #FF00AA, #AA00FF, #00FFAA, #00AAFF,
+  #000000, // Black last for easier random control.
+};
 
 void setup() {
   size(800, 600);
@@ -133,10 +151,15 @@ void setup() {
   }
 
   vertices = vertexGrid.GetAll();
+  Collections.sort(vertices);
   
-  jumpers = new Jumper[100];
+  jumpers = new Jumper[jumperCount];
   for (int i = 0; i < jumpers.length; i++) {
-    jumpers[i] = newRandomJumper();
+    // Pick a random first color (that isn't black).
+    int c1 = int(random(colors.length-1));
+    // Pick a random second color by adding a random number to the first.
+    int c2 = (c1 + int(random(colors.length-1)) + 1) % colors.length;
+    jumpers[i] = newRandomJumper(colors[c1], colors[c2]);
   }
 }
 
@@ -151,42 +174,52 @@ void draw() {
   noFill();
   strokeWeight(1);
   if (drawCircles) {
+    stroke(drawCirclesColor);
     for (Spot[] spots : centers) {
       for (Spot spot : spots) {
-        stroke(#FFFFFF);
         circle(spot.X, spot.Y, hexRadius*2);
-        stroke(#0000FF);
+      }
+    }
+  }
+  
+  if (drawCircleCenters) {
+    stroke(drawCircleCentersColor);
+    for (Spot[] spots : centers) {
+      for (Spot spot : spots) {
         circle(spot.X, spot.Y, 10);
       }
     }
   }
   
   if (drawVertices) {
-    stroke(#00FF00);
+    stroke(drawVerticesColor);
     for (Vertex vertex : vertices) {
       vertex.DrawBorder();
     }
   }
   
   if (drawVertexPaths) {
-    stroke(#FF0000);
+    stroke(drawVertexPathsColor);
     for (Vertex vertex : vertices) {
       for (CircleCrossing cc : CircleCrossing.values()) {
         Vertex other = vertex.Go(cc);
         if (other != null) {
           float angle = cc.Radians();
-          float x1 = vertex.X + 10 * cos(angle);
-          float y1 = vertex.Y + 10 * sin(angle);
-          float x2 = vertex.X + 20 * cos(angle);
-          float y2 = vertex.Y + 20 * sin(angle);
+          float x1 = vertex.X + drawVerexPathsStart * cos(angle);
+          float y1 = vertex.Y + drawVerexPathsStart * sin(angle);
+          float x2 = vertex.X + (drawVerexPathsStart+drawVertexPathsLength) * cos(angle);
+          float y2 = vertex.Y + (drawVerexPathsStart+drawVertexPathsLength) * sin(angle);
           line(x1, y1, x2, y2);
         }
       }
     }
   }
   
-  for (Jumper jumper : jumpers) {
-    jumper.Draw();
+  strokeWeight(20.0);
+  for (int i = 0; i < tailLength; i++) {
+    for (Jumper jumper : jumpers) {
+      jumper.DrawI(i);
+    }
   }
 }
 
@@ -213,10 +246,10 @@ boolean IsVisable(Spot spot) {
       && yLimMin <= spot.Y && spot.Y <= yLimMax;
 }
 
-Jumper newRandomJumper() {
+Jumper newRandomJumper(color headColor, color tailColor) {
   Vertex home = vertices.get(int(random(vertices.size())));
-  return new Jumper(home, 5)
-            .WithColor(#AA00FF, #FF0000)
+  return new Jumper(home, tailLength)
+            .WithColor(headColor, tailColor)
             .WithCorner(RandomHexCornerRotated())
             .WithRotDir(RandomCircleDir());
 }

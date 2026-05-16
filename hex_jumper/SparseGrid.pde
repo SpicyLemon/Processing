@@ -1,4 +1,4 @@
-class SparseGrid<T extends Comparable<T>> {
+class SparseGrid<T> {
   HashMap<Integer, HashMap<Integer, T>> grid;
   
   SparseGrid() {
@@ -40,7 +40,6 @@ class SparseGrid<T extends Comparable<T>> {
     for (HashMap<Integer, T> s : this.grid.values()) {
       rv.addAll(s.values());
     }
-    Collections.sort(rv);
     return rv;
   }
   
