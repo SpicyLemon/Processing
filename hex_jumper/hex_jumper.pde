@@ -38,13 +38,13 @@ boolean drawVertexPaths = false;
 color drawVertexPathsColor = #FF0000;
 float drawVertexPathsLength = 10;
 float drawVerexPathsStart = 10;
-float hexRadius = 60;
+float hexRadius = 80;
 float vertexRadius = 10;
 int changeVertexOdds = 1;
 int changeRotDirOdds = 5;
-int jumperCount = 25;
+int jumperCount = 60;
 boolean jumperHeadFirst = false;
-float headStroke = 50;
+float headStroke = 100;
 int tailLength = 17;
 color[] colors = new color[]{#FFFFFF, 
   #FF0000, #0000FF, #00FF00, #FFFF00, #FF00FF, #00FFFF,
@@ -54,8 +54,8 @@ color[] colors = new color[]{#FFFFFF,
 };
 
 void setup() {
-  size(800, 600);
-  frameRate(20);
+  fullScreen();
+  frameRate(15);
   // sqrt(3/4) is important here because:
   // 1. A hex can be thought of as six equaliateral triangles.
   // 2. An equilateral triangle cut in half is a 30-60-90 triangle.
