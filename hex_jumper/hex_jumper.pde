@@ -58,7 +58,7 @@ color drawBigHexesColor = #222222;
 
 float hexRadius = 80;
 float vertexRadius = 15;
-int bigHexRadiusMin = 15;
+int bigHexRadiusMin = 5;
 int bigHexRadiusMax = 55;
 
 int changeVertexOdds = 1;
@@ -68,8 +68,8 @@ int jumperCount = 18;
 boolean jumperHeadFirst = false;
 float jumperHeadStroke = 100;
 float jumperTailStroke = 5;
-int jumperHeadAlpha = 50;
-int jumperTailAlpha = 255;
+int jumperHeadAlpha = 255;
+int jumperTailAlpha = 50;
 int jumperTailLength = 17;
 
 int maxDroplets = 100;
