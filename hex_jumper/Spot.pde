@@ -305,3 +305,64 @@ class Vertex implements Comparable<Vertex> {
     return Integer.compare(this.IndexX, other.IndexX);
   }
 }
+
+class BigHex implements Comparable<BigHex> {
+  Spot Center;
+  HashMap<HexCornerRotated, HashMap<Integer, Spot>> Corners;
+
+  BigHex(Spot center, int minRadius, int maxRadius) {
+    this.Center = center;
+    this.Corners = new HashMap<HexCornerRotated, HashMap<Integer, Spot>>();
+    for (HexCornerRotated hc : HexCornerRotated.values()) {
+      this.Corners.put(hc, new HashMap<Integer, Spot>());
+      for (int r = minRadius; r <= maxRadius; r++) {
+        this.Corners.get(hc).put(r, CalculateRadialSpot(this.Center.X, this.Center.Y, hc.Radians(), r));
+      }
+    }
+  }
+  
+  Spot GetCorner(HexCornerRotated hc, int radius) {
+    Spot rv = this.Corners.get(hc).get(radius);
+    if (rv != null) {
+      return rv;
+    }
+    rv = CalculateRadialSpot(this.Center.X, this.Center.Y, hc.Radians(), radius);
+    this.Corners.get(hc).put(radius, rv);
+    return rv;
+  }
+  
+  @Override
+  public int compareTo(BigHex other) {
+    return this.Center.compareTo(other.Center);
+  }
+
+  BigHex DrawBorder(int radius) {
+    beginShape();
+    for (HexCornerRotated hc : HexCornerRotated.values()) {
+      Spot c = this.Corners.get(hc).get(radius);
+      vertex(c.X, c.Y);
+    }
+    endShape(CLOSE);
+    return this;
+  }
+  
+  BigHex Draw() {
+    beginShape();
+    HexCornerRotated[] hcs = HexCornerRotated.values();
+    for (HexCornerRotated hc : hcs) {
+      Spot c = this.Corners.get(hc).get(bigHexRadiusMax);
+      vertex(c.X, c.Y);
+    }
+    Collections.reverse(Arrays.asList(hcs));
+
+    beginContour();
+    for (HexCornerRotated hc : hcs) {
+      Spot c = this.Corners.get(hc).get(bigHexRadiusMin);
+      vertex(c.X, c.Y);
+    }
+    endContour();
+    endShape(CLOSE);
+    
+    return this;
+  }
+}

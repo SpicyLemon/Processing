@@ -19,7 +19,7 @@ class Jumper {
     this.Gradient[jumperTailLength-1] = headColor;
     for (int i = 1; i < jumperTailLength-1; i++) {
       this.Gradient[i] = lerpColor(tailColor, headColor, (float)i / (float)(jumperTailLength-1));
-      this.Gradient[i] = setAlpha(this.Gradient[i], int(map(i, 0, jumperTailLength-1, jumperHeadAlpha, jumperTailAlpha)));
+      this.Gradient[i] = setAlpha(this.Gradient[i], int(map(i, 0, jumperTailLength, jumperHeadAlpha, jumperTailAlpha)));
     }
     return this;
   }

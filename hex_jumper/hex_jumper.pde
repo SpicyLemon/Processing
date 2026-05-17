@@ -1,8 +1,11 @@
 import java.util.Collections;
+import java.util.Arrays;
 
 Spot[][] centers;
 SparseGrid<Vertex> vertexGrid;
 ArrayList<Vertex> vertices;
+SparseGrid<BigHex> bigHexGrid;
+ArrayList<BigHex> bigHexes;
 float sqrt34, sqrt3;
 float offsetX, offsetY;
 int hCount, vCount;
@@ -43,19 +46,30 @@ color drawVertexPathsColor = #FF0000;
 float drawVertexPathsLength = 10;
 float drawVerexPathsStart = 10;
 
+boolean drawBigHexesRadiusMin = true;
+color drawBigHexesRadiusMinColor = #444444;
+boolean drawBigHexesRadiusMax = true;
+color drawBigHexesRadiusMaxColor = #666666;
+boolean drawBigHexes = true;
+color drawBigHexesColor = #222222;
+
 float hexRadius = 80;
 float vertexRadius = 25;
-int changeVertexOdds = 2;
+int bigHexRadiusMin = 40;
+int bigHexRadiusMax = 55;
+
+int changeVertexOdds = 1;
 int changeRotDirOdds = 15;
 
 int jumperCount = 18;
 boolean jumperHeadFirst = false;
 float jumperHeadStroke = 100;
 float jumperTailStroke = 5;
-int jumperHeadAlpha = 255;
-int jumperTailAlpha = 50;
+int jumperHeadAlpha = 50;
+int jumperTailAlpha = 255;
 int jumperTailLength = 17;
-color[] colors = new color[]{#FFFFFF, 
+
+color[] colors = new color[]{#FFFFFF, // White first for easier random control.
   #FF0000, #0000FF, #00FF00, #FFFF00, #FF00FF, #00FFFF,
   #AA0000, #0000AA, #00AA00, #AAAA00, #AA00AA, #00AAAA,
   #FFAA00, #AAFF00, #FF00AA, #AA00FF, #00FFAA, #00AAFF,
@@ -162,6 +176,29 @@ void setup() {
   vertices = vertexGrid.GetAll();
   Collections.sort(vertices);
   
+  bigHexGrid = new SparseGrid<BigHex>();
+  for (int i = 0; i < centers.length; i++) {
+    for (int j = 0; j < centers[i].length; j++) {
+      Spot center = centers[i][j];
+      boolean include = true;
+      for (CircleCrossing cc : CircleCrossing.values()) {
+        Spot corner = CalculateVertexSpot(center, cc);
+        if (!IsVisable(corner)) {
+          include = false;
+          break;
+        }
+      }
+      
+      if (include) {
+        BigHex bh = new BigHex(center, bigHexRadiusMin, bigHexRadiusMax);
+        bigHexGrid.Set(center.IndexX, center.IndexY, bh);
+      }
+    }
+  }
+  
+  bigHexes = bigHexGrid.GetAll();
+  Collections.sort(bigHexes);
+  
   jumpers = new Jumper[jumperCount];
   for (int i = 0; i < jumpers.length; i++) {
     // Pick a random first color (that isn't black).
@@ -182,6 +219,7 @@ void draw() {
   
   noFill();
   strokeWeight(1);
+  
   if (drawCircles) {
     stroke(drawCirclesColor);
     for (Spot[] spots : centers) {
@@ -197,6 +235,29 @@ void draw() {
       for (Spot spot : spots) {
         circle(spot.X, spot.Y, 10);
       }
+    }
+  }
+  
+  if (drawBigHexes) {
+    noStroke();
+    fill(drawBigHexesColor);
+    for (BigHex bigHex : bigHexes) {
+      bigHex.Draw();
+    }
+    noFill();
+  }
+  
+  if (drawBigHexesRadiusMin) {
+    stroke(drawBigHexesRadiusMinColor);
+    for (BigHex bigHex : bigHexes) {
+      bigHex.DrawBorder(bigHexRadiusMin);
+    }
+  }
+  
+  if (drawBigHexesRadiusMax) {
+    stroke(drawBigHexesRadiusMaxColor);
+    for (BigHex bigHex : bigHexes) {
+      bigHex.DrawBorder(bigHexRadiusMax);
     }
   }
   
