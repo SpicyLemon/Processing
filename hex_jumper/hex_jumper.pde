@@ -6,6 +6,9 @@ SparseGrid<Vertex> vertexGrid;
 ArrayList<Vertex> vertices;
 SparseGrid<BigHex> bigHexGrid;
 ArrayList<BigHex> bigHexes;
+ArrayList<Droplet> droplets;
+color[][] dropletGradients;
+int[] dropletFrameCounts;
 float sqrt34, sqrt3;
 float offsetX, offsetY;
 int hCount, vCount;
@@ -46,16 +49,16 @@ color drawVertexPathsColor = #FF0000;
 float drawVertexPathsLength = 10;
 float drawVerexPathsStart = 10;
 
-boolean drawBigHexesRadiusMin = true;
+boolean drawBigHexesRadiusMin = false;
 color drawBigHexesRadiusMinColor = #444444;
-boolean drawBigHexesRadiusMax = true;
+boolean drawBigHexesRadiusMax = false;
 color drawBigHexesRadiusMaxColor = #666666;
-boolean drawBigHexes = true;
+boolean drawBigHexes = false;
 color drawBigHexesColor = #222222;
 
 float hexRadius = 80;
-float vertexRadius = 25;
-int bigHexRadiusMin = 40;
+float vertexRadius = 15;
+int bigHexRadiusMin = 15;
 int bigHexRadiusMax = 55;
 
 int changeVertexOdds = 1;
@@ -68,6 +71,13 @@ float jumperTailStroke = 5;
 int jumperHeadAlpha = 50;
 int jumperTailAlpha = 255;
 int jumperTailLength = 17;
+
+int maxDroplets = 100;
+int addDropletChances = 5;
+int addDropletOdds = 10;
+int dropletAlphaStart = 255;
+int dropletAlphaStop = 50;
+
 
 color[] colors = new color[]{#FFFFFF, // White first for easier random control.
   #FF0000, #0000FF, #00FF00, #FFFF00, #FF00FF, #00FFFF,
@@ -207,11 +217,48 @@ void setup() {
     int c2 = (i % (colors.length - 2)) + 1; // (c1 + int(random(colors.length-1)) + 1) % colors.length;
     jumpers[i] = newRandomJumper(colors[c1], colors[c2]);
   }
+  
+  droplets = new ArrayList<Droplet>();
+  int radCount = bigHexRadiusMax - bigHexRadiusMin + 1;
+  dropletGradients = new color[colors.length][radCount];
+  for (int c = 0; c < colors.length; c++) {
+    for (int r = 0; r < radCount; r++) {
+      int alpha = int(map(r, 0, radCount-1, dropletAlphaStart, dropletAlphaStop));
+      dropletGradients[c][r] = setAlpha(colors[c], alpha);
+    }
+  }
+  dropletFrameCounts = new int[radCount];
+  for (int r = 0; r < radCount; r++) {
+    dropletFrameCounts[r] = int(map(r, 0, radCount-1, 1, 6));
+  }
 }
 
 void draw() {
   background(0);
   translate(offsetX, offsetY);
+  
+  for (Droplet droplet : droplets) {
+    droplet.Move();
+  }
+  
+  for (int i = droplets.size()-1; i >= 0; i--) {
+    if (droplets.get(i).IsDone()) {
+      droplets.remove(i);
+    }
+  }
+  
+  if (droplets.size() < maxDroplets) {
+    for (int i = 0; i < addDropletChances; i++) {
+      if (int(random(addDropletOdds)) == 0) {
+        BigHex home = bigHexes.get(int(random(bigHexes.size())));
+        int c = 1 + (int(random(colors.length-2)));
+        droplets.add(new Droplet(home, dropletGradients[c], dropletFrameCounts));
+        if (droplets.size() >= maxDroplets) {
+          break;
+        }
+      }
+    }
+  }
   
   for (Jumper jumper : jumpers) {
     jumper.Move();
@@ -285,7 +332,10 @@ void draw() {
     }
   }
   
-  strokeWeight(20.0);
+  for (Droplet droplet : droplets) {
+    droplet.Draw();
+  }
+  
   for (int i = 0; i < jumperTailLength; i++) {
     for (Jumper jumper : jumpers) {
       jumper.DrawI(i);
@@ -322,4 +372,8 @@ Jumper newRandomJumper(color headColor, color tailColor) {
             .WithColor(headColor, tailColor)
             .WithCorner(RandomHexCornerRotated())
             .WithRotDir(RandomCircleDir());
+}
+
+color setAlpha(color col, int alpha) {
+  return (col & 0x00FFFFFF) | ((alpha & 0xFF) << 24);
 }

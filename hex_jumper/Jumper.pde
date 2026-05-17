@@ -86,7 +86,3 @@ class Jumper {
     return this;
   }
 }
-
-color setAlpha(color col, int alpha) {
-  return (col & 0x00FFFFFF) | ((alpha & 0xFF) << 24);
-}
