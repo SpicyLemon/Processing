@@ -308,26 +308,26 @@ class Vertex implements Comparable<Vertex> {
 
 class BigHex implements Comparable<BigHex> {
   Spot Center;
-  HashMap<HexCornerRotated, HashMap<Integer, Spot>> Corners;
+  HashMap<CircleCrossing, HashMap<Integer, Spot>> Corners;
 
   BigHex(Spot center, int minRadius, int maxRadius) {
     this.Center = center;
-    this.Corners = new HashMap<HexCornerRotated, HashMap<Integer, Spot>>();
-    for (HexCornerRotated hc : HexCornerRotated.values()) {
-      this.Corners.put(hc, new HashMap<Integer, Spot>());
+    this.Corners = new HashMap<CircleCrossing, HashMap<Integer, Spot>>();
+    for (CircleCrossing c : CircleCrossing.values()) {
+      this.Corners.put(c, new HashMap<Integer, Spot>());
       for (int r = minRadius; r <= maxRadius; r++) {
-        this.Corners.get(hc).put(r, CalculateRadialSpot(this.Center.X, this.Center.Y, hc.Radians(), r));
+        this.Corners.get(c).put(r, CalculateRadialSpot(this.Center.X, this.Center.Y, c.Radians(), r));
       }
     }
   }
   
-  Spot GetCorner(HexCornerRotated hc, int radius) {
-    Spot rv = this.Corners.get(hc).get(radius);
+  Spot GetCorner(CircleCrossing c, int radius) {
+    Spot rv = this.Corners.get(c).get(radius);
     if (rv != null) {
       return rv;
     }
-    rv = CalculateRadialSpot(this.Center.X, this.Center.Y, hc.Radians(), radius);
-    this.Corners.get(hc).put(radius, rv);
+    rv = CalculateRadialSpot(this.Center.X, this.Center.Y, c.Radians(), radius);
+    this.Corners.get(c).put(radius, rv);
     return rv;
   }
   
@@ -338,9 +338,9 @@ class BigHex implements Comparable<BigHex> {
 
   BigHex DrawBorder(int radius) {
     beginShape();
-    for (HexCornerRotated hc : HexCornerRotated.values()) {
-      Spot c = this.Corners.get(hc).get(radius);
-      vertex(c.X, c.Y);
+    for (CircleCrossing c : CircleCrossing.values()) {
+      Spot s = this.Corners.get(c).get(radius);
+      vertex(s.X, s.Y);
     }
     endShape(CLOSE);
     return this;
@@ -348,17 +348,17 @@ class BigHex implements Comparable<BigHex> {
   
   BigHex Draw() {
     beginShape();
-    HexCornerRotated[] hcs = HexCornerRotated.values();
-    for (HexCornerRotated hc : hcs) {
-      Spot c = this.Corners.get(hc).get(bigHexRadiusMax);
-      vertex(c.X, c.Y);
+    CircleCrossing[] cs = CircleCrossing.values();
+    for (CircleCrossing c : cs) {
+      Spot s = this.Corners.get(c).get(bigHexRadiusMax);
+      vertex(s.X, s.Y);
     }
-    Collections.reverse(Arrays.asList(hcs));
+    Collections.reverse(Arrays.asList(cs));
 
     beginContour();
-    for (HexCornerRotated hc : hcs) {
-      Spot c = this.Corners.get(hc).get(bigHexRadiusMin);
-      vertex(c.X, c.Y);
+    for (CircleCrossing c : cs) {
+      Spot s = this.Corners.get(c).get(bigHexRadiusMin);
+      vertex(s.X, s.Y);
     }
     endContour();
     endShape(CLOSE);

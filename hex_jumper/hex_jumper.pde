@@ -76,7 +76,7 @@ int maxDroplets = 100;
 int addDropletChances = 5;
 int addDropletOdds = 10;
 int dropletAlphaStart = 255;
-int dropletAlphaStop = 50;
+int dropletAlphaStop = 5;
 
 
 color[] colors = new color[]{#FFFFFF, // White first for easier random control.
