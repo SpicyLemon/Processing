@@ -3,8 +3,8 @@ import java.util.Collections;
 import java.util.Arrays;
 
 GifMaker gifExport;
-int gifFrameLimit = 1500;
-int gifFrameRate = 30; // fps
+int gifFrameLimit = 500;
+int gifFrameRate = 15; // fps
 boolean saveGif = false;
 
 Spot[][] centers;
@@ -63,10 +63,10 @@ color drawBigHexesRadiusMaxColor = #666666;
 boolean drawBigHexes = false;
 color drawBigHexesColor = #222222;
 
-float hexRadius = 80;
-float vertexRadius = 15;
-int bigHexRadiusMin = 5;
-int bigHexRadiusMax = 48;
+float hexRadius = 40;
+float vertexRadius = 10;
+int bigHexRadiusMin = 3;
+int bigHexRadiusMax = 25;
 
 int changeVertexOdds = 2;
 int changeRotDirOdds = 5;
@@ -74,8 +74,8 @@ int changeBigHexOdds = 10;
 
 int jumperCount = 36;
 boolean jumperHeadFirst = false;
-float jumperHeadStroke = 100;
-float jumperTailStroke = 5;
+float jumperHeadStroke = 50;
+float jumperTailStroke = 3;
 int jumperHeadAlpha = 255;
 int jumperTailAlpha = 50;
 int jumperTailLength = 17;
@@ -87,7 +87,6 @@ int addDropletOdds = 10;
 int dropletAlphaStart = 255;
 int dropletAlphaStop = 5;
 
-
 color[] colors = new color[]{#FFFFFF, // White first for easier random control.
   #FF0000, #0000FF, #00FF00, #FFFF00, #FF00FF, #00FFFF,
   #AA0000, #0000AA, #00AA00, #AAAA00, #AA00AA, #00AAAA,
@@ -96,7 +95,7 @@ color[] colors = new color[]{#FFFFFF, // White first for easier random control.
 };
 
 void setup() {
-  fullScreen();
+  size(600, 600);
   frameRate(15);
   
   // Set up the gif exporter.
@@ -228,7 +227,7 @@ void setup() {
   }
   dropletFrameCounts = new int[radCount];
   for (int r = 0; r < radCount; r++) {
-    dropletFrameCounts[r] = int(map(r, 0, radCount-1, 1, 5));
+    dropletFrameCounts[r] = int(map(r, 0, radCount-1, 1, 6));
   }
 }
 
