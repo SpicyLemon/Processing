@@ -63,10 +63,10 @@ color drawBigHexesRadiusMaxColor = #666666;
 boolean drawBigHexes = false;
 color drawBigHexesColor = #222222;
 
-float hexRadius = 40;
-float vertexRadius = 5;
-int bigHexRadiusMin = 4;
-int bigHexRadiusMax = 24;
+float hexRadius = 80;
+float vertexRadius = 15;
+int bigHexRadiusMin = 8;
+int bigHexRadiusMax = 48;
 
 int keepVertexOdds = 3;
 int changeRotDirOdds = 5;
@@ -74,8 +74,8 @@ int changeBigHexOdds = 20;
 
 int jumperCount = 36;
 boolean jumperHeadFirst = false;
-float jumperHeadStroke = 45;
-float jumperTailStroke = 3;
+float jumperHeadStroke = 100;
+float jumperTailStroke = 5;
 int jumperHeadAlpha = 255;
 int jumperTailAlpha = 50;
 int jumperTailLength = 17;
@@ -93,7 +93,7 @@ color[] colors = new color[]{#FFFFFF, // White first for easier random control.
 };
 
 void setup() {
-  size(600, 600);
+  fullScreen();
   frameRate(6);
   
   // Set up the gif exporter.
