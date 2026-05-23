@@ -2,13 +2,13 @@ import java.util.Collections;
 import java.util.Arrays;
 
 Spot[][] centers;
-SparseGrid<Vertex> vertexGrid;
 SparseGrid<ArrayList<Vertex>> vertexLayers;
 ArrayList<Vertex> vertices;
 SparseGrid<BigHex> bigHexGrid;
 ArrayList<BigHex> bigHexes;
 ArrayList<Droplet> droplets;
 color[][] dropletGradients;
+HashMap<Integer, Integer> dropletGradientIndexMap;
 int[] dropletFrameCounts;
 float sqrt34, sqrt3;
 float offsetX, offsetY;
@@ -42,7 +42,7 @@ color drawCirclesColor = #222222;
 boolean drawCircleCenters = false;
 color drawCircleCentersColor = #0000FF;
 
-boolean drawVertices = true;
+boolean drawVertices = false;
 color drawVerticesColor = #444444;
 
 boolean drawVertexPaths = false;
@@ -60,11 +60,11 @@ color drawBigHexesColor = #222222;
 float hexRadius = 80;
 float vertexRadius = 15;
 int bigHexRadiusMin = 5;
-int bigHexRadiusMax = 55;
+int bigHexRadiusMax = 48;
 
-int changeVertexOdds = 3;
-int changeRotDirOdds = 15;
-int changeBigHexOdds = 25;
+int changeVertexOdds = 2;
+int changeRotDirOdds = 5;
+int changeBigHexOdds = 10;
 
 int jumperCount = 36;
 boolean jumperHeadFirst = false;
@@ -74,7 +74,7 @@ int jumperHeadAlpha = 255;
 int jumperTailAlpha = 50;
 int jumperTailLength = 17;
 
-boolean drawDroplets = false;
+boolean drawDroplets = true;
 int maxDroplets = 100;
 int addDropletChances = 5;
 int addDropletOdds = 10;
@@ -138,57 +138,6 @@ void setup() {
     println("Viewable Y:", yLimMin, "to", yLimMax);
   }
   
-  // Calculcate all of the hex vertices.
-  vertexGrid = new SparseGrid<>();
-  for (Spot[] spots : centers) {
-    for (Spot center : spots) {
-      for (CircleCrossing dir : CircleCrossing.values()) { 
-        Spot s = CalculateVertexSpot(center, dir);
-        if (IsVisable(s)) {
-          vertexGrid.Set(s.IndexX, s.IndexY, new Vertex(s));
-        }
-      }
-    }
-  }
-  if (DEBUG) {
-    for (Vertex vertex : vertexGrid.GetAll()) {
-      println("vertexGrid["+vertex.IndexY+"]["+vertex.IndexX+"]: ("+vertex.X+", "+vertex.Y+")");
-    }
-  }
-  
-  // Wire all the Vertices together.
-  for (Integer y : vertexGrid.GetYs()) {
-    for (Integer x : vertexGrid.GetXs(y)) {
-      Vertex primary = vertexGrid.Get(x, y);
-      Spot pSpot = primary.AsSpot();
-      for (CircleCrossing cc : CircleCrossing.values()) {
-        Spot oSpot = CalculateVertexSpot(pSpot, cc);
-        Vertex other = vertexGrid.Get(int(oSpot.X+0.5), int(oSpot.Y+0.5));
-        if (other != null) {
-          primary.WithNeighbor(cc, other);
-          other.WithNeighbor(cc.Opposite(), primary);
-        }
-      }
-    }
-  }
-  
-  // Remove any vertices that have fewer than 2 neighbors.
-  for (Vertex vertex : vertexGrid.GetAll()) {
-    if (vertex.Neighbors.size() < 2) {
-      vertexGrid.Delete(vertex.IndexX, vertex.IndexY);
-      for (CircleCrossing cc : CircleCrossing.values()) {
-        Vertex other = vertex.Go(cc);
-        if (other != null) {
-          vertex.Neighbors.remove(cc);
-          other.Neighbors.remove(cc.Opposite());
-        }
-      }
-    }
-  }
-
-  vertices = vertexGrid.GetAll();
-  Collections.sort(vertices);
-  
   vertexLayers = new SparseGrid<ArrayList<Vertex>>();
   for (int i = 0; i < centers.length; i++) {
     for (int j = 0; j < centers[i].length; j++) {
@@ -230,26 +179,14 @@ void setup() {
     vertices.addAll(nested);
   }
   Collections.sort(vertices);
-
   
   bigHexGrid = new SparseGrid<BigHex>();
-  for (int i = 0; i < centers.length; i++) {
-    for (int j = 0; j < centers[i].length; j++) {
-      Spot center = centers[i][j];
-      boolean include = true;
-      for (CircleCrossing cc : CircleCrossing.values()) {
-        Spot corner = CalculateVertexSpot(center, cc);
-        if (!IsVisable(corner)) {
-          include = false;
-          break;
-        }
-      }
-      
-      if (include) {
-        BigHex bh = new BigHex(center, bigHexRadiusMin, bigHexRadiusMax);
-        bigHexGrid.Set(center.IndexX, center.IndexY, bh);
-      }
+  for (Vertex v : vertices) {
+    if (bigHexGrid.Has(v)) {
+      continue;
     }
+    BigHex bh = new BigHex(v.AsSpot(), bigHexRadiusMin, bigHexRadiusMax);
+    bigHexGrid.Set(v, bh);  
   }
   
   bigHexes = bigHexGrid.GetAll();
@@ -257,17 +194,19 @@ void setup() {
   
   jumpers = new Jumper[jumperCount];
   for (int i = 0; i < jumpers.length; i++) {
-    // Pick a random first color (that isn't black).
-    int c1 = 0; //int(random(colors.length-1));
-    // Pick a random second color by adding a random number to the first.
-    int c2 = (i % (colors.length - 2)) + 1; // (c1 + int(random(colors.length-1)) + 1) % colors.length;
+    // Make the first color white.
+    int c1 = 0;
+    // Pick a random second color that isn't black.
+    int c2 = (i % (colors.length - 2)) + 1;
     jumpers[i] = newRandomJumper(colors[c1], colors[c2]);
   }
   
   droplets = new ArrayList<Droplet>();
   int radCount = bigHexRadiusMax - bigHexRadiusMin + 1;
   dropletGradients = new color[colors.length][radCount];
+  dropletGradientIndexMap = new HashMap<Integer, Integer>();
   for (int c = 0; c < colors.length; c++) {
+    dropletGradientIndexMap.put(colors[c], c); 
     for (int r = 0; r < radCount; r++) {
       int alpha = int(map(r, 0, radCount-1, dropletAlphaStart, dropletAlphaStop));
       dropletGradients[c][r] = setAlpha(colors[c], alpha);
@@ -293,23 +232,11 @@ void draw() {
     }
   }
   
-  if (drawDroplets) {
-    if (droplets.size() < maxDroplets) {
-      for (int i = 0; i < addDropletChances; i++) {
-        if (int(random(addDropletOdds)) == 0) {
-          BigHex home = bigHexes.get(int(random(bigHexes.size())));
-          int c = 1 + (int(random(colors.length-2)));
-          droplets.add(new Droplet(home, dropletGradients[c], dropletFrameCounts));
-          if (droplets.size() >= maxDroplets) {
-            break;
-          }
-        }
-      }
-    }
-  }
-  
   for (Jumper jumper : jumpers) {
-    jumper.Move();
+    Droplet droplet = jumper.Move();
+    if (drawDroplets && droplet != null) {
+      droplets.add(droplet);
+    }
   }
   
   noFill();
@@ -424,4 +351,12 @@ Jumper newRandomJumper(color headColor, color tailColor) {
 
 color setAlpha(color col, int alpha) {
   return (col & 0x00FFFFFF) | ((alpha & 0xFF) << 24);
+}
+
+color[] GetDropletGradient(color col) {
+  Integer i = dropletGradientIndexMap.get(col);
+  if (i == null) {
+    return null;
+  }
+  return dropletGradients[i];
 }

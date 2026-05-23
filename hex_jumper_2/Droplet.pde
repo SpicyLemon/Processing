@@ -6,6 +6,10 @@ class Droplet {
   int Radius;
   int FramesLeft;
   
+  Droplet(BigHex home, color baseColor) {
+    this(home, GetDropletGradient(baseColor), dropletFrameCounts);
+  }
+  
   Droplet(BigHex home, color[] gradient, int[] frameCounts) {
     this.Home = home;
     this.Gradient = gradient;

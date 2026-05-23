@@ -308,12 +308,12 @@ class Vertex implements Comparable<Vertex> {
 
 class BigHex implements Comparable<BigHex> {
   Spot Center;
-  HashMap<CircleCrossing, HashMap<Integer, Spot>> Corners;
+  HashMap<HexCornerRotated, HashMap<Integer, Spot>> Corners;
 
   BigHex(Spot center, int minRadius, int maxRadius) {
     this.Center = center;
-    this.Corners = new HashMap<CircleCrossing, HashMap<Integer, Spot>>();
-    for (CircleCrossing c : CircleCrossing.values()) {
+    this.Corners = new HashMap<HexCornerRotated, HashMap<Integer, Spot>>();
+    for (HexCornerRotated c : HexCornerRotated.values()) {
       this.Corners.put(c, new HashMap<Integer, Spot>());
       for (int r = minRadius; r <= maxRadius; r++) {
         this.Corners.get(c).put(r, CalculateRadialSpot(this.Center.X, this.Center.Y, c.Radians(), r));
@@ -321,7 +321,7 @@ class BigHex implements Comparable<BigHex> {
     }
   }
   
-  Spot GetCorner(CircleCrossing c, int radius) {
+  Spot GetCorner(HexCornerRotated c, int radius) {
     Spot rv = this.Corners.get(c).get(radius);
     if (rv != null) {
       return rv;
@@ -338,7 +338,7 @@ class BigHex implements Comparable<BigHex> {
 
   BigHex DrawBorder(int radius) {
     beginShape();
-    for (CircleCrossing c : CircleCrossing.values()) {
+    for (HexCornerRotated c : HexCornerRotated.values()) {
       Spot s = this.Corners.get(c).get(radius);
       vertex(s.X, s.Y);
     }
@@ -348,15 +348,15 @@ class BigHex implements Comparable<BigHex> {
   
   BigHex Draw() {
     beginShape();
-    CircleCrossing[] cs = CircleCrossing.values();
-    for (CircleCrossing c : cs) {
+    HexCornerRotated[] cs = HexCornerRotated.values();
+    for (HexCornerRotated c : cs) {
       Spot s = this.Corners.get(c).get(bigHexRadiusMax);
       vertex(s.X, s.Y);
     }
     Collections.reverse(Arrays.asList(cs));
 
     beginContour();
-    for (CircleCrossing c : cs) {
+    for (HexCornerRotated c : cs) {
       Spot s = this.Corners.get(c).get(bigHexRadiusMin);
       vertex(s.X, s.Y);
     }

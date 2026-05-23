@@ -6,6 +6,7 @@ class Jumper {
   int HistoryI;
   color[] Gradient;
   float strokeMult;
+  color Col;
 
   Jumper(Vertex home, int jumperTailLength) {
     this.Home = home;
@@ -21,6 +22,7 @@ class Jumper {
       this.Gradient[i] = lerpColor(tailColor, headColor, (float)i / (float)(jumperTailLength-1));
       this.Gradient[i] = setAlpha(this.Gradient[i], int(map(i, 0, jumperTailLength, jumperTailAlpha, jumperHeadAlpha)));
     }
+    this.Col = tailColor;
     return this;
   }
   
@@ -47,7 +49,8 @@ class Jumper {
     return this;
   }
   
-  Jumper Move() {
+  Droplet Move() {
+    Droplet rv = null;
     if (int(random(changeBigHexOdds)) == 0) {
       ArrayList<Vertex> options = vertexLayers.Get(this.Home);
       this.Home = options.get(int(random(options.size())));
@@ -55,6 +58,7 @@ class Jumper {
     
     Vertex neighbor = this.Home.Go(this.Corner.Rot90(this.RotDir));
     if (neighbor != null && int(random(changeVertexOdds)) == 0) {
+      rv = new Droplet(bigHexGrid.Get(this.Home), this.Col);
       this.Home = neighbor;
       if (int(random(changeRotDirOdds)) == 0) {
         this.Corner = this.Corner.Opposite();
@@ -65,7 +69,7 @@ class Jumper {
     }
     this.HistoryI = (this.HistoryI + 1) % this.History.length;
     this.History[this.HistoryI] = this.Home.GetBorderSpot(this.Corner);
-    return this;
+    return rv;
   }
   
   Jumper Draw() {
