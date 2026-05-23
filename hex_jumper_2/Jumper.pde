@@ -57,7 +57,7 @@ class Jumper {
     }
     
     Vertex neighbor = this.Home.Go(this.Corner.Rot90(this.RotDir));
-    if (neighbor != null && int(random(changeVertexOdds)) == 0) {
+    if (neighbor != null && int(random(keepVertexOdds)) != 0) {
       rv = new Droplet(bigHexGrid.Get(this.Home), this.Col);
       this.Home = neighbor;
       if (int(random(changeRotDirOdds)) == 0) {
