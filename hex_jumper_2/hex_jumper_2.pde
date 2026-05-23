@@ -70,7 +70,7 @@ int bigHexRadiusMax = 48;
 
 int changeVertexOdds = 2;
 int changeRotDirOdds = 5;
-int changeBigHexOdds = 10;
+int changeBigHexOdds = 20;
 
 int jumperCount = 36;
 boolean jumperHeadFirst = false;
