@@ -1,5 +1,11 @@
+import gifAnimation.*;
 import java.util.Collections;
 import java.util.Arrays;
+
+GifMaker gifExport;
+int gifFrameLimit = 1500;
+int gifFrameRate = 30; // fps
+boolean saveGif = false;
 
 Spot[][] centers;
 SparseGrid<ArrayList<Vertex>> vertexLayers;
@@ -92,6 +98,14 @@ color[] colors = new color[]{#FFFFFF, // White first for easier random control.
 void setup() {
   fullScreen();
   frameRate(15);
+  
+  // Set up the gif exporter.
+  if (saveGif) {
+    gifExport = new GifMaker(this, "hex-jumper-2.gif");
+    gifExport.setRepeat(0); // Loop forever.
+    gifExport.setDelay(1000/gifFrameRate);
+  }
+  
   // sqrt(3/4) is important here because:
   // 1. A hex can be thought of as six equaliateral triangles.
   // 2. An equilateral triangle cut in half is a 30-60-90 triangle.
@@ -314,6 +328,20 @@ void draw() {
   for (int i = 0; i < jumperTailLength; i++) {
     for (Jumper jumper : jumpers) {
       jumper.DrawI(i);
+    }
+  }
+  
+  if (saveGif) {
+    // Add this frame to the gif.
+    if (frameCount <= gifFrameLimit) {
+      gifExport.addFrame();
+    }
+    
+    // Finish and save.
+    if (frameCount == gifFrameLimit) {
+      gifExport.finish();
+      println("GIF saved!");
+      exit();
     }
   }
 }
