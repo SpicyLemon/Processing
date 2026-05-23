@@ -229,7 +229,7 @@ void setup() {
   }
   dropletFrameCounts = new int[radCount];
   for (int r = 0; r < radCount; r++) {
-    dropletFrameCounts[r] = int(map(r, 0, radCount-1, 1, 6));
+    dropletFrameCounts[r] = int(map(r, 0, radCount-1, 1, 5));
   }
 }
 
