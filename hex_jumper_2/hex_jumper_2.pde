@@ -65,11 +65,11 @@ color drawBigHexesColor = #222222;
 
 float hexRadius = 80;
 float vertexRadius = 15;
-int bigHexRadiusMin = 10;
-int bigHexRadiusMax = 47;
+int bigHexRadiusMin = 5;
+int bigHexRadiusMax = 48;
 
-int changeVertexOdds = 3;
-int changeRotDirOdds = 4;
+int changeVertexOdds = 2;
+int changeRotDirOdds = 5;
 int changeBigHexOdds = 3;
 
 int jumperCount = 36;
@@ -83,7 +83,7 @@ int jumperTailLength = 17;
 boolean drawDroplets = true;
 int dropletAlphaStart = 255;
 int dropletAlphaStop = 5;
-int dropletMaxFrames = 5;
+int dropletMaxFrames = 4;
 
 color[] colors = new color[]{#FFFFFF, // White first for easier random control.
   #FF0000, #0000FF, #00FF00, #FFFF00, #FF00FF, #00FFFF,
@@ -139,7 +139,9 @@ void setup() {
   }
   offsetX = (width - fullWidth) / 2;
   offsetY = (height - fullHeight) / 2;
-  println("Offset:", offsetX, "x", offsetY);
+  if (DEBUG) {
+    println("Offset:", offsetX, "x", offsetY);
+  }
   xLimMin = -offsetX;
   xLimMax = xLimMin + width;
   yLimMin = -offsetY;
@@ -326,6 +328,10 @@ void draw() {
     for (Jumper jumper : jumpers) {
       jumper.DrawI(i);
     }
+  }
+  
+  if (DEBUG) {
+    println("FPS:", frameRate);
   }
   
   if (saveGif) {

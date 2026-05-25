@@ -3,8 +3,8 @@ import java.util.Collections;
 import java.util.Arrays;
 
 GifMaker gifExport;
-int gifFrameLimit = 1500;
-int gifFrameRate = 15; // fps
+int gifFrameLimit = 500;
+int gifFrameRate = 6; // fps
 boolean saveGif = false;
 
 Spot[][] centers;
@@ -70,7 +70,7 @@ int bigHexRadiusMax = 48;
 
 int changeVertexOdds = 2;
 int changeRotDirOdds = 5;
-int changeBigHexOdds = 20;
+int changeBigHexOdds = 3;
 
 int jumperCount = 36;
 boolean jumperHeadFirst = false;
