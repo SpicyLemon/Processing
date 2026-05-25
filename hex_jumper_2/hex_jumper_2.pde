@@ -65,12 +65,12 @@ color drawBigHexesColor = #222222;
 
 float hexRadius = 80;
 float vertexRadius = 15;
-int bigHexRadiusMin = 8;
-int bigHexRadiusMax = 48;
+int bigHexRadiusMin = 10;
+int bigHexRadiusMax = 47;
 
-int keepVertexOdds = 3;
-int changeRotDirOdds = 5;
-int changeBigHexOdds = 20;
+int changeVertexOdds = 3;
+int changeRotDirOdds = 4;
+int changeBigHexOdds = 3;
 
 int jumperCount = 36;
 boolean jumperHeadFirst = false;
@@ -83,7 +83,7 @@ int jumperTailLength = 17;
 boolean drawDroplets = true;
 int dropletAlphaStart = 255;
 int dropletAlphaStop = 5;
-int dropletMaxFrames = 6;
+int dropletMaxFrames = 5;
 
 color[] colors = new color[]{#FFFFFF, // White first for easier random control.
   #FF0000, #0000FF, #00FF00, #FFFF00, #FF00FF, #00FFFF,

@@ -50,19 +50,18 @@ class Jumper {
   }
   
   Droplet Move() {
-    Droplet rv = null;
-    if (int(random(changeBigHexOdds)) == 0) {
-      ArrayList<Vertex> options = vertexLayers.Get(this.Home);
-      this.Home = options.get(int(random(options.size())));
-    }
-    
+    Droplet rv = null;    
     Vertex neighbor = this.Home.Go(this.Corner.Rot90(this.RotDir));
-    if (neighbor != null && int(random(keepVertexOdds)) != 0) {
+    if (neighbor != null && int(random(changeVertexOdds)) == 0) {
       rv = new Droplet(bigHexGrid.Get(this.Home), this.Col);
       this.Home = neighbor;
       if (int(random(changeRotDirOdds)) == 0) {
         this.Corner = this.Corner.Opposite();
         this.RotDir = this.RotDir.Reverse();
+        if (int(random(changeBigHexOdds)) == 0) {
+          ArrayList<Vertex> options = vertexLayers.Get(this.Home);
+          this.Home = options.get(int(random(options.size())));
+        }
       }
     } else {
       this.Corner = this.Corner.Next(this.RotDir);
