@@ -65,30 +65,30 @@ color drawBigHexesColor = #222222;
 
 float hexRadius = 80;
 float vertexRadius = 15;
-int bigHexRadiusMin = 5;
+int bigHexRadiusMin = 15;
 int bigHexRadiusMax = 48;
 
 int changeVertexOdds = 2;
 int changeRotDirOdds = 5;
 int changeBigHexOdds = 3;
 
-int jumperCount = 36;
+int jumperCount = 54;
 boolean jumperHeadFirst = false;
 float jumperHeadStroke = 100;
 float jumperTailStroke = 5;
 int jumperHeadAlpha = 255;
-int jumperTailAlpha = 50;
-int jumperTailLength = 17;
+int jumperTailAlpha = 120;
+int jumperTailLength = 13;
 
 boolean drawDroplets = true;
 int dropletAlphaStart = 255;
 int dropletAlphaStop = 5;
-int dropletMaxFrames = 4;
+int dropletMaxFrames = 5;
 
 color[] colors = new color[]{#FFFFFF, // White first for easier random control.
   #FF0000, #0000FF, #00FF00, #FFFF00, #FF00FF, #00FFFF,
-  #AA0000, #0000AA, #00AA00, #AAAA00, #AA00AA, #00AAAA,
   #FFAA00, #AAFF00, #FF00AA, #AA00FF, #00FFAA, #00AAFF,
+  #AA0000, #0000AA, #00AA00, #AAAA00, #AA00AA, #00AAAA,
   #000000, // Black last for easier random control.
 };
 
@@ -209,7 +209,7 @@ void setup() {
   for (int i = 0; i < jumpers.length; i++) {
     // Make the first color white.
     int c1 = 0;
-    // Pick a random second color that isn't black.
+    // Pick a random second color that isn't white or black.
     int c2 = (i % (colors.length - 2)) + 1;
     jumpers[i] = newRandomJumper(colors[c1], colors[c2]);
   }
