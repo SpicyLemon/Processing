@@ -6,10 +6,15 @@ SparseGrid<Vertex> vertexGrid;
 SparseGrid<Vertex> centerGrid;
 ArrayList<Vertex> vertices;
 ArrayList<Vertex> centerVertices;
-Crawler[] crawlers;
+color[][] dropletGradients;
+HashMap<Integer, Integer> dropletGradientIndexMap;
+int[] dropletFrameCounts;
+color[] colors;
 float offsetX, offsetY;
 int hCount, vCount;
 float xLimMin, xLimMax, yLimMin, yLimMax;
+Crawler[] crawlers;
+ArrayList<Droplet> droplets;
 
 // Angles corresponding to where the circles intersect to form the corners
 // of the primary hexes that make up the grid.
@@ -29,23 +34,31 @@ static float PI_7_6 = PI * 7.0 / 6.0;   // top left corner
 static float PI_3_2 = PI + HALF_PI;     // top
 static float PI_11_6 = PI * 11.0 / 6.0; // top right corner
 
-boolean DEBUG = false;
+boolean DEBUG = true;
 boolean OUTPUT_FPS = false;
 
-float hexRadius = 60;
-int dropletRadiusMin = 5;
-int dropletRadiusMax = 20;
+float hexRadius = 35;
 int centerRadiusMin = 1;
 int centerRadiusMax = 50;
+int dropletRadiusMin = 5;
+int dropletRadiusMax = 40;
+int dropletAlphaStart = 255;
+int dropletAlphaStop = 10;
+int dropletMaxFrames = 8;
 float crawlerWeight = 5;
-float crawlerSpeed = 5;
+float crawlerSpeed = 2;
 int crawlersPerColor = 2;
+int colorsBetweenBases = 3;
 
-color[] colors = new color[]{
-  #FF0000, #00FF00, #0000FF, #FFFF00, #FF00FF, #00FFFF,
-  #FFAA00, #FF00AA, #AAFF00, #00FFAA, #AA00FF, #00AAFF,
-  #AA0000, #00AA00, #0000AA, #AAAA00, #AA00AA, #00AAAA,
+color[] baseColors = new color[]{
+  #FF0000, // Red
+  #FFFF00, // Yellow
+  #00FF00, // Green
+  #00FFFF, // Cyan
+  #0000FF, // Blue
+  #FF00FF, // Magenta
 };
+boolean loopBaseColors = true;
 
 boolean drawCircles = false;
 color drawCirclesColor = #FFFFFF;
@@ -58,17 +71,17 @@ boolean drawVertices = false;
 float drawVerticesRadius = 3;
 color drawVerticesColor = #00FF00;
 
-boolean drawVertexPaths = true;
+boolean drawVertexPaths = false;
 color drawVertexPathsColor = #FF00AA;
 float drawVertexPathsLength = 6;
 float drawVertexPathsStart = 5;
 
-boolean drawOtherPaths = true;
+boolean drawOtherPaths = false;
 color drawOtherPathsColor = #00FF00;
 float drawOtherPathsLength = 6;
 float drawOtherPathsStart = 5;
 
-boolean drawVertexHexes = true;
+boolean drawVertexHexes = false;
 color drawVertexHexesFill = setAlpha(#FF0000, 75);
 color drawVertexHexesBorder = #FF0000;
 
@@ -78,7 +91,7 @@ color drawVertexHexesMinColor = #FF0000;
 boolean drawVertexHexesMax = false;
 color drawVertexHexesMaxColor = #AA0000;
 
-boolean drawCenterHexes = true;
+boolean drawCenterHexes = false;
 color drawCenterHexesFill = setAlpha(#00FF00, 75);
 color drawCenterHexesBorder = #00FF00;
 
@@ -87,6 +100,9 @@ color drawCenterHexesMinColor = #0000FF;
 
 boolean drawCenterHexesMax = false;
 color drawCenterHexesMaxColor = #AA00FF;
+
+boolean drawCrawlers = false;
+boolean drawDroplets = true;
 
 void setup() {
   size(600, 600);
@@ -222,6 +238,56 @@ void setup() {
     v.WithCorners(centerRadiusMin, centerRadiusMax);
   }
   
+  // Define the actual colors that will be used.
+  if (loopBaseColors) {
+    colors = new color[baseColors.length*(colorsBetweenBases + 1)];
+    int idx = 0;
+    for (int c = 0; c < baseColors.length; c++) {
+      color c1 = baseColors[c];
+      color c2 = baseColors[(c+1) % baseColors.length];
+      colors[idx++] = c1;
+      for (int n = 1; n <= colorsBetweenBases; n++) {
+        colors[idx++] = lerpColor(c1, c2, (float)n / (colorsBetweenBases+1));
+      }
+    }
+  } else {
+    colors = new color[baseColors.length+(baseColors.length-1)*colorsBetweenBases];
+    int idx = 0;
+    for (int c = 0; c < baseColors.length - 1; c++) {
+      color c1 = baseColors[c];
+      color c2 = baseColors[c+1];
+      colors[idx++] = c1;
+      for (int n = 1; n <= colorsBetweenBases; n++) {
+        colors[idx++] = lerpColor(c1, c2, (float)n/(colorsBetweenBases+1));
+      }
+    }
+    colors[idx] = baseColors[baseColors.length-1];
+  }
+  
+  if (DEBUG) {
+    println("There are", colors.length, "colors");
+    for (int i = 0; i < colors.length; i++) {
+      println("colors[" + i + "] = " + hex(colors[i]));
+    }
+  }
+  
+  // Pre-calc all the gradients that the droplets will use.
+  droplets = new ArrayList<Droplet>();
+  int radCount = dropletRadiusMax - dropletRadiusMin + 1;
+  dropletGradients = new color[colors.length][radCount];
+  dropletGradientIndexMap = new HashMap<Integer, Integer>();
+  for (int c = 0; c < colors.length; c++) {
+    dropletGradientIndexMap.put(colors[c], c); 
+    for (int r = 0; r < radCount; r++) {
+      int alpha = int(map(r, 0, radCount-1, dropletAlphaStart, dropletAlphaStop));
+      dropletGradients[c][r] = setAlpha(colors[c], alpha);
+    }
+  }
+  dropletFrameCounts = new int[radCount];
+  for (int r = 0; r < radCount; r++) {
+    dropletFrameCounts[r] = int(map(r, 0, radCount-1, 1, dropletMaxFrames));
+  }
+  
   // Now create the crawlers.
   crawlers = new Crawler[colors.length*crawlersPerColor];
   for (int n = 0; n < crawlersPerColor; n++) {
@@ -234,9 +300,22 @@ void setup() {
 void draw() {
   background(0);
   translate(offsetX, offsetY);
+
+  for (Droplet droplet : droplets) {
+    droplet.Move();
+  }
+  
+  for (int i = droplets.size()-1; i >= 0; i--) {
+    if (droplets.get(i).IsDone()) {
+      droplets.remove(i);
+    }
+  }
   
   for (Crawler crawler : crawlers) {
-    crawler.Move();
+    Droplet droplet = crawler.Move();
+    if (droplet != null && drawDroplets) {
+      droplets.add(droplet);
+    }
   }
 
   noFill();
@@ -329,8 +408,14 @@ void draw() {
     drawPaths(centerVertices, drawOtherPathsStart, drawOtherPathsLength, vg);
   }
   
-  for (Crawler crawler : crawlers) {
-    crawler.Draw();
+  for (Droplet droplet : droplets) {
+    droplet.Draw();
+  }
+  
+  if (drawCrawlers) {
+    for (Crawler crawler : crawlers) {
+      crawler.Draw();
+    }
   }
   
   if (OUTPUT_FPS) {
@@ -380,6 +465,14 @@ int indexVal(float val) {
 
 boolean roughlyEqual(float x, float y) {
   return abs(x - y) < 0.001;
+}
+
+color[] GetDropletGradient(color col) {
+  Integer i = dropletGradientIndexMap.get(col);
+  if (i == null) {
+    return null;
+  }
+  return dropletGradients[i];
 }
 
 interface VertexGetter {

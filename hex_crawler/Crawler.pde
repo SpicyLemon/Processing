@@ -43,13 +43,15 @@ class Crawler {
     return this;
   }
 
-  Crawler Move() {
+  Droplet Move() {
     this.HeadLen += crawlerSpeed;
     this.TailLen -= crawlerSpeed;
 
+    Vertex newDropletAround = null;
     if (this.HeadLen >= hexRadius) {
       this.HeadLen -= hexRadius;
       this.TailLen += hexRadius;
+      newDropletAround = this.Tail;
       this.TailDir = this.HeadToTail;
       this.Tail = this.Head;
       this.Head = this.Head.Go(this.HeadDir);
@@ -60,7 +62,11 @@ class Crawler {
     this._Nose = CalculateRadialSpot(this.Head, this.HeadDir, this.HeadLen);
     this._TailTip = CalculateRadialSpot(this.Tail, this.TailDir, this.TailLen);
 
-    return this;
+    if (newDropletAround == null) {
+      return null;
+    }
+    
+    return new Droplet(newDropletAround, this.Gradient[0]);
   }
   
   Crawler DrawSimple() {
