@@ -6,6 +6,7 @@ SparseGrid<Vertex> vertexGrid;
 SparseGrid<Vertex> centerGrid;
 ArrayList<Vertex> vertices;
 ArrayList<Vertex> centerVertices;
+Crawler[] crawlers;
 float offsetX, offsetY;
 int hCount, vCount;
 float xLimMin, xLimMax, yLimMin, yLimMax;
@@ -28,7 +29,21 @@ static float PI_7_6 = PI * 7.0 / 6.0;   // top left corner
 static float PI_3_2 = PI + HALF_PI;     // top
 static float PI_11_6 = PI * 11.0 / 6.0; // top right corner
 
-boolean DEBUG = true;
+boolean DEBUG = false;
+boolean OUTPUT_FPS = false;
+
+float hexRadius = 60;
+int dropletRadiusMin = 5;
+int dropletRadiusMax = 20;
+int centerRadiusMin = 1;
+int centerRadiusMax = 50;
+float crawlerWeight = 5;
+float crawlerSpeed = 5;
+int crawlersPerColor = 3;
+
+color[] colors = new color[]{
+  #FF0000, #00FF00, #0000FF, #FFFF00, #FF00FF, #00FFFF,
+};
 
 boolean drawCircles = false;
 color drawCirclesColor = #FFFFFF;
@@ -70,12 +85,6 @@ color drawCenterHexesMinColor = #0000FF;
 
 boolean drawCenterHexesMax = false;
 color drawCenterHexesMaxColor = #AA00FF;
-
-float hexRadius = 60;
-int dropletRadiusMin = 5;
-int dropletRadiusMax = 20;
-int centerRadiusMin = 1;
-int centerRadiusMax = 50;
 
 void setup() {
   size(600, 600);
@@ -210,11 +219,23 @@ void setup() {
   for (Vertex v : centerVertices) {
     v.WithCorners(centerRadiusMin, centerRadiusMax);
   }
+  
+  // Now create the crawlers.
+  crawlers = new Crawler[colors.length*crawlersPerColor];
+  for (int n = 0; n < crawlersPerColor; n++) {
+    for (int c = 0; c < colors.length; c++) {
+      crawlers[n*colors.length+c] = NewRandomCrawler(colors[c]);
+    }
+  }
 }
 
 void draw() {
   background(0);
   translate(offsetX, offsetY);
+  
+  for (Crawler crawler : crawlers) {
+    crawler.Move();
+  }
 
   noFill();
   strokeWeight(1);
@@ -306,11 +327,30 @@ void draw() {
     drawPaths(centerVertices, drawOtherPathsStart, drawOtherPathsLength, vg);
   }
   
-  noLoop();
+  for (Crawler crawler : crawlers) {
+    crawler.Draw();
+  }
+  
+  if (OUTPUT_FPS) {
+    println("FPS:", frameRate);
+  }
+}
+
+void mousePressed() {
+  if (mouseButton == LEFT) {
+    noLoop();
+    redraw();
+  } else if (mouseButton == RIGHT) {
+    loop();
+  }
 }
 
 Spot CalculateRadialSpot(float x, float y, float angle, float radius) {
   return new Spot(x + radius * cos(angle), y + radius * sin(angle));
+}
+
+Spot CalculateRadialSpot(Vertex v, CircleCrossing dir, float radius) {
+  return CalculateRadialSpot(v.X, v.Y, dir.Radians(), radius);
 }
 
 Spot CalculateVertexSpot(Spot center, CircleCrossing dir) {
@@ -358,4 +398,18 @@ void drawPaths(ArrayList<Vertex> vs, float pathStart, float pathLength, VertexGe
       }
     }
   }
+}
+
+Crawler NewRandomCrawler(color tailColor) {
+  Vertex head = vertices.get(int(random(vertices.size())));
+  CircleCrossing headDir = head.RandomNeighborDir();
+  float headLen = random(hexRadius);
+  CircleCrossing headToTail = head.RandomNeighborDir(headDir);
+  Vertex tail = head.Go(headToTail);
+  CircleCrossing tailDir = tail.RandomNeighborDir(headToTail.Opposite());
+  float tailLen = hexRadius - headLen;
+  return new Crawler()
+           .WithColor(#FFFFFF, tailColor, 16)
+           .WithHead(head, headDir, headLen)
+           .WithTail(headToTail, tail, tailDir, tailLen);
 }

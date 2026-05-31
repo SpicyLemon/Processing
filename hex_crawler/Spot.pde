@@ -292,6 +292,26 @@ class Vertex implements Comparable<Vertex> {
   Spot AsSpot() {
     return new Spot(this.X, this.Y).WithIndex(this.IndexX, this.IndexY);
   }
+  
+  CircleCrossing RandomNeighborDir() {
+    return this.RandomNeighborDir(null);
+  }
+
+  CircleCrossing RandomNeighborDir(CircleCrossing notAllowed) {
+    ArrayList<CircleCrossing> options = new ArrayList<CircleCrossing>(this.Neighbors.keySet());
+    if (notAllowed != null) {
+      for (int i = options.size()-1; i >= 0; i--) {
+        if (options.get(i) == notAllowed) {
+          options.remove(i);
+          break;
+        }
+      }
+    }
+    if (options.size() == 1) {
+      return options.get(0);
+    }
+    return options.get(int(random(options.size())));
+  }
 
   @Override
   public int compareTo(Vertex other) {
