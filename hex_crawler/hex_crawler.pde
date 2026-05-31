@@ -39,10 +39,12 @@ int centerRadiusMin = 1;
 int centerRadiusMax = 50;
 float crawlerWeight = 5;
 float crawlerSpeed = 5;
-int crawlersPerColor = 3;
+int crawlersPerColor = 2;
 
 color[] colors = new color[]{
   #FF0000, #00FF00, #0000FF, #FFFF00, #FF00FF, #00FFFF,
+  #FFAA00, #FF00AA, #AAFF00, #00FFAA, #AA00FF, #00AAFF,
+  #AA0000, #00AA00, #0000AA, #AAAA00, #AA00AA, #00AAAA,
 };
 
 boolean drawCircles = false;
