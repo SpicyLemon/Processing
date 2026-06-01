@@ -4,6 +4,7 @@ import java.util.Arrays;
 Spot[][] centers;
 SparseGrid<Vertex> vertexGrid;
 SparseGrid<Vertex> centerGrid;
+SparseGrid<VertexDot> dotGrid;
 ArrayList<Vertex> vertices;
 ArrayList<Vertex> centerVertices;
 color[][] dropletGradients;
@@ -48,8 +49,9 @@ int dropletMaxFrames = 8;
 float crawlerWeight = 5;
 float crawlerSpeed = 2;
 int crawlersPerColor = 2;
-int colorsBetweenBases = 3;
+int vertexDotRadius = 3;
 
+int colorsBetweenBases = 3;
 color[] baseColors = new color[]{
   #FF0000, // Red
   #FFFF00, // Yellow
@@ -60,6 +62,11 @@ color[] baseColors = new color[]{
 };
 boolean loopBaseColors = true;
 
+int vertexDotFramesPerColor = 3;
+color[] vertexDotGradient = new color[]{
+  #000000, #333333, #666666, #999999, #CCCCCC, #FFFFFF
+};
+
 boolean drawCircles = false;
 color drawCirclesColor = #FFFFFF;
 
@@ -68,8 +75,9 @@ float drawCircleCentersRadius = 3;
 color drawCircleCentersColor = #444444;
 
 boolean drawVertices = false;
-float drawVerticesRadius = 3;
-color drawVerticesColor = #00FF00;
+float drawVerticesRadius = 2;
+color drawVerticesColor = #AAAAAA;
+color drawVerticesFill = #AAAAAA;
 
 boolean drawVertexPaths = false;
 color drawVertexPathsColor = #FF00AA;
@@ -101,8 +109,9 @@ color drawCenterHexesMinColor = #0000FF;
 boolean drawCenterHexesMax = false;
 color drawCenterHexesMaxColor = #AA00FF;
 
-boolean drawCrawlers = false;
+boolean drawCrawlers = true;
 boolean drawDroplets = true;
+boolean drawDotGrid = true;
 
 void setup() {
   size(600, 600);
@@ -231,8 +240,9 @@ void setup() {
   }
   
   // Pre-calc all the hexes around the vertices.
+  int vertexRadiusMin = min(dropletRadiusMin, vertexDotRadius);
   for (Vertex v : vertices) {
-    v.WithCorners(dropletRadiusMin, dropletRadiusMax);
+    v.WithCorners(vertexRadiusMin, dropletRadiusMax);
   }
   for (Vertex v : centerVertices) {
     v.WithCorners(centerRadiusMin, centerRadiusMax);
@@ -288,11 +298,20 @@ void setup() {
     dropletFrameCounts[r] = int(map(r, 0, radCount-1, 1, dropletMaxFrames));
   }
   
+  // Create the initial dot grid.
+  dotGrid = new SparseGrid<VertexDot>();
+  for (Vertex vertex : vertices) {
+    dotGrid.Set(vertex, new VertexDot(vertex).FullyOn());
+  }
+  
   // Now create the crawlers.
   crawlers = new Crawler[colors.length*crawlersPerColor];
   for (int n = 0; n < crawlersPerColor; n++) {
     for (int c = 0; c < colors.length; c++) {
-      crawlers[n*colors.length+c] = NewRandomCrawler(colors[c]);
+      Crawler crawler = NewRandomCrawler(colors[c]);
+      crawlers[n*colors.length+c] = crawler;
+      dotGrid.Delete(crawler.Head);
+      dotGrid.Delete(crawler.Tail);
     }
   }
 }
@@ -300,13 +319,20 @@ void setup() {
 void draw() {
   background(0);
   translate(offsetX, offsetY);
+  
+  for (VertexDot vd : dotGrid.GetAll()) {
+    vd.Move();
+  }
 
   for (Droplet droplet : droplets) {
     droplet.Move();
+    dotGrid.Delete(droplet.Home);
   }
   
   for (int i = droplets.size()-1; i >= 0; i--) {
     if (droplets.get(i).IsDone()) {
+      Vertex home = droplets.get(i).Home;
+      dotGrid.Set(home, new VertexDot(home));
       droplets.remove(i);
     }
   }
@@ -315,6 +341,7 @@ void draw() {
     Droplet droplet = crawler.Move();
     if (droplet != null && drawDroplets) {
       droplets.add(droplet);
+      dotGrid.Delete(droplet.Home);
     }
   }
 
@@ -383,9 +410,11 @@ void draw() {
   
   if (drawVertices) {
     stroke(drawVerticesColor);
+    fill(drawVerticesFill);
     for (Vertex vertex : vertices) {
       circle(vertex.X, vertex.Y, drawVerticesRadius*2);
     }
+    noFill();
   }
   
   if (drawVertexPaths) {
@@ -406,6 +435,12 @@ void draw() {
     };
     drawPaths(vertices, drawOtherPathsStart, drawOtherPathsLength, vg);
     drawPaths(centerVertices, drawOtherPathsStart, drawOtherPathsLength, vg);
+  }
+  
+  if (drawDotGrid) {
+    for (VertexDot vd : dotGrid.GetAll()) {
+      vd.Draw();
+    }
   }
   
   for (Droplet droplet : droplets) {
