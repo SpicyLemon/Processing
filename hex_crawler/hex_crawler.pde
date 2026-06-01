@@ -35,17 +35,17 @@ static float PI_7_6 = PI * 7.0 / 6.0;   // top left corner
 static float PI_3_2 = PI + HALF_PI;     // top
 static float PI_11_6 = PI * 11.0 / 6.0; // top right corner
 
-boolean DEBUG = true;
+boolean DEBUG = false;
 boolean OUTPUT_FPS = false;
 
-float hexRadius = 35;
+float hexRadius = 85;
 int centerRadiusMin = 1;
 int centerRadiusMax = 50;
 int dropletRadiusMin = 5;
-int dropletRadiusMax = 40;
+int dropletRadiusMax = 95;
 int dropletAlphaStart = 255;
 int dropletAlphaStop = 10;
-int dropletMaxFrames = 8;
+int dropletMaxFrames = 6;
 float crawlerWeight = 5;
 float crawlerSpeed = 2;
 int crawlersPerColor = 2;
@@ -114,7 +114,7 @@ boolean drawDroplets = true;
 boolean drawDotGrid = true;
 
 void setup() {
-  size(600, 600);
+  fullScreen();
   frameRate(30);
   
   // sqrt(3/4) is important here because:
@@ -331,8 +331,10 @@ void draw() {
   
   for (int i = droplets.size()-1; i >= 0; i--) {
     if (droplets.get(i).IsDone()) {
-      Vertex home = droplets.get(i).Home;
-      dotGrid.Set(home, new VertexDot(home));
+      if (drawDotGrid) {
+        Vertex home = droplets.get(i).Home;
+        dotGrid.Set(home, new VertexDot(home));
+      }
       droplets.remove(i);
     }
   }
