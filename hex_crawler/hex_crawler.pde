@@ -16,6 +16,7 @@ int hCount, vCount;
 float xLimMin, xLimMax, yLimMin, yLimMax;
 Crawler[] crawlers;
 ArrayList<Droplet> droplets;
+int vertexDotBorderColorIdx, vertexDotBorderColorFramesLeft;
 
 // Angles corresponding to where the circles intersect to form the corners
 // of the primary hexes that make up the grid.
@@ -45,14 +46,17 @@ int dropletRadiusMin = 5;
 int dropletRadiusMax = 54;
 int dropletAlphaStart = 255;
 int dropletAlphaStop = 10;
-int dropletMaxFrames = 6;
+int dropletMaxFrames = 5;
 float crawlerWeightHead = 15;
 float crawlerWeightTail = 5;
-float crawlerSpeed = 3;
-int crawlersPerColor = 1;
+float crawlerSpeed = 5;
+int crawlersPerColor = 2;
 int vertexDotRadius = 8;
+float vertexDotBorderWeight = 1.5;
+color vertexDotFillColor = #FFFFFF;
+int vertexDotFramesPerColor = 5;
 
-int colorsBetweenBases = 3;
+int colorsBetweenBases = 1;
 color[] baseColors = new color[]{
   #FF0000, // Red
   #FFFF00, // Yellow
@@ -63,10 +67,8 @@ color[] baseColors = new color[]{
 };
 boolean loopBaseColors = true;
 
-int vertexDotFramesPerColor = 3;
-color[] vertexDotGradient = new color[]{
-  #000000, #333333, #666666, #999999, #CCCCCC, #FFFFFF
-};
+int vertexDotFramesPerAlpha = 3;
+int[] vertexDotAlphaGradient = new int[]{0, 50, 101, 153, 204, 255};
 
 boolean drawCircles = false;
 color drawCirclesColor = #FFFFFF;
@@ -282,6 +284,9 @@ void setup() {
     }
   }
   
+  vertexDotBorderColorIdx = 0;
+  vertexDotBorderColorFramesLeft = vertexDotFramesPerColor;
+  
   // Pre-calc all the gradients that the droplets will use.
   droplets = new ArrayList<Droplet>();
   int radCount = dropletRadiusMax - dropletRadiusMin + 1;
@@ -321,13 +326,21 @@ void draw() {
   background(0);
   translate(offsetX, offsetY);
   
+  vertexDotBorderColorFramesLeft--;
+  if (vertexDotBorderColorFramesLeft <= 0) {
+    vertexDotBorderColorFramesLeft = vertexDotFramesPerColor;
+    vertexDotBorderColorIdx++;
+    if (vertexDotBorderColorIdx >= colors.length) {
+      vertexDotBorderColorIdx = 0;
+    }
+  }
+  
   for (VertexDot vd : dotGrid.GetAll()) {
     vd.Move();
   }
 
   for (Droplet droplet : droplets) {
     droplet.Move();
-    dotGrid.Delete(droplet.Home);
   }
   
   for (int i = droplets.size()-1; i >= 0; i--) {
@@ -340,6 +353,11 @@ void draw() {
     }
   }
   
+  // Everwhere where there's still a droplet, there shouldn't be a vertex dot.
+  for (Droplet droplet : droplets) {
+    dotGrid.Delete(droplet.Home);
+  }
+  
   for (Crawler crawler : crawlers) {
     Droplet droplet = crawler.Move();
     if (droplet != null && drawDroplets) {
@@ -347,6 +365,7 @@ void draw() {
       dotGrid.Delete(droplet.Home);
     }
     dotGrid.Delete(crawler.Head);
+    dotGrid.Delete(crawler.Tail);
   }
 
   noFill();

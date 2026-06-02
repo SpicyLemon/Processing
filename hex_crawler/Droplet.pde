@@ -49,39 +49,38 @@ class Droplet {
 
 class VertexDot {
   Vertex Home;
-  color[] Gradient;
-  int GradientI;
+  int AlphaGradientI;
   int FramesLeft;
   
   VertexDot(Vertex home) {
     this.Home = home;
-    this.Gradient = vertexDotGradient;
-    this.GradientI = 0;
-    this.FramesLeft = vertexDotFramesPerColor;
+    this.AlphaGradientI = 0;
+    this.FramesLeft = vertexDotFramesPerAlpha;
   }
   
   VertexDot FullyOn() {
-    this.GradientI = this.Gradient.length-1;
+    this.AlphaGradientI = vertexDotAlphaGradient.length-1;
     return this;
   }
   
   VertexDot Move() {
-    // If we're on the last color, just stay there.
-    if (this.GradientI == this.Gradient.length - 1) {
+    if (this.AlphaGradientI >= vertexDotAlphaGradient.length-1) {
       return this;
     }
     
     this.FramesLeft--;
     if (this.FramesLeft <= 0) {
-      this.FramesLeft = vertexDotFramesPerColor;
-      this.GradientI++;
+      this.FramesLeft = vertexDotFramesPerAlpha;
+      this.AlphaGradientI++;
     }
     return this;
   }
   
   VertexDot Draw() {
-    noStroke();
-    fill(this.Gradient[this.GradientI]);
+    int alpha = vertexDotAlphaGradient[this.AlphaGradientI];
+    strokeWeight(vertexDotBorderWeight);
+    stroke(setAlpha(colors[vertexDotBorderColorIdx], alpha));
+    fill(setAlpha(vertexDotFillColor, alpha));
     this.Home.DrawBorder(vertexDotRadius);
     return this;
   }
