@@ -41,7 +41,7 @@ boolean OUTPUT_FPS = false;
 
 float hexRadius = 85;
 int centerRadiusMin = 1;
-int centerRadiusMax = 50;
+int centerRadiusMax = 45;
 int dropletRadiusMin = 5;
 int dropletRadiusMax = 54;
 int dropletAlphaStart = 255;
@@ -110,7 +110,7 @@ boolean drawCenterHexesMin = false;
 color drawCenterHexesMinColor = #0000FF;
 
 boolean drawCenterHexesMax = false;
-color drawCenterHexesMaxColor = #AA00FF;
+color drawCenterHexesMaxColor = #333333;
 
 boolean drawCrawlers = true;
 boolean drawDroplets = true;
