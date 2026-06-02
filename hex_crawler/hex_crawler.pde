@@ -50,6 +50,7 @@ int dropletMaxFrames = 5;
 float crawlerWeightHead = 15;
 float crawlerWeightTail = 5;
 float crawlerSpeed = 5;
+color crawlerHeadColor = #FFFFFF;
 int crawlersPerColor = 2;
 int vertexDotRadius = 8;
 float vertexDotBorderWeight = 1.5;
@@ -562,7 +563,7 @@ Crawler NewRandomCrawler(color tailColor) {
   CircleCrossing tailDir = tail.RandomNeighborDir(headToTail.Opposite());
   float tailLen = hexRadius - headLen;
   return new Crawler()
-           .WithColor(#FFFFFF, tailColor, 16)
+           .WithColor(crawlerHeadColor, tailColor, 16)
            .WithHead(head, headDir, headLen)
            .WithTail(headToTail, tail, tailDir, tailLen);
 }
