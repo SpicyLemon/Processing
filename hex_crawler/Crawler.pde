@@ -17,7 +17,7 @@ class Crawler {
     // Since we draw from tail to head, it's easier if the gradient is "backwards".
     // So the tail color will be at 0, and head at count-1.
     this.Gradient = new color[gradientSize];
-    int cutoff = 5;
+    int cutoff = 3;
     int gradientCount = gradientSize - 1 - cutoff;
     for (int i = 0; i <= gradientCount; i++) {
       this.Gradient[i] = lerpColor(endColor, startColor, (float)i / gradientCount);
@@ -71,7 +71,7 @@ class Crawler {
   
   Crawler DrawSimple() {
     stroke(this.Gradient[0]);
-    strokeWeight(crawlerWeight);
+    strokeWeight(crawlerWeightTail);
     beginShape();
     if (this.HeadLen > 0) {
       vertex(this._Nose.X, this._Nose.Y);
@@ -86,8 +86,6 @@ class Crawler {
   }
   
   Crawler Draw() {
-    strokeWeight(crawlerWeight);
-    
     // Build the list of points from tail to head.
     ArrayList<Spot> spots = new ArrayList<Spot>();
     ArrayList<Float> segmentLengths = new ArrayList<Float>();
@@ -121,6 +119,7 @@ class Crawler {
         // Get the color from the gradient.
         int gi = constrain(int(pos * (this.Gradient.length - 1)), 0, this.Gradient.length - 1);
         stroke(this.Gradient[gi]);
+        strokeWeight(map(gi, 0, this.Gradient.length-1, crawlerWeightTail, crawlerWeightHead));
         
         float x1 = lerp(s1.X, s2.X, t1);
         float y1 = lerp(s1.Y, s2.Y, t1);

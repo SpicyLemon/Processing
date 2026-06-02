@@ -42,14 +42,15 @@ float hexRadius = 85;
 int centerRadiusMin = 1;
 int centerRadiusMax = 50;
 int dropletRadiusMin = 5;
-int dropletRadiusMax = 95;
+int dropletRadiusMax = 54;
 int dropletAlphaStart = 255;
 int dropletAlphaStop = 10;
 int dropletMaxFrames = 6;
-float crawlerWeight = 5;
-float crawlerSpeed = 2;
-int crawlersPerColor = 2;
-int vertexDotRadius = 3;
+float crawlerWeightHead = 15;
+float crawlerWeightTail = 5;
+float crawlerSpeed = 3;
+int crawlersPerColor = 1;
+int vertexDotRadius = 8;
 
 int colorsBetweenBases = 3;
 color[] baseColors = new color[]{
@@ -345,6 +346,7 @@ void draw() {
       droplets.add(droplet);
       dotGrid.Delete(droplet.Home);
     }
+    dotGrid.Delete(crawler.Head);
   }
 
   noFill();
