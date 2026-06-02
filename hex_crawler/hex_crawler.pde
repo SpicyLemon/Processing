@@ -336,10 +336,6 @@ void draw() {
     }
   }
   
-  for (VertexDot vd : dotGrid.GetAll()) {
-    vd.Move();
-  }
-
   for (Droplet droplet : droplets) {
     droplet.Move();
   }
@@ -367,6 +363,10 @@ void draw() {
     }
     dotGrid.Delete(crawler.Head);
     dotGrid.Delete(crawler.Tail);
+  }
+  
+  for (VertexDot vd : dotGrid.GetAll()) {
+    vd.Move();
   }
 
   noFill();
