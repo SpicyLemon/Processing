@@ -1,7 +1,6 @@
 import gifAnimation.*;
 
 GifMaker gifExport;
-int gifFrameLimit = 1500;
 int gifFrameRate = 30; // fps
 boolean saveGif = false;
 
@@ -70,6 +69,7 @@ float runnerSize = 25;
 
 void setup() {
   fullScreen();
+  frameRate(30);
   
   // Calculate some screen bounds.
   xMax = width/2;
@@ -98,7 +98,8 @@ void setup() {
   // Create the tracers
   tracers = new Tracer[tracerShift.length];
   for (int i = 0; i < tracerShift.length; i++) {
-    tracers[i] = newRandomTracer(tracerColor(tracerShift[i]));
+    float speed = map(i, 0, tracerShift.length-1, minSpeed, maxSpeed);
+    tracers[i] = newRandomTracer(tracerColor(tracerShift[i]), speed);
   }
   
   // Calculate all the points that will be used for the runners.
@@ -122,10 +123,12 @@ void draw() {
   background(0);
   translate(xMax, yMax);
   
+  boolean backPalCycled = false;
   // Shift the background to the next color.
   backPalI += dBackPalI;
   if (int(backPalI) >= backPal.Size()) {
     backPalI = 0.0;
+    backPalCycled = true;
   }
   
   // Adjust the overall rotational offset (makes the whole thing spin at random).
@@ -220,17 +223,15 @@ void draw() {
   }
 
   if (saveGif) {
-    // Add this frame to the gif.
-    if (frameCount <= gifFrameLimit) {
-      gifExport.addFrame();
-    }
-    
     // Finish and save.
-    if (frameCount == gifFrameLimit) {
+    if (backPalCycled) {
       gifExport.finish();
       println("GIF saved!");
       exit();
     }
+    
+    // Add this frame to the gif.
+    gifExport.addFrame();
   }
 }
 
@@ -273,13 +274,10 @@ void drawRunner() {
   translate(-backOvalOffsetX, -backOvalOffsetX);
 }
 
-Tracer newRandomTracer(color col) {
+Tracer newRandomTracer(color col, float speed) {
   float r = randomRadius();
-  float speed = random(minSpeed-maxSpeed, maxSpeed-minSpeed);
-  if (speed < 0) {
-    speed -= minSpeed;
-  } else {
-    speed += minSpeed;
+  if (int(random(2)) == 0) {
+    speed *= -1;
   }
   return new Tracer(random(xLimMin+r, xLimMax-r), random(yLimMin+r, yLimMax-r))
              .WithRadius(r)
