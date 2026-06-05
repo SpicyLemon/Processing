@@ -4,7 +4,8 @@ GifMaker gifExport;
 int gifFrameRate = 1000/15; // 15 fps
 boolean saveGif = false;
 boolean stopping = false;
-int extraFrames = 2;
+int extraFrames = 3;
+float gifLoops = 4.00;
 float loops;
 
 float xMin, xMax, yMin, yMax;
@@ -29,13 +30,15 @@ int dotSpace = 20;
 int trailLength = 8;
 int changeDirOdds = 8;
 int newRoamingChances = 5;
-int newRoamingOdds = 20;
+int newRoamingOdds = 30;
 boolean drawTheGrid = false;
 color gridColor = #222222;
 int framesToFirst = 25;
 int framesToMore = 75;
 int framesToPause = 25;
-int pauseAtRoamingCount = 30;
+int pauseAtRoamingCount = 25;
+boolean drawHome = false;
+color drawHomeColor = #FFFFFF;
 
 void setup() {
   fullScreen(); //size(800, 600);
@@ -161,9 +164,9 @@ void draw() {
     if (IsCorner(runners[0].Home)) {
       loops += 0.25;
       println("loops:", loops);
-      if (RoughlyEqual(loops, 1.00)) {
+      if (RoughlyEqual(loops, gifLoops)) {
         newRoamingChances = 0;
-      } else if (loops > 0.25 && RoughlyEqual(loops, int(loops)) && roaming.size() == 0) {
+      } else if (loops >= gifLoops && RoughlyEqual(loops, int(loops)) && roaming.size() == 0) {
         stopping = true;
       }
     }
@@ -207,6 +210,14 @@ void draw() {
     }
   }
   
+  if (drawHome) {
+    strokeWeight(5.0);
+    stroke(drawHomeColor);
+    fill(drawHomeColor);
+    Spot spot = runners[0].Home.Spot();
+    point(spot.X, spot.Y);
+  }
+  
   if (saveGif) {
     if (stopping) {
       extraFrames--;
@@ -222,6 +233,7 @@ void draw() {
     // So, by not saving the last frame, it'll loop perfectly.
     gifExport.addFrame();
   }
+
 }
 
 void mousePressed() {
