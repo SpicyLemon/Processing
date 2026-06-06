@@ -129,14 +129,12 @@ class Bubble {
   Bubble Draw() {
     noStroke();
     if (this.MaxGradient < this.Gradient.length - 1) {
-      println("Growing bubble.");
       for (int c = 0; c <= this.MaxGradient; c++) {
         int r = centerRadiusMax - c;
         fill(this.Gradient[c]);
         this.Home.DrawBorder(r);
       }
     } else {
-      println("Shrinking bubble.");
       for (int r = this.MaxRadius; r >= 1; r--) {
         int c = this.MaxRadius - r;
         fill(this.Gradient[c]);

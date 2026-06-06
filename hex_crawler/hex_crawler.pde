@@ -7,6 +7,7 @@ SparseGrid<Vertex> vertexGrid;
 SparseGrid<Vertex> centerGrid;
 SparseGrid<VertexDot> dotGrid;
 SparseGrid<Bubble> bubbleGrid;
+SparseGrid<ArrayList<Droplet>> dropletListGrid;
 ArrayList<Vertex> vertices;
 ArrayList<Vertex> centerVertices;
 color[][] dropletGradients;
@@ -46,7 +47,7 @@ float hexRadius = 85;
 int centerRadiusMin = 1;
 int centerRadiusMax = 45;
 int dropletRadiusMin = 5;
-int dropletRadiusMax = 54;
+int dropletRadiusMax = 53;
 int dropletAlphaStart = 255;
 int dropletAlphaStop = 10;
 int dropletMaxFrames = 5;
@@ -298,6 +299,8 @@ void setup() {
   
   // Pre-calc all the gradients that the droplets will use.
   droplets = new ArrayList<Droplet>();
+  dropletListGrid = new SparseGrid<ArrayList<Droplet>>();
+
   int dropletRadCount = dropletRadiusMax - dropletRadiusMin + 1;
   dropletGradients = new color[colors.length][dropletRadCount];
   colorIndexMap = new HashMap<Integer, Integer>();
@@ -368,6 +371,18 @@ void draw() {
     }
   }
   
+  for (ArrayList<Droplet> dropletList : dropletListGrid.GetAll()) {
+    for (int i = dropletList.size()-1; i >= 0; i--) {
+      if (dropletList.get(i).IsDone()) {
+        if (DEBUG) {
+          Droplet droplet = droplets.get(i);
+          println("(" + droplet.Home.IndexX + ", " + droplet.Home.IndexY + "): Removing droplet.");
+        }
+        dropletList.remove(i);
+      }
+    }
+  }
+  
   // Everwhere where there's still a droplet, there shouldn't be a vertex dot.
   for (Droplet droplet : droplets) {
     dotGrid.Delete(droplet.Home);
@@ -377,6 +392,13 @@ void draw() {
     Droplet droplet = crawler.Move();
     if (droplet != null && drawDroplets) {
       droplets.add(droplet);
+      if (!dropletListGrid.Has(droplet.Home)) {
+        if (DEBUG) {
+          println("("+droplet.Home.IndexX+", "+droplet.Home.IndexY+"): Creating ArrayList<Droplet>");
+        }
+        dropletListGrid.Set(droplet.Home, new ArrayList<Droplet>());
+      }
+      dropletListGrid.Get(droplet.Home).add(droplet);
       dotGrid.Delete(droplet.Home);
     }
     dotGrid.Delete(crawler.Head);
@@ -405,8 +427,12 @@ void draw() {
         if (bubbleGrid.Has(home)) {
           continue;
         }
-        color[] gradient = bubbleGradients[int(random(bubbleGradients.length))];
-        Bubble bubble = new Bubble(home, gradient);
+        ArrayList<Integer> colorOpts = GetAdjacentDropletColors(home);
+        if (colorOpts.size() == 0) {
+          continue;
+        }
+        color baseColor = colorOpts.get(int(random(colorOpts.size())));
+        Bubble bubble = new Bubble(home, GetBubbleGradient(baseColor));
         bubbleGrid.Set(home, bubble);
       }
     }
@@ -621,4 +647,25 @@ Crawler NewRandomCrawler(color tailColor) {
            .WithColor(crawlerHeadColor, tailColor, 16)
            .WithHead(head, headDir, headLen)
            .WithTail(headToTail, tail, tailDir, tailLen);
+}
+
+ArrayList<Integer> GetAdjacentDropletColors(Vertex center) {
+  ArrayList<Integer> rv = new ArrayList<Integer>();
+  for (CircleCrossing cc : CircleCrossing.values()) {
+    Vertex v = center.GetOther(cc);
+    if (v == null) {
+      continue;
+    }
+    ArrayList<Droplet> droplets = dropletListGrid.Get(v);
+    if (droplets == null || droplets.size() == 0) {
+      continue;
+    }
+    for (Droplet droplet : droplets) {
+      rv.add(droplet.Gradient[0]);
+    }
+  }
+  if (DEBUG) {
+    println("(" + center.IndexX + ", " + center.IndexY + ") has " + rv.size() + " color opts");
+  }
+  return rv;
 }
