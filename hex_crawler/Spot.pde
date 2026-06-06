@@ -322,6 +322,10 @@ class Vertex implements Comparable<Vertex> {
     return Integer.compare(this.IndexX, other.IndexX);
   }
   
+  public boolean EqualTo(Vertex that) {
+    return this.compareTo(that) == 0;
+  }
+  
   Vertex DrawBorder(int radius) {
     beginShape();
     HashMap<HexCornerRotated, Spot> corners = this.Corners.get(radius);

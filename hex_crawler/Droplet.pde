@@ -19,6 +19,14 @@ class Droplet {
     this.FramesLeft = this.FrameCounts[0];
   }
   
+  boolean EqualTo(Droplet that) {
+    return this.Home.EqualTo(that.Home)
+        && this.GradientI == that.GradientI
+        && this.Radius == that.Radius
+        && this.FramesLeft == that.FramesLeft
+        && this.Gradient[this.GradientI] == that.Gradient[that.GradientI];
+  }
+  
   Droplet Move() {
     this.FramesLeft--;
     if (this.FramesLeft > 0) {
@@ -82,6 +90,59 @@ class VertexDot {
     stroke(setAlpha(colors[vertexDotBorderColorIdx], alpha));
     fill(setAlpha(vertexDotFillColor, alpha));
     this.Home.DrawBorder(vertexDotRadius);
+    return this;
+  }
+}
+
+class Bubble {
+  Vertex Home;
+  color[] Gradient;  
+  int MaxGradient;
+  int MaxRadius;
+  
+  Bubble(Vertex home, color[] gradient) {
+    this.Home = home;
+    this.Gradient = gradient;
+    this.MaxGradient = 0;
+    this.MaxRadius = centerRadiusMax;
+  }
+  
+  Bubble Move() {
+    if (this.MaxGradient < this.Gradient.length - 1) {
+      this.MaxGradient += bubbleGrowSpeed;
+      if (this.MaxGradient >= this.Gradient.length) {
+        this.MaxGradient = this.Gradient.length - 1;
+      }
+    } else {
+      this.MaxRadius -= bubbleShrinkSpeed;
+      if (this.MaxRadius <= 0) {
+        this.MaxRadius = 0;
+      }
+    }
+    return this;
+  }
+  
+  boolean IsDone() {
+    return this.MaxRadius <= 0;
+  }
+  
+  Bubble Draw() {
+    noStroke();
+    if (this.MaxGradient < this.Gradient.length - 1) {
+      println("Growing bubble.");
+      for (int c = 0; c <= this.MaxGradient; c++) {
+        int r = centerRadiusMax - c;
+        fill(this.Gradient[c]);
+        this.Home.DrawBorder(r);
+      }
+    } else {
+      println("Shrinking bubble.");
+      for (int r = this.MaxRadius; r >= 1; r--) {
+        int c = this.MaxRadius - r;
+        fill(this.Gradient[c]);
+        this.Home.DrawBorder(r);
+      }
+    }
     return this;
   }
 }

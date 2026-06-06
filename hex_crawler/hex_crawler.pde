@@ -1,14 +1,17 @@
-import java.util.Collections;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Objects;
 
 Spot[][] centers;
 SparseGrid<Vertex> vertexGrid;
 SparseGrid<Vertex> centerGrid;
 SparseGrid<VertexDot> dotGrid;
+SparseGrid<Bubble> bubbleGrid;
 ArrayList<Vertex> vertices;
 ArrayList<Vertex> centerVertices;
 color[][] dropletGradients;
-HashMap<Integer, Integer> dropletGradientIndexMap;
+color[][] bubbleGradients;
+HashMap<Integer, Integer> colorIndexMap;
 int[] dropletFrameCounts;
 color[] colors;
 float offsetX, offsetY;
@@ -56,6 +59,10 @@ int vertexDotRadius = 8;
 float vertexDotBorderWeight = 1.5;
 color vertexDotFillColor = #FFFFFF;
 int vertexDotFramesPerColor = 5;
+int bubbleGrowSpeed = 2;
+int bubbleShrinkSpeed = 3;
+int bubbleChances = 10;
+int bubbleOdds = 5;
 
 int colorsBetweenBases = 1;
 color[] baseColors = new color[]{
@@ -113,6 +120,7 @@ color drawCenterHexesMinColor = #0000FF;
 boolean drawCenterHexesMax = false;
 color drawCenterHexesMaxColor = #333333;
 
+boolean drawBubbles = true;
 boolean drawCrawlers = true;
 boolean drawDroplets = true;
 boolean drawDotGrid = true;
@@ -290,20 +298,30 @@ void setup() {
   
   // Pre-calc all the gradients that the droplets will use.
   droplets = new ArrayList<Droplet>();
-  int radCount = dropletRadiusMax - dropletRadiusMin + 1;
-  dropletGradients = new color[colors.length][radCount];
-  dropletGradientIndexMap = new HashMap<Integer, Integer>();
+  int dropletRadCount = dropletRadiusMax - dropletRadiusMin + 1;
+  dropletGradients = new color[colors.length][dropletRadCount];
+  colorIndexMap = new HashMap<Integer, Integer>();
   for (int c = 0; c < colors.length; c++) {
-    dropletGradientIndexMap.put(colors[c], c); 
-    for (int r = 0; r < radCount; r++) {
-      int alpha = int(map(r, 0, radCount-1, dropletAlphaStart, dropletAlphaStop));
+    colorIndexMap.put(colors[c], c); 
+    for (int r = 0; r < dropletRadCount; r++) {
+      int alpha = int(map(r, 0, dropletRadCount-1, dropletAlphaStart, dropletAlphaStop));
       dropletGradients[c][r] = setAlpha(colors[c], alpha);
     }
   }
-  dropletFrameCounts = new int[radCount];
-  for (int r = 0; r < radCount; r++) {
-    dropletFrameCounts[r] = int(map(r, 0, radCount-1, 1, dropletMaxFrames));
+  dropletFrameCounts = new int[dropletRadCount];
+  for (int r = 0; r < dropletRadCount; r++) {
+    dropletFrameCounts[r] = int(map(r, 0, dropletRadCount-1, 1, dropletMaxFrames));
   }
+  
+  // Pre-calc all the gradients that the bubbles will use.
+  int bubbleRadCount = centerRadiusMax - centerRadiusMin + 1;
+  bubbleGradients = new color[colors.length][bubbleRadCount];
+  for (int c = 0; c < colors.length; c++) {
+    for (int r = 0; r < bubbleRadCount; r++) {
+      bubbleGradients[c][r] = lerpColor(#000000, colors[c], (float)r/((float)bubbleRadCount-1));
+    }
+  }
+  bubbleGrid = new SparseGrid<Bubble>();
   
   // Create the initial dot grid.
   dotGrid = new SparseGrid<VertexDot>();
@@ -367,6 +385,31 @@ void draw() {
   
   for (VertexDot vd : dotGrid.GetAll()) {
     vd.Move();
+  }
+  
+  for (Bubble bubble : bubbleGrid.GetAll()) {
+    bubble.Move();
+  }
+  
+  for (Bubble bubble : bubbleGrid.GetAll()) {
+    if (bubble.IsDone()) {
+      bubbleGrid.Delete(bubble.Home);
+    }
+  }
+  
+  if (drawBubbles) {
+    for (int i = 0; i < bubbleChances; i++) {
+      if (int(random(bubbleOdds)) == 0) {
+        Vertex home = centerVertices.get(int(random(centerVertices.size())));
+        // If this home already has a bubble, try again.
+        if (bubbleGrid.Has(home)) {
+          continue;
+        }
+        color[] gradient = bubbleGradients[int(random(bubbleGradients.length))];
+        Bubble bubble = new Bubble(home, gradient);
+        bubbleGrid.Set(home, bubble);
+      }
+    }
   }
 
   noFill();
@@ -461,6 +504,10 @@ void draw() {
     drawPaths(centerVertices, drawOtherPathsStart, drawOtherPathsLength, vg);
   }
   
+  for (Bubble bubble : bubbleGrid.GetAll()) {
+    bubble.Draw();
+  }
+  
   if (drawDotGrid) {
     for (VertexDot vd : dotGrid.GetAll()) {
       vd.Draw();
@@ -527,11 +574,19 @@ boolean roughlyEqual(float x, float y) {
 }
 
 color[] GetDropletGradient(color col) {
-  Integer i = dropletGradientIndexMap.get(col);
+  Integer i = colorIndexMap.get(col);
   if (i == null) {
     return null;
   }
   return dropletGradients[i];
+}
+
+color[] GetBubbleGradient(color col) {
+  Integer i = colorIndexMap.get(col);
+  if (i == null) {
+    return null;
+  }
+  return bubbleGradients[i];
 }
 
 interface VertexGetter {
