@@ -124,7 +124,7 @@ color drawCenterHexesMaxColor = #333333;
 boolean drawBubbles = true;
 boolean drawCrawlers = true;
 boolean drawDroplets = true;
-boolean drawDotGrid = true;
+boolean drawDotGrid = false;
 
 void setup() {
   fullScreen();
