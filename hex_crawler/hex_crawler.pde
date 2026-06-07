@@ -7,7 +7,7 @@ GifMaker gifExport;
 int gifFrameStart = 0;
 int gifFrameStop = 750;
 int gifFrameRate = 20; // fps
-boolean saveGif = true;
+boolean saveGif = false;
 
 Spot[][] centers;
 SparseGrid<Vertex> vertexGrid;
@@ -50,25 +50,25 @@ static float PI_11_6 = PI * 11.0 / 6.0; // top right corner
 boolean DEBUG = false;
 boolean OUTPUT_FPS = false;
 
-float hexRadius = 40;
+float hexRadius = 85;
 int centerRadiusMin = 1;
-int centerRadiusMax = 35;
+int centerRadiusMax = 80;
 int dropletRadiusMin = 5;
-int dropletRadiusMax = 35;
+int dropletRadiusMax = 65;
 int dropletAlphaStart = 255;
 int dropletAlphaStop = 10;
-int dropletMaxFrames = 4;
-float crawlerWeightHead = 12;
+int dropletMaxFrames = 3;
+float crawlerWeightHead = 15;
 float crawlerWeightTail = 5;
-float crawlerSpeed = 4;
+float crawlerSpeed = 5;
 color crawlerHeadColor = #FFFFFF;
 int crawlersPerColor = 2;
-int vertexDotRadius = 6;
+int vertexDotRadius = 8;
 float vertexDotBorderWeight = 1.5;
 color vertexDotFillColor = #FFFFFF;
 int vertexDotFramesPerColor = 5;
-int bubbleGrowSpeed = 2;
-int bubbleShrinkSpeed = 1;
+int bubbleGrowSpeed = 3;
+int bubbleShrinkSpeed = 2;
 int bubbleChances = 5;
 int bubbleOdds = 5;
 
@@ -134,8 +134,8 @@ boolean drawDroplets = true;
 boolean drawDotGrid = false;
 
 void setup() {
-  size(600, 600);
-  frameRate(30);
+  fullScreen();
+  frameRate(20);
 
   // Set up the gif exporter.
   if (saveGif) {
