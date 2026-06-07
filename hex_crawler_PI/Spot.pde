@@ -327,13 +327,13 @@ class Vertex implements Comparable<Vertex> {
   }
   
   Vertex DrawBorder(int radius) {
-    beginShape();
+    pg.beginShape();
     HashMap<HexCornerRotated, Spot> corners = this.Corners.get(radius);
     for (HexCornerRotated c : HexCornerRotated.values()) {
       Spot s = corners.get(c);
-      vertex(s.X, s.Y);
+      pg.vertex(s.X, s.Y);
     }
-    endShape(CLOSE);
+    pg.endShape(CLOSE);
     return this;
   }
   
@@ -346,20 +346,20 @@ class Vertex implements Comparable<Vertex> {
     HashMap<HexCornerRotated, Spot> cornersMax = this.Corners.get(rMax);
     HexCornerRotated[] cs = HexCornerRotated.values();
     
-    beginShape();
+    pg.beginShape();
     for (HexCornerRotated c : cs) {
       Spot s = cornersMax.get(c);
-      vertex(s.X, s.Y);
+      pg.vertex(s.X, s.Y);
     }
     Collections.reverse(Arrays.asList(cs));
     
-    beginContour();
+    pg.beginContour();
     for (HexCornerRotated c : cs) {
       Spot s = cornersMin.get(c);
-      vertex(s.X, s.Y);
+      pg.vertex(s.X, s.Y);
     }
-    endContour();
-    endShape(CLOSE);
+    pg.endContour();
+    pg.endShape(CLOSE);
     
     return this;
   }

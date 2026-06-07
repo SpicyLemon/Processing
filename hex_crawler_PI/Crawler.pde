@@ -70,18 +70,18 @@ class Crawler {
   }
   
   Crawler DrawSimple() {
-    stroke(this.Gradient[0]);
-    strokeWeight(crawlerWeightTail);
-    beginShape();
+    pg.stroke(this.Gradient[0]);
+    pg.strokeWeight(crawlerWeightTail);
+    pg.beginShape();
     if (this.HeadLen > 0) {
-      vertex(this._Nose.X, this._Nose.Y);
+      pg.vertex(this._Nose.X, this._Nose.Y);
     }
-    vertex(this.Head.X, this.Head.Y);
-    vertex(this.Tail.X, this.Tail.Y);
+    pg.vertex(this.Head.X, this.Head.Y);
+    pg.vertex(this.Tail.X, this.Tail.Y);
     if (this.TailLen > 0) {
-      vertex(this._TailTip.X, this._TailTip.Y);
+      pg.vertex(this._TailTip.X, this._TailTip.Y);
     }
-    endShape();
+    pg.endShape();
     return this;
   }
   
@@ -118,14 +118,14 @@ class Crawler {
         
         // Get the color from the gradient.
         int gi = constrain(int(pos * (this.Gradient.length - 1)), 0, this.Gradient.length - 1);
-        stroke(this.Gradient[gi]);
-        strokeWeight(map(gi, 0, this.Gradient.length-1, crawlerWeightTail, crawlerWeightHead));
+        pg.stroke(this.Gradient[gi]);
+        pg.strokeWeight(map(gi, 0, this.Gradient.length-1, crawlerWeightTail, crawlerWeightHead));
         
         float x1 = lerp(s1.X, s2.X, t1);
         float y1 = lerp(s1.Y, s2.Y, t1);
         float x2 = lerp(s1.X, s2.X, t2);
         float y2 = lerp(s1.Y, s2.Y, t2);
-        line(x1, y1, x2, y2);
+        pg.line(x1, y1, x2, y2);
       }
       distanceSoFar += segmentLength;
     }

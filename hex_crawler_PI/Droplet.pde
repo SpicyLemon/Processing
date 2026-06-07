@@ -48,8 +48,8 @@ class Droplet {
   }
   
   Droplet Draw() {
-    noStroke();
-    fill(this.Gradient[this.GradientI]);
+    pg.noStroke();
+    pg.fill(this.Gradient[this.GradientI]);
     this.Home.DrawBorder(this.Radius);
     return this;
   }
@@ -86,9 +86,9 @@ class VertexDot {
   
   VertexDot Draw() {
     int alpha = vertexDotAlphaGradient[this.AlphaGradientI];
-    strokeWeight(vertexDotBorderWeight);
-    stroke(setAlpha(colors[vertexDotBorderColorIdx], alpha));
-    fill(setAlpha(vertexDotFillColor, alpha));
+    pg.strokeWeight(vertexDotBorderWeight);
+    pg.stroke(setAlpha(colors[vertexDotBorderColorIdx], alpha));
+    pg.fill(setAlpha(vertexDotFillColor, alpha));
     this.Home.DrawBorder(vertexDotRadius);
     return this;
   }
@@ -127,17 +127,17 @@ class Bubble {
   }
   
   Bubble Draw() {
-    noStroke();
+    pg.noStroke();
     if (this.MaxGradient < this.Gradient.length - 1) {
       for (int c = 0; c <= this.MaxGradient; c++) {
         int r = centerRadiusMax - c;
-        fill(this.Gradient[c]);
+        pg.fill(this.Gradient[c]);
         this.Home.DrawBorder(r);
       }
     } else {
       for (int r = this.MaxRadius; r >= 1; r--) {
         int c = this.MaxRadius - r;
-        fill(this.Gradient[c]);
+        pg.fill(this.Gradient[c]);
         this.Home.DrawBorder(r);
       }
     }

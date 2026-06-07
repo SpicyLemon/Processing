@@ -2,6 +2,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Objects;
 
+PGraphics pg;
 Spot[][] centers;
 SparseGrid<Vertex> vertexGrid;
 SparseGrid<Vertex> centerGrid;
@@ -43,17 +44,17 @@ static float PI_11_6 = PI * 11.0 / 6.0; // top right corner
 boolean DEBUG = false;
 boolean OUTPUT_FPS = false;
 
-float hexRadius = 85;
+float hexRadius = 20;
 int centerRadiusMin = 1;
-int centerRadiusMax = 80;
-int dropletRadiusMin = 5;
-int dropletRadiusMax = 65;
+int centerRadiusMax = 17;
+int dropletRadiusMin = 3;
+int dropletRadiusMax = 15;
 int dropletAlphaStart = 255;
 int dropletAlphaStop = 10;
 int dropletMaxFrames = 3;
-float crawlerWeightHead = 15;
-float crawlerWeightTail = 5;
-float crawlerSpeed = 5;
+float crawlerWeightHead = 7;
+float crawlerWeightTail = 3;
+float crawlerSpeed = 3;
 color crawlerHeadColor = #FFFFFF;
 int crawlersPerColor = 2;
 int vertexDotRadius = 8;
@@ -127,8 +128,9 @@ boolean drawDroplets = true;
 boolean drawDotGrid = false;
 
 void setup() {
-  fullScreen();
-  frameRate(30);
+  fullScreen(P2D);
+  frameRate(20);
+  pg = createGraphics(width/2, height/2);
   
   // sqrt(3/4) is important here because:
   // 1. A hex can be thought of as six equaliateral triangles.
@@ -139,8 +141,8 @@ void setup() {
   
   // Taking 10 out of the width and height to ensure that there's some padding.
   // Adding two to each count so that the padding is still covered by a hex.
-  hCount = int((2.0*(width-10)-hexRadius)/(3.0*hexRadius))+2;
-  vCount = int((height-10-sqrt34*hexRadius)/(sqrt3*hexRadius))+2;
+  hCount = int((2.0*(pg.width-10)-hexRadius)/(3.0*hexRadius))+2;
+  vCount = int((pg.height-10-sqrt34*hexRadius)/(sqrt3*hexRadius))+2;
   if (DEBUG) {
     println("Dimensions:", hCount, "x", vCount);
   }
@@ -164,15 +166,15 @@ void setup() {
   if (DEBUG) {
     println("Hexes fill:", fullWidth, "x", fullHeight);
   }
-  offsetX = (width - fullWidth) / 2;
-  offsetY = (height - fullHeight) / 2;
+  offsetX = (pg.width - fullWidth) / 2;
+  offsetY = (pg.height - fullHeight) / 2;
   if (DEBUG) {
     println("Offset:", offsetX, "x", offsetY);
   }
   xLimMin = -offsetX;
-  xLimMax = xLimMin + width;
+  xLimMax = xLimMin + pg.width;
   yLimMin = -offsetY;
-  yLimMax = yLimMin + height;
+  yLimMax = yLimMin + pg.height;
   if (DEBUG) {
     println("Viewable X:", xLimMin, "to", xLimMax);
     println("Viewable Y:", yLimMin, "to", yLimMax);
@@ -345,8 +347,9 @@ void setup() {
 }
 
 void draw() {
-  background(0);
-  translate(offsetX, offsetY);
+  pg.beginDraw();
+  pg.background(0);
+  pg.translate(offsetX, offsetY);
   
   vertexDotBorderColorFramesLeft--;
   if (vertexDotBorderColorFramesLeft <= 0) {
@@ -438,80 +441,80 @@ void draw() {
     }
   }
 
-  noFill();
-  strokeWeight(1);
+  pg.noFill();
+  pg.strokeWeight(1);
   
   if (drawCircles) {
-    stroke(drawCirclesColor);
+    pg.stroke(drawCirclesColor);
     for (Vertex center : centerVertices) {
-      circle(center.X, center.Y, hexRadius*2);
+      pg.circle(center.X, center.Y, hexRadius*2);
     }
   }
   
   if (drawCircleCenters) {
-    stroke(drawCircleCentersColor);
+    pg.stroke(drawCircleCentersColor);
     for (Vertex center: centerVertices) {
-      circle(center.X, center.Y, drawCircleCentersRadius*2);
+      pg.circle(center.X, center.Y, drawCircleCentersRadius*2);
     }
   }
   
   if (drawCenterHexes) {
-    stroke(drawCenterHexesBorder);
-    fill(drawCenterHexesFill);
+    pg.stroke(drawCenterHexesBorder);
+    pg.fill(drawCenterHexesFill);
     for (Vertex v : centerVertices) {
       v.Draw();
     }
-    noFill();
+    pg.noFill();
   }
   
   if (drawCenterHexesMin) {
-    stroke(drawCenterHexesMinColor);
+    pg.stroke(drawCenterHexesMinColor);
     for (Vertex v : centerVertices) {
       v.DrawBorder(centerRadiusMin);
     }
   }
 
   if (drawCenterHexesMax) {
-    stroke(drawCenterHexesMaxColor);
+    pg.stroke(drawCenterHexesMaxColor);
     for (Vertex v : centerVertices) {
       v.DrawBorder(centerRadiusMax);
     }
   }
   
   if (drawVertexHexes) {
-    stroke(drawVertexHexesBorder);
-    fill(drawVertexHexesFill);
+    pg.stroke(drawVertexHexesBorder);
+    pg.fill(drawVertexHexesFill);
     for (Vertex v : vertices) {
       v.Draw();
     }
-    noFill();
+    pg.noFill();
   }
   
   if (drawVertexHexesMin) {
-    stroke(drawVertexHexesMinColor);
+    pg.stroke(drawVertexHexesMinColor);
     for (Vertex v : vertices) {
       v.DrawBorder(dropletRadiusMin);
     }
   }
   
   if (drawVertexHexesMax) {
-    stroke(drawVertexHexesMaxColor);
+    pg.stroke(drawVertexHexesMaxColor);
     for (Vertex v : vertices) {
       v.DrawBorder(dropletRadiusMax);
     }
   }
   
   if (drawVertices) {
-    stroke(drawVerticesColor);
-    fill(drawVerticesFill);
+    pg.stroke(drawVerticesColor);
+    pg.fill(drawVerticesFill);
     for (Vertex vertex : vertices) {
-      circle(vertex.X, vertex.Y, drawVerticesRadius*2);
+      pg.circle(vertex.X, vertex.Y, drawVerticesRadius*2);
     }
-    noFill();
+    pg.noFill();
   }
   
   if (drawVertexPaths) {
-    stroke(drawVertexPathsColor);
+    pg.stroke(drawVertexPathsColor);
     drawPaths(vertices, drawVertexPathsStart, drawVertexPathsLength, new VertexGetter() {
       Vertex get(Vertex v, CircleCrossing cc) {
         return v.Go(cc);
@@ -520,7 +523,7 @@ void draw() {
   }
   
   if (drawOtherPaths) {
-    stroke(drawOtherPathsColor);
+    pg.stroke(drawOtherPathsColor);
     VertexGetter vg = new VertexGetter() {
       Vertex get(Vertex v, CircleCrossing cc) {
         return v.GetOther(cc);
@@ -549,6 +552,9 @@ void draw() {
       crawler.Draw();
     }
   }
+  
+  pg.endDraw();
+  image(pg, 0, 0, width, height);
   
   if (OUTPUT_FPS) {
     println("FPS:", frameRate);
@@ -629,7 +635,7 @@ void drawPaths(ArrayList<Vertex> vs, float pathStart, float pathLength, VertexGe
         float y1 = vertex.Y + pathStart * sin(angle);
         float x2 = vertex.X + (pathStart+pathLength) * cos(angle);
         float y2 = vertex.Y + (pathStart+pathLength) * sin(angle);
-        line(x1, y1, x2, y2);
+        pg.line(x1, y1, x2, y2);
       }
     }
   }
