@@ -1,6 +1,13 @@
+import gifAnimation.*;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Objects;
+
+GifMaker gifExport;
+int gifFrameStart = 0;
+int gifFrameStop = 750;
+int gifFrameRate = 20; // fps
+boolean saveGif = true;
 
 Spot[][] centers;
 SparseGrid<Vertex> vertexGrid;
@@ -43,25 +50,25 @@ static float PI_11_6 = PI * 11.0 / 6.0; // top right corner
 boolean DEBUG = false;
 boolean OUTPUT_FPS = false;
 
-float hexRadius = 85;
+float hexRadius = 40;
 int centerRadiusMin = 1;
-int centerRadiusMax = 80;
+int centerRadiusMax = 35;
 int dropletRadiusMin = 5;
-int dropletRadiusMax = 65;
+int dropletRadiusMax = 35;
 int dropletAlphaStart = 255;
 int dropletAlphaStop = 10;
-int dropletMaxFrames = 3;
-float crawlerWeightHead = 15;
+int dropletMaxFrames = 4;
+float crawlerWeightHead = 12;
 float crawlerWeightTail = 5;
-float crawlerSpeed = 5;
+float crawlerSpeed = 4;
 color crawlerHeadColor = #FFFFFF;
 int crawlersPerColor = 2;
-int vertexDotRadius = 8;
+int vertexDotRadius = 6;
 float vertexDotBorderWeight = 1.5;
 color vertexDotFillColor = #FFFFFF;
 int vertexDotFramesPerColor = 5;
-int bubbleGrowSpeed = 3;
-int bubbleShrinkSpeed = 2;
+int bubbleGrowSpeed = 2;
+int bubbleShrinkSpeed = 1;
 int bubbleChances = 5;
 int bubbleOdds = 5;
 
@@ -127,8 +134,15 @@ boolean drawDroplets = true;
 boolean drawDotGrid = false;
 
 void setup() {
-  fullScreen();
+  size(600, 600);
   frameRate(30);
+
+  // Set up the gif exporter.
+  if (saveGif) {
+    gifExport = new GifMaker(this, "hex-crawler.gif");
+    gifExport.setRepeat(0); // Loop forever.
+    gifExport.setDelay(1000/gifFrameRate);
+  }
   
   // sqrt(3/4) is important here because:
   // 1. A hex can be thought of as six equaliateral triangles.
@@ -547,6 +561,20 @@ void draw() {
   if (drawCrawlers) {
     for (Crawler crawler : crawlers) {
       crawler.Draw();
+    }
+  }
+
+  if (saveGif) {
+    // Add this frame to the gif.
+    if (frameCount >= gifFrameStart) {
+      gifExport.addFrame();
+    }
+
+    // Finish and save.
+    if (frameCount >= gifFrameStop) {
+      gifExport.finish();
+      println("GIF saved!");
+      exit();
     }
   }
   
