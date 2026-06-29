@@ -3,7 +3,7 @@ import gifAnimation.*;
 GifMaker gifExport;
 int gifFrameLimit = 1750;
 int gifFrameRate = 30; // 30 fps
-boolean saveGif = true;
+boolean saveGif = false;
 
 float xMin, xMax, yMin, yMax;
 float xLimMin, xLimMax, yLimMin, yLimMax;
@@ -12,21 +12,21 @@ Palette[] palettes;
 int palettesIndex = 6;
 Tracer[] tracers;
 boolean mouseWasPressed = false;
-int tailLength = 40;
+int tailLength = 50;
 int palCountMult = 1;
-float maxStroke = 15.0;
+float maxStroke = 30.0;
 float headSize = 0.0;
-float maxSpeed = 8.0;
-float minSpeed = 4.0;
+float maxSpeed = 20.0;
+float minSpeed = 5.0;
 float minRadius = 5.0;
-float dRadiusMin = 0.1;
-float dRadiusMax = 2.0;
+float dRadiusMin = 0.5;
+float dRadiusMax = 2.5;
 float changeDirOdds = 25;
 
 boolean DEBUG = false;
 
 void setup() {
-  size(600, 600);
+  fullScreen();
   frameRate(30);
   
   xMin = 0.0;
