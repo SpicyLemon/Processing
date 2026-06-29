@@ -21,7 +21,7 @@ float minSpeed = 5.0;
 float minRadius = 5.0;
 float dRadiusMin = 0.25;
 float dRadiusMax = 2.5;
-float changeDirOdds = 10;
+float changeDirOdds = 15;
 
 boolean DEBUG = false;
 
@@ -33,9 +33,9 @@ void setup() {
   xMax = width;
   yMin = 0.0;
   yMax = height;
-  xLimMax = xMax * 0.95;
+  xLimMax = xMax * 0.99;
   xLimMin = width-xLimMax;
-  yLimMax = yMax * 0.95;
+  yLimMax = yMax * 0.99;
   yLimMin = height-yLimMax;
   
   if (DEBUG) {
@@ -132,14 +132,18 @@ void freshTracers() {
 }
 
 Tracer newRandomTracer(Color col) {
-  float r = randomRadius();
   float speed = random(minSpeed-maxSpeed, maxSpeed-minSpeed);
   if (speed < 0) {
     speed -= minSpeed;
   } else {
     speed += minSpeed;
   }
-  return new Tracer(random(r, width-r), random(r, height-r))
+  float r = randomRadius();
+  // Keep the whole starting circle inside the limit region.
+  r = min(r, min((xLimMax - xLimMin) / 2.0, (yLimMax - yLimMin) / 2.0));
+  float cx = random(xLimMin + r, xLimMax - r);
+  float cy = random(yLimMin + r, yLimMax - r);
+  return new Tracer(cx, cy)
               .WithRadius(r)
               .WithDRadius(randomDRadius())
               .WithSpeed(speed)
