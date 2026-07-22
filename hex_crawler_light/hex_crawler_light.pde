@@ -58,7 +58,7 @@ int dropletRadiusMax = 65;
 int dropletAlphaStart = 255;
 int dropletAlphaStop = 10;
 int dropletMaxFrames = 3;
-float crawlerWeightHead = 15;
+float crawlerWeightHead = 25;
 float crawlerWeightTail = 5;
 float crawlerSpeed = 5;
 color crawlerHeadColor = #FFFFFF;
@@ -71,6 +71,7 @@ int bubbleGrowSpeed = 3;
 int bubbleShrinkSpeed = 2;
 int bubbleChances = 5;
 int bubbleOdds = 5;
+color backgroundColor = #EEEEEE;
 
 int colorsBetweenBases = 1;
 color[] baseColors = new color[]{
@@ -335,7 +336,7 @@ void setup() {
   bubbleGradients = new color[colors.length][bubbleRadCount];
   for (int c = 0; c < colors.length; c++) {
     for (int r = 0; r < bubbleRadCount; r++) {
-      bubbleGradients[c][r] = lerpColor(#C4FBFF, colors[c], (float)r/((float)bubbleRadCount-1));
+      bubbleGradients[c][r] = lerpColor(backgroundColor, colors[c], (float)r/((float)bubbleRadCount-1));
     }
   }
   bubbleGrid = new SparseGrid<Bubble>();
@@ -349,8 +350,17 @@ void setup() {
   // Now create the crawlers.
   crawlers = new Crawler[colors.length*crawlersPerColor];
   for (int n = 0; n < crawlersPerColor; n++) {
+    // Create a shuffled list of color indexes.
+    // This makes it so that the head colors are evenly distributed.
+    // If merely picking a random head color each time, you end up with
+    // too many that are one color.
+    int[] c2s = new int[colors.length];
     for (int c = 0; c < colors.length; c++) {
-      Crawler crawler = NewRandomCrawler(colors[c]);
+      c2s[c] = c;
+    }
+    derange(c2s);
+    for (int c = 0; c < colors.length; c++) {
+      Crawler crawler = NewRandomCrawler(colors[c], colors[c2s[c]]);
       crawlers[n*colors.length+c] = crawler;
       dotGrid.Delete(crawler.Head);
       dotGrid.Delete(crawler.Tail);
@@ -359,7 +369,7 @@ void setup() {
 }
 
 void draw() {
-  background(#C4FBFF);
+  background(backgroundColor);
   translate(offsetX, offsetY);
   
   vertexDotBorderColorFramesLeft--;
@@ -627,6 +637,37 @@ boolean roughlyEqual(float x, float y) {
   return abs(x - y) < 0.001;
 }
 
+void shuffle(int[] a) {
+  for (int i = a.length - 1; i > 0; i--) {
+    int j = int(random(i + 1));
+    int t = a[i]; 
+    a[i] = a[j]; 
+    a[j] = t;
+  }
+}
+
+void derange(int[] a) {
+  // A derangement of 0 or 1 elements is impossible or trivial.
+  // (n == 1 would loop forever, since a[0] can only be 0.)
+  if (a.length < 2) {
+    return;
+  }
+
+  // Supposedly, a random permutation is a derangement about 37% of 
+  // the time (1/e), so this should average under 3 tries.
+  boolean ok;
+  do {
+    shuffle(a);
+    ok = true;
+    for (int i = 0; i < a.length; i++) {
+      if (a[i] == i) {
+        ok = false;
+        break;
+      }
+    }
+  } while (!ok);
+}
+
 color[] GetDropletGradient(color col) {
   Integer i = colorIndexMap.get(col);
   if (i == null) {
@@ -663,7 +704,7 @@ void drawPaths(ArrayList<Vertex> vs, float pathStart, float pathLength, VertexGe
   }
 }
 
-Crawler NewRandomCrawler(color tailColor) {
+Crawler NewRandomCrawler(color tailColor, color headColor) {
   Vertex head = vertices.get(int(random(vertices.size())));
   CircleCrossing headDir = head.RandomNeighborDir();
   float headLen = random(hexRadius);
@@ -672,7 +713,7 @@ Crawler NewRandomCrawler(color tailColor) {
   CircleCrossing tailDir = tail.RandomNeighborDir(headToTail.Opposite());
   float tailLen = hexRadius - headLen;
   return new Crawler()
-           .WithColor(crawlerHeadColor, tailColor, 16)
+           .WithColor(headColor, tailColor, 16) // crawlerHeadColor
            .WithHead(head, headDir, headLen)
            .WithTail(headToTail, tail, tailDir, tailLen);
 }
