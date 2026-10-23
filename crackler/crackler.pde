@@ -21,8 +21,8 @@ float offDirMin = 25;
 float offDirMax = 100;
 float minLength = 100;
 float maxLength = 300;
-float minSpeed = 5;
-float maxSpeed = 15;
+float minSpeed = 15;
+float maxSpeed = 30;
 float lineWeight = 8.0;
 int maxLines = 100;
 
