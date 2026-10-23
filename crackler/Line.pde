@@ -5,6 +5,8 @@ class Line {
   float Head;
   float Tail;
   float Speed;
+  color HighlightMid;
+  color HighlightMain;
   
   Line(color col, float x, float y) {
     this.Col = col;
@@ -12,6 +14,8 @@ class Line {
     this.Points.add(new PVector(x, y));
     this.Dists = new ArrayList<>();
     this.Dists.add(0.0);
+    this.HighlightMain = #FFFFFF;
+    this.HighlightMid = lerpColor(this.Col, this.HighlightMain, 0.5);
   }
   
   Line WithLength(float l) {
@@ -122,6 +126,24 @@ class Line {
       p0 = p1;
       p1 = pts.get(i);
       line(p0.x, p0.y, p1.x, p1.y);
+    }
+
+    stroke(this.HighlightMid);
+    strokeWeight(lineHighlightMidWeight);
+    p1 = pts.get(0);
+    for (int i = 1; i < pts.size(); i++) {
+      p0 = p1;
+      p1 = pts.get(i);
+      line(p0.x-offsetHighlightMid, p0.y-offsetHighlightMid, p1.x-offsetHighlightMid, p1.y-offsetHighlightMid);
+    }
+
+    stroke(this.HighlightMain);
+    strokeWeight(lineHighlightMainWeight);
+    p1 = pts.get(0);
+    for (int i = 1; i < pts.size(); i++) {
+      p0 = p1;
+      p1 = pts.get(i);
+      line(p0.x-offsetHighlightMain, p0.y-offsetHighlightMain, p1.x-offsetHighlightMain, p1.y-offsetHighlightMain);
     }
   }
 }

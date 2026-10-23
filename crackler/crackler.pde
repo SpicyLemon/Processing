@@ -1,5 +1,6 @@
 ArrayList<Line> lines;
 float xLimMin, xLimMax, yLimMin, yLimMax;
+float offsetHighlightMid, offsetHighlightMain;
 color[] baseColors = new color[]{
   #FF0000, // Red
   #FFFF00, // Yellow
@@ -24,6 +25,8 @@ float maxLength = 300;
 float minSpeed = 15;
 float maxSpeed = 30;
 float lineWeight = 8.0;
+float lineHighlightMidWeight = 4.0;
+float lineHighlightMainWeight = 1.0;
 int maxLines = 100;
 
 int newLineChances = 5;
@@ -33,12 +36,19 @@ boolean DEBUG = false;
 
 void setup() {
   size(1024, 768);
+
+  lines = new ArrayList<>();
+  
   xLimMin = border;
   yLimMin = border;
   xLimMax = width-border;
   yLimMax = height-border;
   
-  lines = new ArrayList<>();
+  offsetHighlightMain = max(lineWeight/2-1, 1);
+  offsetHighlightMid = max(lineWeight/2-2, 2);
+  if (offsetHighlightMain == offsetHighlightMid) {
+    offsetHighlightMid++;
+  }
   
   if (loopBaseColors) {
     colors = new color[baseColors.length*(colorsBetweenBases + 1)];
