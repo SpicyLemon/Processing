@@ -1,6 +1,6 @@
 ArrayList<Line> lines;
 float xLimMin, xLimMax, yLimMin, yLimMax;
-color[] colors = new color[]{
+color[] baseColors = new color[]{
   #FF0000, // Red
   #FFFF00, // Yellow
   #00FF00, // Green
@@ -8,6 +8,9 @@ color[] colors = new color[]{
   #0000FF, // Blue
   #FF00FF, // Magenta
 };
+color[] colors;
+boolean loopBaseColors = true;
+int colorsBetweenBases = 1;
 
 float border = 25;
 float borderWeight = 2;
@@ -18,8 +21,8 @@ float offDirMin = 25;
 float offDirMax = 100;
 float minLength = 100;
 float maxLength = 300;
-float minSpeed = 15;
-float maxSpeed = 30;
+float minSpeed = 5;
+float maxSpeed = 15;
 float lineWeight = 8.0;
 int maxLines = 100;
 
@@ -36,6 +39,31 @@ void setup() {
   yLimMax = height-border;
   
   lines = new ArrayList<>();
+  
+  if (loopBaseColors) {
+    colors = new color[baseColors.length*(colorsBetweenBases + 1)];
+    int idx = 0;
+    for (int c = 0; c < baseColors.length; c++) {
+      color c1 = baseColors[c];
+      color c2 = baseColors[(c+1) % baseColors.length];
+      colors[idx++] = c1;
+      for (int n = 1; n <= colorsBetweenBases; n++) {
+        colors[idx++] = lerpColor(c1, c2, (float)n / (colorsBetweenBases+1));
+      }
+    }
+  } else {
+    colors = new color[baseColors.length+(baseColors.length-1)*colorsBetweenBases];
+    int idx = 0;
+    for (int c = 0; c < baseColors.length - 1; c++) {
+      color c1 = baseColors[c];
+      color c2 = baseColors[c+1];
+      colors[idx++] = c1;
+      for (int n = 1; n <= colorsBetweenBases; n++) {
+        colors[idx++] = lerpColor(c1, c2, (float)n/(colorsBetweenBases+1));
+      }
+    }
+    colors[idx] = baseColors[baseColors.length-1];
+  }
 }
 
 void draw() {
