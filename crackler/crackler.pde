@@ -33,7 +33,7 @@ float minLength = 100;
 float maxLength = 300;
 float minSpeed = 5;
 float maxSpeed = 15;
-float lineWeight = 8.0;
+float lineWeight = 10.0;
 float lineHighlightMidWeight = 4.0;
 float lineHighlightMainWeight = 1.0;
 color lineHighlightColor = #FFFFFF;
@@ -52,7 +52,7 @@ boolean DEBUG = false;
 static float PI_3_2 = HALF_PI + PI;
 
 void setup() {
-  size(1024, 768);
+  fullScreen();
 
   lines = new ArrayList<>();
   splitters = new ArrayList<>();
