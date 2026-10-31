@@ -43,6 +43,11 @@ float newLineOdds = 8;
 
 float splitterStartLen = 25;
 float splitterStartWeight = 4.0;
+float splitterSecondLen = 13;
+float splitterSecondWeight = 2.0;
+float splitterThirdLen = 20;
+float splitterThirdWeight = 3.0;
+float splitterThirdAngleMax = PI/3;
 int newSplitterChances = 10;
 float newSplitterOdds = 4;
 int maxSplitters = 500;
@@ -103,12 +108,12 @@ void setup() {
     colorHighlights[i] = lerpColor(colors[i], lineHighlightColor, 0.5);
   }
   
-  splitterColors = new color[colors.length][5];
+  splitterColors = new color[colors.length][7];
   for (int i = 0; i < colors.length; i++) {
-    for (int j = 0; j < 5; j++) {
+    for (int j = 0; j < splitterColors[0].length; j++) {
       // Using j+1 so that the zeroth color is slightly darker.
-      // using /7.0 so that the last color isn't just black.
-      splitterColors[i][j] = lerpColor(colors[i], #000000, float(j+1)/6.0);
+      // using /...+1 so that the last color isn't just black.
+      splitterColors[i][j] = lerpColor(colors[i], #000000, float(j+1)/float(splitterColors[0].length+1));
     }
   }
 }
@@ -247,7 +252,7 @@ Line newLine() {
 
 Splitter newSplitter() {
   Line parent = lines.get(int(random(lines.size())));
-  float d = parent.Head - random(parent.Head - parent.Tail)/2;
+  float d = parent.Head - 5; // - random(parent.Head - parent.Tail)/2;
   PVector start = parent.GetPoint(d);
   Direction lineDir = parent.GetDir(d);
   Direction mainDir = int(random(2)) == 0 ? lineDir.TurnCW() : lineDir.TurnCCW();
