@@ -1,4 +1,5 @@
 ArrayList<Line> lines;
+ArrayList<Splitter> splitters;
 float xLimMin, xLimMax, yLimMin, yLimMax;
 float offsetHighlightMid, offsetHighlightMain;
 color[] baseColors = new color[]{
@@ -10,34 +11,47 @@ color[] baseColors = new color[]{
   #FF00FF, // Magenta
 };
 color[] colors;
+color[] colorHighlights;
+color[][] splitterColors;
+HashMap<Integer, Integer> colorIndex;
 boolean loopBaseColors = true;
 int colorsBetweenBases = 1;
 
 float border = 25;
 float borderWeight = 2;
 color borderColor = #FFFFFF;
+
 float mainDirMin = 100;
 float mainDirMax = 400;
 float offDirMin = 25;
 float offDirMax = 100;
 float minLength = 100;
 float maxLength = 300;
-float minSpeed = 15;
-float maxSpeed = 30;
+float minSpeed = 10;
+float maxSpeed = 20;
 float lineWeight = 8.0;
 float lineHighlightMidWeight = 4.0;
 float lineHighlightMainWeight = 1.0;
+color lineHighlightColor = #FFFFFF;
 int maxLines = 100;
-
 int newLineChances = 5;
-float newLineOdds = 10;
+float newLineOdds = 8;
+
+float splitterStartLen = 25;
+float splitterStartWeight = 4.0;
+int newSplitterChances = 20;
+float newSplitterOdds = 4;
+int maxSplitters = 500;
 
 boolean DEBUG = false;
+
+static float PI_3_2 = HALF_PI + PI;
 
 void setup() {
   size(1024, 768);
 
   lines = new ArrayList<>();
+  splitters = new ArrayList<>();
   
   xLimMin = border;
   yLimMin = border;
@@ -74,6 +88,25 @@ void setup() {
     }
     colors[idx] = baseColors[baseColors.length-1];
   }
+  
+  colorIndex = new HashMap<>();
+  for (int i = 0; i < colors.length; i++) {
+    colorIndex.put(colors[i], i);
+  }
+  
+  colorHighlights = new color[colors.length];
+  for (int i = 0; i < colors.length; i++) {
+    colorHighlights[i] = lerpColor(colors[i], lineHighlightColor, 0.5);
+  }
+  
+  splitterColors = new color[colors.length][5];
+  for (int i = 0; i < colors.length; i++) {
+    for (int j = 0; j < 5; j++) {
+      // Using j+1 so that the zeroth color is slightly darker.
+      // using /7.0 so that the last color isn't just black.
+      splitterColors[i][j] = lerpColor(colors[i], #000000, float(j+1)/6.0);
+    }
+  }
 }
 
 void draw() {
@@ -98,10 +131,31 @@ void draw() {
     lines.add(newLine());
   }
   
+  for (Splitter splitter : splitters) {
+    splitter.Move();
+  }
+  
+  for (int i = splitters.size()-1; i >= 0; i--) {
+    if (splitters.get(i).IsDead()) {
+      splitters.remove(i);
+    }
+  }
+  
+  for (int i = 1; i <= newSplitterChances && splitters.size() < maxSplitters; i++) {
+    if (int(random(newSplitterOdds)) == 0) {
+      splitters.add(newSplitter());
+    }
+  }
+  
   // drawBorder();
+  
+  for (Splitter splitter: splitters) {
+    splitter.Draw();
+  }
+
   for (Line line : lines) {
     line.DrawShort();
-  }
+  }  
 }
 
 void mousePressed() {
@@ -187,6 +241,15 @@ Line newLine() {
   return rv;
 }
 
+Splitter newSplitter() {
+  Line parent = lines.get(int(random(lines.size())));
+  float d = parent.Head - random(parent.Head - parent.Tail)/2;
+  PVector start = parent.GetPoint(d);
+  Direction lineDir = parent.GetDir(d);
+  Direction mainDir = int(random(2)) == 0 ? lineDir.TurnCW() : lineDir.TurnCCW();
+  return new Splitter(start, mainDir, parent);
+}
+
 float DistanceToLimit(PVector cur, Direction dir) {
   switch (dir) {
     case Up: return cur.y - yLimMin;
@@ -199,4 +262,32 @@ float DistanceToLimit(PVector cur, Direction dir) {
 
 boolean IsInBorder(PVector p) {
   return xLimMin <= p.x && p.x <= xLimMax && yLimMin <= p.y && p.y <= yLimMax;
+}
+
+boolean roughlyEqual(float a, float b) {
+  return abs(a - b) < 0.001;
+}
+
+boolean lineContains(PVector p1, PVector p2, PVector toCheck) {
+  float dx = p2.x - p1.x;
+  float dy = p2.y - p1.y;
+
+  // Degenerate case: p1 and p2 are the same point.
+  if (roughlyEqual(dx, 0.0) && roughlyEqual(dy, 0.0)) {
+    return roughlyEqual(toCheck.x, p1.x) && roughlyEqual(toCheck.y, p1.y);
+  }
+
+  // Walk along the larger axis to find t, then confirm the other
+  // coordinate lands where it should (this is the collinearity check).
+  float t;
+  if (abs(dx) >= abs(dy)) {
+    t = (toCheck.x - p1.x) / dx;
+    if (!roughlyEqual(toCheck.y, p1.y + t * dy)) return false;
+  } else {
+    t = (toCheck.y - p1.y) / dy;
+    if (!roughlyEqual(toCheck.x, p1.x + t * dx)) return false;
+  }
+
+  // t within [0, 1] means toCheck falls between the endpoints.
+  return t >= 0.0 && t <= 1.0;
 }

@@ -2,11 +2,13 @@ class Line {
   color Col;
   ArrayList<PVector> Points;
   ArrayList<Float> Dists;
+  ArrayList<Direction> Dirs;
   float Head;
   float Tail;
   float Speed;
   color HighlightMid;
   color HighlightMain;
+  ArrayList<PVector> Visible;
   
   Line(color col, float x, float y) {
     this.Col = col;
@@ -14,12 +16,14 @@ class Line {
     this.Points.add(new PVector(x, y));
     this.Dists = new ArrayList<>();
     this.Dists.add(0.0);
-    this.HighlightMain = #FFFFFF;
-    this.HighlightMid = lerpColor(this.Col, this.HighlightMain, 0.5);
+    this.Dirs = new ArrayList<>();
+    this.HighlightMain = lineHighlightColor;
+    this.HighlightMid = colorHighlights[colorIndex.get(col)];
   }
   
   Line WithLength(float l) {
     this.Tail = -l;
+    setVisible();
     return this;
   }
   
@@ -31,6 +35,7 @@ class Line {
   Line Go(Direction dir, float distance) {
     this.Points.add(dir.Go(this.Last(), distance));
     this.Dists.add(this.Dists.get(this.Dists.size() - 1) + distance);
+    this.Dirs.add(dir);
     return this;
   }
   
@@ -71,6 +76,26 @@ class Line {
     return this.Last().copy();
   }
   
+  Direction GetDir(float distance) {
+    if (distance <= 0) {
+      return this.Dirs.get(0);
+    }
+    if (distance >= this.Length()) {
+      return this.Dirs.get(this.Dirs.size()-1);
+    }
+    for (int i = 1; i < this.Dirs.size(); i++) {
+      if (distance <= this.Dists.get(i)) {
+        return this.Dirs.get(i-1);
+      }
+    }
+    return this.Dirs.get(0);
+  }
+  
+  PVector RandomVisiblePoint() {
+    float d = random(this.Tail, this.Head);
+    return GetPoint(d);
+  }
+  
   boolean IsDead() {
     return this.Tail >= this.Length();
   }
@@ -78,6 +103,19 @@ class Line {
   void Move() {
     this.Head += this.Speed;
     this.Tail += this.Speed;
+    this.setVisible();
+  }
+  
+  void setVisible() {
+    this.Visible = new ArrayList<>();
+    this.Visible.add(this.GetPoint(this.Tail));
+    for (int i = 0; i < this.Points.size(); i++) {
+      float d = this.Dists.get(i);
+      if (this.Tail <= d && d <= this.Head) {
+        this.Visible.add(this.Points.get(i).copy());
+      }
+    }
+    this.Visible.add(this.GetPoint(this.Head));
   }
   
   void DrawFull() {
@@ -108,41 +146,31 @@ class Line {
   }
   
   void DrawShort() {
-    ArrayList<PVector> pts = new ArrayList<>();
-    pts.add(this.GetPoint(this.Tail));
-    for (int i = 0; i < this.Points.size(); i++) {
-      float d = this.Dists.get(i);
-      if (this.Tail <= d && d <= this.Head) {
-        pts.add(this.Points.get(i).copy());
-      }
-    }
-    pts.add(this.GetPoint(this.Head));
-    
     stroke(this.Col);
     strokeWeight(lineWeight);
     PVector p0;
-    PVector p1 = pts.get(0);
-    for (int i = 1; i < pts.size(); i++) {
+    PVector p1 = this.Visible.get(0);
+    for (int i = 1; i < this.Visible.size(); i++) {
       p0 = p1;
-      p1 = pts.get(i);
+      p1 = this.Visible.get(i);
       line(p0.x, p0.y, p1.x, p1.y);
     }
 
     stroke(this.HighlightMid);
     strokeWeight(lineHighlightMidWeight);
-    p1 = pts.get(0);
-    for (int i = 1; i < pts.size(); i++) {
+    p1 = this.Visible.get(0);
+    for (int i = 1; i < this.Visible.size(); i++) {
       p0 = p1;
-      p1 = pts.get(i);
+      p1 = this.Visible.get(i);
       line(p0.x-offsetHighlightMid, p0.y-offsetHighlightMid, p1.x-offsetHighlightMid, p1.y-offsetHighlightMid);
     }
 
     stroke(this.HighlightMain);
     strokeWeight(lineHighlightMainWeight);
-    p1 = pts.get(0);
-    for (int i = 1; i < pts.size(); i++) {
+    p1 = this.Visible.get(0);
+    for (int i = 1; i < this.Visible.size(); i++) {
       p0 = p1;
-      p1 = pts.get(i);
+      p1 = this.Visible.get(i);
       line(p0.x-offsetHighlightMain, p0.y-offsetHighlightMain, p1.x-offsetHighlightMain, p1.y-offsetHighlightMain);
     }
   }
@@ -161,7 +189,27 @@ enum Direction {
       case Down: return Up;
       case Left: return Right;
     }
-    return null;
+    throw new IllegalArgumentException("Unknown direction: " + this);
+  }
+  
+  Direction TurnCW() {
+    switch(this) {
+      case Up: return Right;
+      case Right: return Down;
+      case Down: return Left;
+      case Left: return Up;
+    }
+    throw new IllegalArgumentException("Unknown direction: " + this);
+  }
+  
+  Direction TurnCCW() {
+    switch(this) {
+      case Up: return Left;
+      case Right: return Up;
+      case Down: return Right;
+      case Left: return Down;
+    }
+    throw new IllegalArgumentException("Unknown direction: " + this);
   }
   
   PVector Go(PVector from, float distance) {
@@ -170,6 +218,16 @@ enum Direction {
       case Right: return new PVector(from.x + distance, from.y);
       case Down: return new PVector(from.x, from.y + distance);
       case Left: return new PVector(from.x - distance, from.y);
+    }
+    throw new IllegalArgumentException("Unknown direction: " + this);
+  }
+  
+  float Radians() {
+    switch(this) {
+      case Up: return PI_3_2;
+      case Right: return 0;
+      case Down: return HALF_PI;
+      case Left: return PI;
     }
     throw new IllegalArgumentException("Unknown direction: " + this);
   }
