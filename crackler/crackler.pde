@@ -3,19 +3,23 @@ ArrayList<Splitter> splitters;
 float xLimMin, xLimMax, yLimMin, yLimMax;
 float offsetHighlightMid, offsetHighlightMain;
 color[] baseColors = new color[]{
-  #FF0000, // Red
-  #FFFF00, // Yellow
-  #00FF00, // Green
-  #00FFFF, // Cyan
-  #0000FF, // Blue
   #FF00FF, // Magenta
+  #FFAA00, // Orange
+  #FF0000, // Red
+  #0000FF, // Blue
+  //#FF0000, // Red
+  //#FFFF00, // Yellow
+  //#00FF00, // Green
+  //#00FFFF, // Cyan
+  //#0000FF, // Blue
+  //#FF00FF, // Magenta
 };
 color[] colors;
 color[] colorHighlights;
 color[][] splitterColors;
 HashMap<Integer, Integer> colorIndex;
 boolean loopBaseColors = true;
-int colorsBetweenBases = 1;
+int colorsBetweenBases = 5;
 
 float border = 25;
 float borderWeight = 2;
