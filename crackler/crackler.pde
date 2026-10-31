@@ -6,7 +6,7 @@ color[] baseColors = new color[]{
   #FF00FF, // Magenta
   #FFAA00, // Orange
   #FF0000, // Red
-  #0000FF, // Blue
+  #AA00FF, // Purple
   //#FF0000, // Red
   //#FFFF00, // Yellow
   //#00FF00, // Green
@@ -32,7 +32,7 @@ float offDirMax = 100;
 float minLength = 100;
 float maxLength = 300;
 float minSpeed = 5;
-float maxSpeed = 15;
+float maxSpeed = 25;
 float lineWeight = 10.0;
 float lineHighlightMidWeight = 4.0;
 float lineHighlightMainWeight = 1.0;
