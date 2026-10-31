@@ -52,6 +52,8 @@ int newSplitterChances = 10;
 float newSplitterOdds = 4;
 int maxSplitters = 500;
 
+color backgroundColor = #14041C;
+
 boolean DEBUG = false;
 
 static float PI_3_2 = HALF_PI + PI;
@@ -113,13 +115,13 @@ void setup() {
     for (int j = 0; j < splitterColors[0].length; j++) {
       // Using j+1 so that the zeroth color is slightly darker.
       // using /...+1 so that the last color isn't just black.
-      splitterColors[i][j] = lerpColor(colors[i], #000000, float(j+1)/float(splitterColors[0].length+1));
+      splitterColors[i][j] = lerpColor(colors[i], backgroundColor, float(j+1)/float(splitterColors[0].length+1));
     }
   }
 }
 
 void draw() {
-  background(0);
+  background(backgroundColor);
   
   for (Line line : lines) {
     line.Move();
