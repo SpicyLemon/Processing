@@ -29,8 +29,8 @@ float mainDirMin = 100;
 float mainDirMax = 400;
 float offDirMin = 25;
 float offDirMax = 100;
-float minLength = 100;
-float maxLength = 300;
+float minLength = 200;
+float maxLength = 400;
 float minSpeed = 5;
 float maxSpeed = 25;
 float lineWeight = 10.0;
@@ -152,7 +152,9 @@ void draw() {
   
   for (int i = 1; i <= newSplitterChances && splitters.size() < maxSplitters; i++) {
     if (int(random(newSplitterOdds)) == 0) {
-      splitters.add(newSplitter());
+      Splitter[] ns = newSplitters();
+      splitters.add(ns[0]);
+      splitters.add(ns[1]);
     }
   }
   
@@ -250,13 +252,17 @@ Line newLine() {
   return rv;
 }
 
-Splitter newSplitter() {
+Splitter[] newSplitters() {
   Line parent = lines.get(int(random(lines.size())));
-  float d = parent.Head - 5; // - random(parent.Head - parent.Tail)/2;
+  float d = parent.Head - random(parent.Head - parent.Tail)/2;
   PVector start = parent.GetPoint(d);
   Direction lineDir = parent.GetDir(d);
-  Direction mainDir = int(random(2)) == 0 ? lineDir.TurnCW() : lineDir.TurnCCW();
-  return new Splitter(start, mainDir, parent);
+  Direction dir1 = lineDir.TurnCW();
+  Direction dir2 = lineDir.TurnCCW();
+  return new Splitter[]{
+    new Splitter(start, dir1, parent),
+    new Splitter(start, dir2, parent),
+  };
 }
 
 float DistanceToLimit(PVector cur, Direction dir) {
