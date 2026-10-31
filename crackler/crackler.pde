@@ -31,8 +31,8 @@ float offDirMin = 25;
 float offDirMax = 100;
 float minLength = 100;
 float maxLength = 300;
-float minSpeed = 10;
-float maxSpeed = 20;
+float minSpeed = 5;
+float maxSpeed = 15;
 float lineWeight = 8.0;
 float lineHighlightMidWeight = 4.0;
 float lineHighlightMainWeight = 1.0;
@@ -43,7 +43,7 @@ float newLineOdds = 8;
 
 float splitterStartLen = 25;
 float splitterStartWeight = 4.0;
-int newSplitterChances = 20;
+int newSplitterChances = 10;
 float newSplitterOdds = 4;
 int maxSplitters = 500;
 
