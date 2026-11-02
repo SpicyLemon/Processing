@@ -1,5 +1,6 @@
 ArrayList<Line> lines;
 ArrayList<Splitter> splitters;
+ArrayList<Puddle> puddles;
 float xLimMin, xLimMax, yLimMin, yLimMax;
 float offsetHighlightMid, offsetHighlightMain;
 color[] baseColors = new color[]{
@@ -7,16 +8,11 @@ color[] baseColors = new color[]{
   #FFAA00, // Orange
   #FF0000, // Red
   #AA00FF, // Purple
-  //#FF0000, // Red
-  //#FFFF00, // Yellow
-  //#00FF00, // Green
-  //#00FFFF, // Cyan
-  //#0000FF, // Blue
-  //#FF00FF, // Magenta
 };
 color[] colors;
 color[] colorHighlights;
 color[][] splitterColors;
+color[][] puddleColors;
 HashMap<Integer, Integer> colorIndex;
 boolean loopBaseColors = true;
 int colorsBetweenBases = 5;
@@ -53,6 +49,8 @@ int newSplitterChances = 10;
 float newSplitterOdds = 4;
 int maxSplitters = 500;
 
+float puddleSize = 10;
+
 color backgroundColor = #14041C;
 
 boolean DEBUG = false;
@@ -64,6 +62,7 @@ void setup() {
 
   lines = new ArrayList<>();
   splitters = new ArrayList<>();
+  puddles = new ArrayList<>();
   
   xLimMin = border;
   yLimMin = border;
@@ -119,6 +118,17 @@ void setup() {
       splitterColors[i][j] = lerpColor(colors[i], backgroundColor, float(j+1)/float(splitterColors[0].length+1));
     }
   }
+  
+  puddleColors = new color[colors.length][6];
+  for (int i = 0; i < colors.length; i++) {
+    for (int j = 0; j < puddleColors[0].length; j++) {
+      float p = float(j)/float(puddleColors[0].length);
+      color c = lerpColor(colors[i], backgroundColor, p);
+      // a = 255 at j = 0, and 50 at j = max.
+      int a = int(255 - 205.0 * j / (puddleColors[0].length - 1));
+      puddleColors[i][j] = setAlpha(c, a);
+    }
+  }
 }
 
 void draw() {
@@ -143,6 +153,24 @@ void draw() {
     lines.add(newLine());
   }
   
+  for (Puddle puddle : puddles) {
+    puddle.Move();
+  }
+  
+  for (int i = puddles.size()-1; i >= 0; i--) {
+    if (puddles.get(i).IsDead()) {
+      puddles.remove(i);
+    } 
+  }
+  
+  for (Splitter splitter : splitters) {
+    if (splitter.Age == 22) {
+      for (Puddle puddle : newPuddles(splitter)) {
+        puddles.add(puddle);
+      }
+    }
+  }
+  
   for (Splitter splitter : splitters) {
     splitter.Move();
   }
@@ -163,7 +191,11 @@ void draw() {
   
   // drawBorder();
   
-  for (Splitter splitter: splitters) {
+  for (Puddle puddle : puddles) {
+    puddle.Draw();
+  }
+  
+  for (Splitter splitter : splitters) {
     splitter.Draw();
   }
 
@@ -268,6 +300,16 @@ Splitter[] newSplitters() {
   };
 }
 
+Puddle[] newPuddles(Splitter s) {
+  color[] pal = puddleColors[colorIndex.get(s.Parent.Col)];
+  return new Puddle[]{
+    new Puddle(s.Path1A[s.Path1A.length-1], puddleSize, pal),
+    new Puddle(s.Path1B[s.Path1B.length-1], puddleSize, pal),
+    new Puddle(s.Path2A[s.Path2A.length-1], puddleSize, pal),
+    new Puddle(s.Path2B[s.Path2B.length-1], puddleSize, pal),
+  };
+}
+
 float DistanceToLimit(PVector cur, Direction dir) {
   switch (dir) {
     case Up: return cur.y - yLimMin;
@@ -280,6 +322,10 @@ float DistanceToLimit(PVector cur, Direction dir) {
 
 boolean IsInBorder(PVector p) {
   return xLimMin <= p.x && p.x <= xLimMax && yLimMin <= p.y && p.y <= yLimMax;
+}
+
+color setAlpha(color col, int alpha) {
+  return (col & 0x00FFFFFF) | ((alpha & 0xFF) << 24);
 }
 
 boolean roughlyEqual(float a, float b) {
