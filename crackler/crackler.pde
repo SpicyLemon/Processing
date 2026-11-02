@@ -13,6 +13,7 @@ color[] colors;
 color[] colorHighlights;
 color[][] splitterColors;
 color[][] puddleColors;
+color[] puddleHighlights;
 HashMap<Integer, Integer> colorIndex;
 boolean loopBaseColors = true;
 int colorsBetweenBases = 5;
@@ -49,7 +50,8 @@ int newSplitterChances = 10;
 float newSplitterOdds = 4;
 int maxSplitters = 500;
 
-float puddleSize = 10;
+float puddleSize = 30;
+color puddleHighlightColor = #FFFFFF;
 
 color backgroundColor = #14041C;
 
@@ -128,6 +130,14 @@ void setup() {
       int a = int(255 - 205.0 * j / (puddleColors[0].length - 1));
       puddleColors[i][j] = setAlpha(c, a);
     }
+  }
+  
+  puddleHighlights = new color[puddleColors[0].length];
+  for (int j = 0; j < puddleHighlights.length; j++) {
+    float p = float(j)/float(puddleHighlights.length);
+    color c = lerpColor(puddleHighlightColor, backgroundColor, p);
+    int a = int(255 - 205.0 * j / (puddleHighlights.length - 1));
+    puddleHighlights[j] = setAlpha(c, a);
   }
 }
 

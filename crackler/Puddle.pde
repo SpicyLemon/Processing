@@ -42,6 +42,22 @@ class Puddle {
     int maxIdx = this.Pal.length - 1;
     int first = max(0, this.Age - VISIBLE_SEGMENTS + 1);
     int last = min(maxIdx, this.Age);
+    strokeWeight(1.5);
+    for (int k = first; k <= last; k++) {
+      int i = maxIdx - k;
+      stroke(puddleHighlights[i]);
+      if (k == 0) {
+        line(this.Center.x, this.Center.y, this.UL[i].x, this.UL[i].y);
+        line(this.Center.x, this.Center.y, this.UR[i].x, this.UR[i].y);
+        line(this.Center.x, this.Center.y, this.LL[i].x, this.LL[i].y);
+        line(this.Center.x, this.Center.y, this.LR[i].x, this.LR[i].y);
+      } else {
+        line(this.UL[i+1].x, this.UL[i+1].y, this.UL[i].x, this.UL[i].y);
+        line(this.UR[i+1].x, this.UR[i+1].y, this.UR[i].x, this.UR[i].y);
+        line(this.LL[i+1].x, this.LL[i+1].y, this.LL[i].x, this.LL[i].y);
+        line(this.LR[i+1].x, this.LR[i+1].y, this.LR[i].x, this.LR[i].y);
+      }
+    }
     strokeWeight(1);
     for (int k = first; k <= last; k++) {
       int i = maxIdx - k;
