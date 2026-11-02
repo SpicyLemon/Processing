@@ -4,10 +4,16 @@ ArrayList<Puddle> puddles;
 float xLimMin, xLimMax, yLimMin, yLimMax;
 float offsetHighlightMid, offsetHighlightMain;
 color[] baseColors = new color[]{
-  #FF00FF, // Magenta
-  #FFAA00, // Orange
   #FF0000, // Red
-  #AA00FF, // Purple
+  #FFFF00, // Yellow
+  #00FF00, // Green
+  #00FFFF, // Cyan
+  #0000FF, // Blue
+  #FF00FF, // Magenta
+  //#FF00FF, // Magenta
+  //#FFAA00, // Orange
+  //#FF0000, // Red
+  //#AA00FF, // Purple
 };
 color[] colors;
 color[] colorHighlights;
@@ -51,9 +57,9 @@ float newSplitterOdds = 7;
 int maxSplitters = 500;
 
 float puddleSize = 30;
-color puddleHighlightColor = #FFFFFF;
+color puddleHighlightColor = #000000;
 
-color backgroundColor = #14041C;
+color backgroundColor = #FFFFFF; //#14041C;
 
 boolean DEBUG = false;
 
