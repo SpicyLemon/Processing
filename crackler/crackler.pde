@@ -112,7 +112,7 @@ void setup() {
     colorHighlights[i] = lerpColor(colors[i], lineHighlightColor, 0.5);
   }
   
-  splitterColors = new color[colors.length][7];
+  splitterColors = new color[colors.length][8];
   for (int i = 0; i < colors.length; i++) {
     for (int j = 0; j < splitterColors[0].length; j++) {
       // Using j+1 so that the zeroth color is slightly darker.
@@ -174,7 +174,7 @@ void draw() {
   }
   
   for (Splitter splitter : splitters) {
-    if (splitter.Age == 22) {
+    if (splitter.Age == 25) {
       for (Puddle puddle : newPuddles(splitter)) {
         puddles.add(puddle);
       }

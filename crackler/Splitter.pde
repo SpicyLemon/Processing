@@ -30,10 +30,10 @@ class Splitter {
     this.LastSplit1 = Go(this.Corner1, mainDir.Radians() + da, splitterStartLen);
     this.LastSplit2 = Go(this.Corner2, mainDir.Radians() - da, splitterStartLen);
     
-    this.Path1A = new PVector[4];
-    this.Path1B = new PVector[4];
-    this.Path2A = new PVector[4];
-    this.Path2B = new PVector[4];
+    this.Path1A = new PVector[5];
+    this.Path1B = new PVector[5];
+    this.Path2A = new PVector[5];
+    this.Path2B = new PVector[5];
 
     this.Path1A[0] = DirTo1.Go(this.LastSplit1, splitterSecondLen);
     this.Path1B[0] = DirTo2.Go(this.LastSplit1, splitterSecondLen);
@@ -45,7 +45,7 @@ class Splitter {
     this.Path2A[1] = mainDir.Go(this.Path2A[0], splitterSecondLen);
     this.Path2B[1] = mainDir.Go(this.Path2B[0], splitterSecondLen);
     
-    for (int i = 2; i < 4; i++) {    
+    for (int i = 2; i < 5; i++) {    
       this.Path1A[i] = Go(this.Path1A[i-1], mainDir.Radians() + random(-splitterThirdAngleMax, splitterThirdAngleMax), splitterThirdLen);
       this.Path1B[i] = Go(this.Path1B[i-1], mainDir.Radians() + random(-splitterThirdAngleMax, splitterThirdAngleMax), splitterThirdLen);
       this.Path2A[i] = Go(this.Path2A[i-1], mainDir.Radians() + random(-splitterThirdAngleMax, splitterThirdAngleMax), splitterThirdLen);
@@ -58,13 +58,21 @@ class Splitter {
   }
   
   boolean IsDead() {
-    return this.Age >= 42;
+    return this.Age >= 48;
   }
   
   void Draw() {
     int minPal = 0;
-    if (this.Age > 21) {
-      minPal = min(this.Age/3 - 7, 6);
+    if (this.Age > 24) {
+      minPal = min(this.Age/3 - 8, 7);
+    }
+    if (this.Age >= 21) {
+        strokeWeight(splitterThirdWeight);
+        stroke(this.Pal[max(7, minPal)]);
+        line(this.Path1A[3].x, this.Path1A[3].y, this.Path1A[4].x, this.Path1A[4].y);
+        line(this.Path1B[3].x, this.Path1B[3].y, this.Path1B[4].x, this.Path1B[4].y);
+        line(this.Path2A[3].x, this.Path2A[3].y, this.Path2A[4].x, this.Path2A[4].y);
+        line(this.Path2B[3].x, this.Path2B[3].y, this.Path2B[4].x, this.Path2B[4].y);
     }
     if (this.Age >= 18) {
         strokeWeight(splitterThirdWeight);
