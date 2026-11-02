@@ -62,11 +62,13 @@ color puddleHighlightColor = #000000;
 color backgroundColor = #FFFFFF; //#14041C;
 
 boolean DEBUG = false;
+boolean showFPS = false;
 
 static float PI_3_2 = HALF_PI + PI;
 
 void setup() {
   fullScreen();
+  frameRate(25);
 
   lines = new ArrayList<>();
   splitters = new ArrayList<>();
@@ -217,7 +219,17 @@ void draw() {
 
   for (Line line : lines) {
     line.DrawShort();
-  }  
+  }
+
+  if (showFPS) {
+    drawFPS();
+  }
+}
+
+void keyPressed() {
+  if (key == 'f' || key == 'F') {
+    showFPS = !showFPS;
+  }
 }
 
 void mousePressed() {
@@ -229,6 +241,20 @@ void mousePressed() {
     DEBUG = false;
     loop();
   }
+}
+
+void drawFPS() {
+  String txt = nf(frameRate, 0, 1) + " fps";
+  textSize(16);
+  float pad = 4;
+  float w = textWidth(txt) + 2*pad;
+  float h = textAscent() + textDescent() + 2*pad;
+  noStroke();
+  fill(0, 160);
+  rect(0, height - h, w, h);
+  fill(255);
+  textAlign(LEFT, BOTTOM);
+  text(txt, pad, height - pad);
 }
 
 void drawBorder() {
