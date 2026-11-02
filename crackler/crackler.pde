@@ -47,7 +47,7 @@ float splitterThirdLen = 10;
 float splitterThirdWeight = 3.0;
 float splitterThirdAngleMax = PI/3;
 int newSplitterChances = 10;
-float newSplitterOdds = 4;
+float newSplitterOdds = 7;
 int maxSplitters = 500;
 
 float puddleSize = 30;
