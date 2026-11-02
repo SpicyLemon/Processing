@@ -43,9 +43,10 @@ float newLineOdds = 8;
 
 float splitterStartLen = 25;
 float splitterStartWeight = 4.0;
+float splitterStartAngleMax = PI/5;
 float splitterSecondLen = 13;
 float splitterSecondWeight = 2.0;
-float splitterThirdLen = 20;
+float splitterThirdLen = 10;
 float splitterThirdWeight = 3.0;
 float splitterThirdAngleMax = PI/3;
 int newSplitterChances = 10;

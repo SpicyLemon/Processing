@@ -26,8 +26,9 @@ class Splitter {
     this.Corner1 = DirTo1.Go(this.Split, splitterStartLen);
     this.Corner2 = DirTo2.Go(this.Split, splitterStartLen);
 
-    this.LastSplit1 = mainDir.Go(this.Corner1, splitterStartLen);
-    this.LastSplit2 = mainDir.Go(this.Corner2, splitterStartLen);
+    float da = random(splitterStartAngleMax);
+    this.LastSplit1 = Go(this.Corner1, mainDir.Radians() + da, splitterStartLen);
+    this.LastSplit2 = Go(this.Corner2, mainDir.Radians() - da, splitterStartLen);
     
     this.Path1A = new PVector[4];
     this.Path1B = new PVector[4];
