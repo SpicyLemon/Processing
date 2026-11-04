@@ -129,7 +129,10 @@ void setup() {
     for (int j = 0; j < splitterColors[0].length; j++) {
       // Using j+1 so that the zeroth color is slightly darker.
       // using /...+1 so that the last color isn't just black.
-      splitterColors[i][j] = lerpColor(colors[i], backgroundColor, float(j+1)/float(splitterColors[0].length+1));
+      float p = float(j+1)/float(splitterColors[0].length+1);
+      color c = lerpColor(colors[i], backgroundColor, p);
+      int a = int(255 - 205.0 * j / float(splitterColors[0].length+1));
+      splitterColors[i][j] = setAlpha(c, a);
     }
   }
   
