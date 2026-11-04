@@ -1,19 +1,19 @@
-class Puddle {
+class Pinwheel {
   PVector Center;
   PVector[][] Corners;
   color[] Pal;
   int Age;
   int DSpin;
   
-  Puddle(PVector center, color[] pal, int dSpin) {
+  Pinwheel(PVector center, color[] pal, int dSpin) {
     this.Center = center.copy();
     this.Pal = pal;
-    this.Corners = new PVector[puddleCorners.length][puddleCorners[0].length+1];
-    for (int i = 0; i < puddleCorners.length; i++) {
-      for (int j = 0; j < puddleCorners[i].length; j++) {
-        this.Corners[i][j] = PVector.add(center, puddleCorners[i][j]);
+    this.Corners = new PVector[pinwheelCorners.length][pinwheelCorners[0].length+1];
+    for (int i = 0; i < pinwheelCorners.length; i++) {
+      for (int j = 0; j < pinwheelCorners[i].length; j++) {
+        this.Corners[i][j] = PVector.add(center, pinwheelCorners[i][j]);
       }
-      this.Corners[i][puddleCorners[i].length] = this.Center;
+      this.Corners[i][pinwheelCorners[i].length] = this.Center;
     }
     this.DSpin = dSpin;
   }
@@ -38,7 +38,7 @@ class Puddle {
     strokeWeight(1.5);
     for (int k = first; k <= last; k++) {
       int i = maxIdx - k;
-      stroke(puddleHighlights[i]);
+      stroke(pinwheelHighlights[i]);
       for (int j = 0; j < this.Corners.length; j++) {
         int j2 = (j + this.Corners.length + this.DSpin) % this.Corners.length;
         line(this.Corners[j][i+1].x, this.Corners[j][i+1].y, this.Corners[j2][i].x, this.Corners[j2][i].y);

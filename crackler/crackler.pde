@@ -1,6 +1,6 @@
 ArrayList<Line> lines;
 ArrayList<Splitter> splitters;
-ArrayList<Puddle> puddles;
+ArrayList<Pinwheel> pinwheels;
 float xLimMin, xLimMax, yLimMin, yLimMax;
 float offsetHighlightMid, offsetHighlightMain;
 color[] baseColors = new color[]{
@@ -18,13 +18,13 @@ color[] baseColors = new color[]{
 color[] colors;
 color[] colorHighlights;
 color[][] splitterColors;
-color[][] puddleColors;
-color[] puddleHighlights;
+color[][] pinwheelColors;
+color[] pinwheelHighlights;
 HashMap<Integer, Integer> colorIndex;
 boolean loopBaseColors = true;
 int colorsBetweenBases = 5;
 
-PVector[][] puddleCorners;
+PVector[][] pinwheelCorners;
 
 float border = 25;
 float borderWeight = 2;
@@ -58,8 +58,8 @@ int newSplitterChances = 10;
 float newSplitterOdds = 5;
 int maxSplitters = 500;
 
-float puddleSize = 30;
-color puddleHighlightColor = #FFFFFF;
+float pinwheelSize = 30;
+color pinwheelHighlightColor = #FFFFFF;
 
 color backgroundColor = #000000; //#14041C;
 
@@ -74,7 +74,7 @@ void setup() {
 
   lines = new ArrayList<>();
   splitters = new ArrayList<>();
-  puddles = new ArrayList<>();
+  pinwheels = new ArrayList<>();
   
   xLimMin = border;
   yLimMin = border;
@@ -131,33 +131,33 @@ void setup() {
     }
   }
   
-  int puddleColorCount = 6;
-  puddleColors = new color[colors.length][puddleColorCount];
+  int pinwheelColorCount = 6;
+  pinwheelColors = new color[colors.length][pinwheelColorCount];
   for (int i = 0; i < colors.length; i++) {
-    for (int j = 0; j < puddleColorCount; j++) {
-      float p = float(j)/float(puddleColorCount);
+    for (int j = 0; j < pinwheelColorCount; j++) {
+      float p = float(j)/float(pinwheelColorCount);
       color c = lerpColor(colors[i], backgroundColor, p);
       // a = 255 at j = 0, and 50 at j = max.
-      int a = int(255 - 205.0 * j / (puddleColorCount - 1));
-      puddleColors[i][j] = setAlpha(c, a);
+      int a = int(255 - 205.0 * j / (pinwheelColorCount - 1));
+      pinwheelColors[i][j] = setAlpha(c, a);
     }
   }
   
-  puddleHighlights = new color[puddleColorCount];
-  for (int j = 0; j < puddleHighlights.length; j++) {
-    float p = float(j)/float(puddleHighlights.length);
-    color c = lerpColor(puddleHighlightColor, backgroundColor, p);
-    int a = int(255 - 205.0 * j / (puddleHighlights.length - 1));
-    puddleHighlights[j] = setAlpha(c, a);
+  pinwheelHighlights = new color[pinwheelColorCount];
+  for (int j = 0; j < pinwheelHighlights.length; j++) {
+    float p = float(j)/float(pinwheelHighlights.length);
+    color c = lerpColor(pinwheelHighlightColor, backgroundColor, p);
+    int a = int(255 - 205.0 * j / (pinwheelHighlights.length - 1));
+    pinwheelHighlights[j] = setAlpha(c, a);
   }
   
-  puddleCorners = new PVector[4][puddleColorCount];
-  for (int i = 0; i < puddleColorCount; i++) {
-    float s = map(i, 0, puddleColorCount+1, puddleSize, 0);
-    puddleCorners[0][i] = new PVector(-s, -s);
-    puddleCorners[1][i] = new PVector(s, -s);
-    puddleCorners[2][i] = new PVector(s, s);
-    puddleCorners[3][i] = new PVector(-s, s);
+  pinwheelCorners = new PVector[4][pinwheelColorCount];
+  for (int i = 0; i < pinwheelColorCount; i++) {
+    float s = map(i, 0, pinwheelColorCount+1, pinwheelSize, 0);
+    pinwheelCorners[0][i] = new PVector(-s, -s);
+    pinwheelCorners[1][i] = new PVector(s, -s);
+    pinwheelCorners[2][i] = new PVector(s, s);
+    pinwheelCorners[3][i] = new PVector(-s, s);
   }
 }
 
@@ -183,20 +183,20 @@ void draw() {
     lines.add(newLine());
   }
   
-  for (Puddle puddle : puddles) {
-    puddle.Move();
+  for (Pinwheel pinwheel : pinwheels) {
+    pinwheel.Move();
   }
   
-  for (int i = puddles.size()-1; i >= 0; i--) {
-    if (puddles.get(i).IsDead()) {
-      puddles.remove(i);
+  for (int i = pinwheels.size()-1; i >= 0; i--) {
+    if (pinwheels.get(i).IsDead()) {
+      pinwheels.remove(i);
     } 
   }
   
   for (Splitter splitter : splitters) {
     if (splitter.Age == 25) {
-      for (Puddle puddle : newPuddles(splitter)) {
-        puddles.add(puddle);
+      for (Pinwheel pinwheel : newPinwheels(splitter)) {
+        pinwheels.add(pinwheel);
       }
     }
   }
@@ -221,8 +221,8 @@ void draw() {
   
   // drawBorder();
   
-  for (Puddle puddle : puddles) {
-    puddle.Draw();
+  for (Pinwheel pinwheel : pinwheels) {
+    pinwheel.Draw();
   }
   
   for (Splitter splitter : splitters) {
@@ -354,13 +354,13 @@ Splitter[] newSplitters() {
   };
 }
 
-Puddle[] newPuddles(Splitter s) {
-  color[] pal = puddleColors[colorIndex.get(s.Parent.Col)];
-  return new Puddle[]{
-    new Puddle(s.Path1A[s.Path1A.length-1], pal, 1),
-    new Puddle(s.Path1B[s.Path1B.length-1], pal, -1),
-    new Puddle(s.Path2A[s.Path2A.length-1], pal, -1),
-    new Puddle(s.Path2B[s.Path2B.length-1], pal, 1),
+Pinwheel[] newPinwheels(Splitter s) {
+  color[] pal = pinwheelColors[colorIndex.get(s.Parent.Col)];
+  return new Pinwheel[]{
+    new Pinwheel(s.Path1A[s.Path1A.length-1], pal, 1),
+    new Pinwheel(s.Path1B[s.Path1B.length-1], pal, -1),
+    new Pinwheel(s.Path2A[s.Path2A.length-1], pal, -1),
+    new Pinwheel(s.Path2B[s.Path2B.length-1], pal, 1),
   };
 }
 
