@@ -1,3 +1,42 @@
+class Puddle {
+  PVector[][] Corners;
+  color[] Pal;
+  int Age;
+  
+  Puddle(PVector[][] corners, color[] pal) {
+    this.Corners = corners;
+    this.Pal = pal;
+  }
+  
+  void Move() {
+    this.Age++;
+  }
+  
+  boolean IsDead() {
+    return this.Age >= (this.Pal.length - 1) + this.Pal.length * SHRINK_FRAMES;
+  }
+
+  // Once at full size, the number of frames each inner-most square lasts before disappearing.
+  static final int SHRINK_FRAMES = 2;
+
+  void Draw() {
+    int shapes = this.Pal.length;  // == Corners[0].length - 1 (the last entry is the center).
+    int colorAge = min(this.Age, shapes - 1);
+    int minS = max(0, this.Age - (shapes - 1)) / SHRINK_FRAMES;
+    noStroke();
+    // Outer-most first so inner shapes are drawn on top.
+    for (int s = min(this.Age, shapes - 1); s >= minS; s--) {
+      int ring = shapes - 1 - s;  // Index into Corners[j][...]; 0 is outer-most.
+      fill(this.Pal[shapes - 1 - (colorAge - s)]);
+      beginShape();
+      for (int j = 0; j < this.Corners.length; j++) {
+        vertex(this.Corners[j][ring].x, this.Corners[j][ring].y);
+      }
+      endShape(CLOSE);
+    }
+  }
+}
+
 class Pinwheel {
   PVector Center;
   PVector[][] Corners;
@@ -29,6 +68,10 @@ class Pinwheel {
     // Segment k is drawn while Age is in [k, k+VISIBLE_SEGMENTS-1], 
     // and the last segment is k = Pal.length-1.
     return this.Age >= this.Pal.length + VISIBLE_SEGMENTS - 1;
+  }
+  
+  boolean LeavingCenter() {
+    return this.Age == VISIBLE_SEGMENTS - 1;
   }
 
   void Draw() {

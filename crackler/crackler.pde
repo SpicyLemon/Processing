@@ -1,6 +1,7 @@
 ArrayList<Line> lines;
 ArrayList<Splitter> splitters;
 ArrayList<Pinwheel> pinwheels;
+ArrayList<Puddle> puddles;
 float xLimMin, xLimMax, yLimMin, yLimMax;
 float offsetHighlightMid, offsetHighlightMain;
 color[] baseColors = new color[]{
@@ -46,19 +47,19 @@ int maxLines = 100;
 int newLineChances = 5;
 float newLineOdds = 8;
 
-float splitterStartLen = 25;
+float splitterStartLen = 35;
 float splitterStartWeight = 4.0;
 float splitterStartAngleMax = PI/5;
-float splitterSecondLen = 13;
+float splitterSecondLen = 20;
 float splitterSecondWeight = 2.0;
-float splitterThirdLen = 10;
+float splitterThirdLen = 15;
 float splitterThirdWeight = 3.0;
 float splitterThirdAngleMax = PI/3;
 int newSplitterChances = 10;
 float newSplitterOdds = 5;
 int maxSplitters = 500;
 
-float pinwheelSize = 30;
+float pinwheelSize = 40;
 color pinwheelHighlightColor = #FFFFFF;
 
 color backgroundColor = #000000; //#14041C;
@@ -75,6 +76,7 @@ void setup() {
   lines = new ArrayList<>();
   splitters = new ArrayList<>();
   pinwheels = new ArrayList<>();
+  puddles = new ArrayList<>();
   
   xLimMin = border;
   yLimMin = border;
@@ -183,6 +185,22 @@ void draw() {
     lines.add(newLine());
   }
   
+  for (Puddle puddle : puddles) {
+    puddle.Move();
+  }
+  
+  for (int i = puddles.size()-1; i >= 0; i--) {
+    if (puddles.get(i).IsDead()) {
+      puddles.remove(i);
+    }
+  }
+  
+  for (Pinwheel pinwheel : pinwheels) {
+    if (pinwheel.LeavingCenter()) {
+      puddles.add(new Puddle(pinwheel.Corners, pinwheel.Pal));
+    }
+  }
+  
   for (Pinwheel pinwheel : pinwheels) {
     pinwheel.Move();
   }
@@ -220,6 +238,10 @@ void draw() {
   }
   
   // drawBorder();
+  
+  for (Puddle puddle : puddles) {
+    puddle.Draw();
+  }
   
   for (Pinwheel pinwheel : pinwheels) {
     pinwheel.Draw();
@@ -357,10 +379,10 @@ Splitter[] newSplitters() {
 Pinwheel[] newPinwheels(Splitter s) {
   color[] pal = pinwheelColors[colorIndex.get(s.Parent.Col)];
   return new Pinwheel[]{
-    new Pinwheel(s.Path1A[s.Path1A.length-1], pal, 1),
-    new Pinwheel(s.Path1B[s.Path1B.length-1], pal, -1),
-    new Pinwheel(s.Path2A[s.Path2A.length-1], pal, -1),
-    new Pinwheel(s.Path2B[s.Path2B.length-1], pal, 1),
+    new Pinwheel(s.Path1A[s.Path1A.length-1], pal, 0),
+    new Pinwheel(s.Path1B[s.Path1B.length-1], pal, 0),
+    new Pinwheel(s.Path2A[s.Path2A.length-1], pal, 0),
+    new Pinwheel(s.Path2B[s.Path2B.length-1], pal, 0),
   };
 }
 
