@@ -30,13 +30,13 @@ float border = 25;
 float borderWeight = 2;
 color borderColor = #FFFFFF;
 
-float mainDirMin = 100;
-float mainDirMax = 400;
+float mainDirMin = 200;
+float mainDirMax = 500;
 float offDirMin = 25;
 float offDirMax = 100;
 float minLength = 200;
 float maxLength = 400;
-float minSpeed = 5;
+float minSpeed = 10;
 float maxSpeed = 25;
 float lineWeight = 10.0;
 float lineHighlightMidWeight = 4.0;
@@ -55,7 +55,7 @@ float splitterThirdLen = 10;
 float splitterThirdWeight = 3.0;
 float splitterThirdAngleMax = PI/3;
 int newSplitterChances = 10;
-float newSplitterOdds = 7;
+float newSplitterOdds = 5;
 int maxSplitters = 500;
 
 float puddleSize = 30;
