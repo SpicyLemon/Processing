@@ -43,9 +43,9 @@ float lineWeight = 10.0;
 float lineHighlightMidWeight = 4.0;
 float lineHighlightMainWeight = 1.0;
 color lineHighlightColor = #FFFFFF;
-int maxLines = 100;
+int maxLines = 50;
 int newLineChances = 5;
-float newLineOdds = 8;
+float newLineOdds = 20;
 
 float splitterStartLen = 35;
 float splitterStartWeight = 4.0;
@@ -56,7 +56,7 @@ float splitterThirdLen = 15;
 float splitterThirdWeight = 3.0;
 float splitterThirdAngleMax = PI/3;
 int newSplitterChances = 10;
-float newSplitterOdds = 5;
+float newSplitterOdds = 4;
 int maxSplitters = 500;
 
 float pinwheelSize = 40;
