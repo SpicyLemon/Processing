@@ -2,6 +2,7 @@ ArrayList<Line> lines;
 ArrayList<Splitter> splitters;
 ArrayList<Pinwheel> pinwheels;
 ArrayList<Puddle> puddles;
+ArrayList<Zapper> zappers;
 float xLimMin, xLimMax, yLimMin, yLimMax;
 float offsetHighlightMid, offsetHighlightMain;
 color[] baseColors = new color[]{
@@ -62,6 +63,10 @@ int maxSplitters = 500;
 float pinwheelSize = 40;
 color pinwheelHighlightColor = #FFFFFF;
 
+float zapperAngleMax = PI/6;
+float zapperLengthMin = 5;
+float zapperLengthMax = 15;
+
 color backgroundColor = #000000; //#14041C;
 
 boolean DEBUG = false;
@@ -77,6 +82,7 @@ void setup() {
   splitters = new ArrayList<>();
   pinwheels = new ArrayList<>();
   puddles = new ArrayList<>();
+  zappers = new ArrayList<>();
   
   xLimMin = border;
   yLimMin = border;
@@ -204,6 +210,24 @@ void draw() {
     }
   }
   
+  for (Zapper zapper : zappers) {
+    zapper.Move();
+  }
+  
+  for (int i = zappers.size()-1; i >= 0; i--) {
+    if (zappers.get(i).IsDead()) {
+      zappers.remove(i);
+    }
+  }
+  
+  for (Pinwheel pinwheel : pinwheels) {
+    if (pinwheel.ReachedEdge()) {
+      for (Zapper zapper : newZappers(pinwheel)) {
+        zappers.add(zapper);
+      }
+    }
+  }
+  
   for (Pinwheel pinwheel : pinwheels) {
     pinwheel.Move();
   }
@@ -244,6 +268,10 @@ void draw() {
   
   for (Puddle puddle : puddles) {
     puddle.Draw();
+  }
+  
+  for (Zapper zapper : zappers) {
+    zapper.Draw();
   }
   
   for (Pinwheel pinwheel : pinwheels) {
@@ -383,10 +411,25 @@ Pinwheel[] newPinwheels(Splitter s) {
   color[] pal = pinwheelColors[colorIndex.get(s.Parent.Col)];
   return new Pinwheel[]{
     new Pinwheel(s.Path1A[s.Path1A.length-1], pal, 0),
-    new Pinwheel(s.Path1B[s.Path1B.length-1], pal, 0),
-    new Pinwheel(s.Path2A[s.Path2A.length-1], pal, 0),
+    //new Pinwheel(s.Path1B[s.Path1B.length-1], pal, 0),
+    //new Pinwheel(s.Path2A[s.Path2A.length-1], pal, 0),
     new Pinwheel(s.Path2B[s.Path2B.length-1], pal, 0),
   };
+}
+
+float[] zapperMainDirs = new float[]{
+  5 * PI / 4, // Upper Left,
+  7 * PI / 4, // Upper Right,
+  PI / 4,     // Lower Right,
+  3 * PI / 4, // Lower Left,
+};
+
+Zapper[] newZappers(Pinwheel pinwheel) {
+  Zapper[] rv = new Zapper[4];
+  for (int i = 0; i < 4; i++) {
+    rv[i] = new Zapper(pinwheel.Corners[i][0], zapperMainDirs[i], 5, pinwheel.Pal[0]);
+  }
+  return rv;
 }
 
 float DistanceToLimit(PVector cur, Direction dir) {

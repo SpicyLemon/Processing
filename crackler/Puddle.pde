@@ -73,6 +73,10 @@ class Pinwheel {
   boolean LeavingCenter() {
     return this.Age == VISIBLE_SEGMENTS - 1;
   }
+  
+  boolean ReachedEdge() {
+    return this.Age == this.Pal.length - 1;
+  }
 
   void Draw() {
     int maxIdx = this.Pal.length-1;
@@ -95,6 +99,45 @@ class Pinwheel {
         int j2 = (j + this.Corners.length + this.DSpin) % this.Corners.length;
         line(this.Corners[j][i+1].x, this.Corners[j][i+1].y, this.Corners[j2][i].x, this.Corners[j2][i].y);
       }
+    }
+  }
+}
+
+class Zapper {
+  PVector[] Points;
+  color Col;
+  int Age;
+  
+  Zapper(PVector start, float mainDir, int steps, color col) {
+    this.Col = col;
+    this.Points = new PVector[steps+1];
+    this.Points[0] = start.copy();
+    for (int i = 1; i <= steps; i++) {
+      this.Points[i] = Go(this.Points[i-1], 
+        mainDir + random(-zapperAngleMax, zapperAngleMax), 
+        random(zapperLengthMin, zapperLengthMax));
+    }
+  }
+  
+  void Move() {
+    this.Age++;
+  }
+  
+  boolean IsDead() {
+    return this.Age >= this.Points.length;
+  }
+  
+  void Draw() {
+    strokeWeight(1.5);
+    stroke(pinwheelHighlights[0]);
+    int maxI = min(this.Age+1, this.Points.length-1);
+    for (int i = 1; i <= maxI; i++) {
+      line(this.Points[i-1].x, this.Points[i-1].y, this.Points[i].x, this.Points[i].y);
+    }
+    strokeWeight(1);
+    stroke(this.Col);
+    for (int i = 1; i <= maxI; i++) {
+      line(this.Points[i-1].x, this.Points[i-1].y, this.Points[i].x, this.Points[i].y);
     }
   }
 }
