@@ -59,9 +59,9 @@ float newSplitterOdds = 7;
 int maxSplitters = 500;
 
 float puddleSize = 30;
-color puddleHighlightColor = #000000;
+color puddleHighlightColor = #FFFFFF;
 
-color backgroundColor = #FFFFFF; //#14041C;
+color backgroundColor = #000000; //#14041C;
 
 boolean DEBUG = false;
 boolean showFPS = false;
