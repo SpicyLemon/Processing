@@ -24,6 +24,8 @@ HashMap<Integer, Integer> colorIndex;
 boolean loopBaseColors = true;
 int colorsBetweenBases = 5;
 
+PVector[][] puddleCorners;
+
 float border = 25;
 float borderWeight = 2;
 color borderColor = #FFFFFF;
@@ -129,23 +131,33 @@ void setup() {
     }
   }
   
-  puddleColors = new color[colors.length][6];
+  int puddleColorCount = 6;
+  puddleColors = new color[colors.length][puddleColorCount];
   for (int i = 0; i < colors.length; i++) {
-    for (int j = 0; j < puddleColors[0].length; j++) {
-      float p = float(j)/float(puddleColors[0].length);
+    for (int j = 0; j < puddleColorCount; j++) {
+      float p = float(j)/float(puddleColorCount);
       color c = lerpColor(colors[i], backgroundColor, p);
       // a = 255 at j = 0, and 50 at j = max.
-      int a = int(255 - 205.0 * j / (puddleColors[0].length - 1));
+      int a = int(255 - 205.0 * j / (puddleColorCount - 1));
       puddleColors[i][j] = setAlpha(c, a);
     }
   }
   
-  puddleHighlights = new color[puddleColors[0].length];
+  puddleHighlights = new color[puddleColorCount];
   for (int j = 0; j < puddleHighlights.length; j++) {
     float p = float(j)/float(puddleHighlights.length);
     color c = lerpColor(puddleHighlightColor, backgroundColor, p);
     int a = int(255 - 205.0 * j / (puddleHighlights.length - 1));
     puddleHighlights[j] = setAlpha(c, a);
+  }
+  
+  puddleCorners = new PVector[4][puddleColorCount];
+  for (int i = 0; i < puddleColorCount; i++) {
+    float s = map(i, 0, puddleColorCount+1, puddleSize, 0);
+    puddleCorners[0][i] = new PVector(-s, -s);
+    puddleCorners[1][i] = new PVector(s, -s);
+    puddleCorners[2][i] = new PVector(s, s);
+    puddleCorners[3][i] = new PVector(-s, s);
   }
 }
 
@@ -345,10 +357,10 @@ Splitter[] newSplitters() {
 Puddle[] newPuddles(Splitter s) {
   color[] pal = puddleColors[colorIndex.get(s.Parent.Col)];
   return new Puddle[]{
-    new Puddle(s.Path1A[s.Path1A.length-1], puddleSize, pal),
-    new Puddle(s.Path1B[s.Path1B.length-1], puddleSize, pal),
-    new Puddle(s.Path2A[s.Path2A.length-1], puddleSize, pal),
-    new Puddle(s.Path2B[s.Path2B.length-1], puddleSize, pal),
+    new Puddle(s.Path1A[s.Path1A.length-1], pal),
+    new Puddle(s.Path1B[s.Path1B.length-1], pal),
+    new Puddle(s.Path2A[s.Path2A.length-1], pal),
+    new Puddle(s.Path2B[s.Path2B.length-1], pal),
   };
 }
 

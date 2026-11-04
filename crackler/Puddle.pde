@@ -1,25 +1,18 @@
 class Puddle {
   PVector Center;
-  PVector[] UL;
-  PVector[] UR;
-  PVector[] LL;
-  PVector[] LR;
+  PVector[][] Corners;
   color[] Pal;
   int Age;
   
-  Puddle(PVector center, float size, color[] pal) {
+  Puddle(PVector center, color[] pal) {
     this.Center = center.copy();
     this.Pal = pal;
-    this.UL = new PVector[pal.length];
-    this.UR = new PVector[pal.length];
-    this.LL = new PVector[pal.length];
-    this.LR = new PVector[pal.length];
-    for (int i = 0; i < pal.length; i++) {
-      float s = map(i, 0, pal.length+1, size, 0);
-      this.UL[i] = new PVector(center.x - s, center.y - s);
-      this.UR[i] = new PVector(center.x + s, center.y - s);
-      this.LL[i] = new PVector(center.x - s, center.y + s);
-      this.LR[i] = new PVector(center.x + s, center.y + s);
+    this.Corners = new PVector[puddleCorners.length][puddleCorners[0].length+1];
+    for (int i = 0; i < puddleCorners.length; i++) {
+      for (int j = 0; j < puddleCorners[i].length; j++) {
+        this.Corners[i][j] = PVector.add(center, puddleCorners[i][j]);
+      }
+      this.Corners[i][puddleCorners[i].length] = this.Center;
     }
   }
   
@@ -37,41 +30,23 @@ class Puddle {
   }
 
   void Draw() {
-    // Segment k (0 = innermost) goes from Center (k = 0) or index 
-    // maxIdx-k+1 (k > 0) out to index maxIdx-k, and is drawn with Pal[maxIdx-k].
-    int maxIdx = this.Pal.length - 1;
+    int maxIdx = this.Pal.length-1;
     int first = max(0, this.Age - VISIBLE_SEGMENTS + 1);
     int last = min(maxIdx, this.Age);
     strokeWeight(1.5);
     for (int k = first; k <= last; k++) {
       int i = maxIdx - k;
       stroke(puddleHighlights[i]);
-      if (k == 0) {
-        line(this.Center.x, this.Center.y, this.UL[i].x, this.UL[i].y);
-        line(this.Center.x, this.Center.y, this.UR[i].x, this.UR[i].y);
-        line(this.Center.x, this.Center.y, this.LL[i].x, this.LL[i].y);
-        line(this.Center.x, this.Center.y, this.LR[i].x, this.LR[i].y);
-      } else {
-        line(this.UL[i+1].x, this.UL[i+1].y, this.UL[i].x, this.UL[i].y);
-        line(this.UR[i+1].x, this.UR[i+1].y, this.UR[i].x, this.UR[i].y);
-        line(this.LL[i+1].x, this.LL[i+1].y, this.LL[i].x, this.LL[i].y);
-        line(this.LR[i+1].x, this.LR[i+1].y, this.LR[i].x, this.LR[i].y);
+      for (int j = 0; j < this.Corners.length; j++) {
+        line(this.Corners[j][i+1].x, this.Corners[j][i+1].y, this.Corners[j][i].x, this.Corners[j][i].y);
       }
     }
     strokeWeight(1);
     for (int k = first; k <= last; k++) {
       int i = maxIdx - k;
       stroke(this.Pal[i]);
-      if (k == 0) {
-        line(this.Center.x, this.Center.y, this.UL[i].x, this.UL[i].y);
-        line(this.Center.x, this.Center.y, this.UR[i].x, this.UR[i].y);
-        line(this.Center.x, this.Center.y, this.LL[i].x, this.LL[i].y);
-        line(this.Center.x, this.Center.y, this.LR[i].x, this.LR[i].y);
-      } else {
-        line(this.UL[i+1].x, this.UL[i+1].y, this.UL[i].x, this.UL[i].y);
-        line(this.UR[i+1].x, this.UR[i+1].y, this.UR[i].x, this.UR[i].y);
-        line(this.LL[i+1].x, this.LL[i+1].y, this.LL[i].x, this.LL[i].y);
-        line(this.LR[i+1].x, this.LR[i+1].y, this.LR[i].x, this.LR[i].y);
+      for (int j = 0; j < this.Corners.length; j++) {
+        line(this.Corners[j][i+1].x, this.Corners[j][i+1].y, this.Corners[j][i].x, this.Corners[j][i].y);
       }
     }
   }
