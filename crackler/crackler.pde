@@ -6,16 +6,16 @@ ArrayList<Zapper> zappers;
 float xLimMin, xLimMax, yLimMin, yLimMax;
 float offsetHighlightMid, offsetHighlightMain;
 color[] baseColors = new color[]{
-  #FF0000, // Red
-  #FFFF00, // Yellow
-  #00FF00, // Green
-  #00FFFF, // Cyan
-  #0000FF, // Blue
-  #FF00FF, // Magenta
-  //#FF00FF, // Magenta
-  //#FFAA00, // Orange
   //#FF0000, // Red
-  //#AA00FF, // Purple
+  //#FFFF00, // Yellow
+  //#00FF00, // Green
+  //#00FFFF, // Cyan
+  //#0000FF, // Blue
+  //#FF00FF, // Magenta
+  #FF00FF, // Magenta
+  #FFAA00, // Orange
+  #FF0000, // Red
+  #AA00FF, // Purple
 };
 color[] colors;
 color[] colorHighlights;
@@ -44,9 +44,9 @@ float lineWeight = 10.0;
 float lineHighlightMidWeight = 4.0;
 float lineHighlightMainWeight = 1.0;
 color lineHighlightColor = #FFFFFF;
-int maxLines = 50;
+int maxLines = 5;
 int newLineChances = 5;
-float newLineOdds = 20;
+float newLineOdds = 30;
 
 float splitterStartLen = 35;
 float splitterStartWeight = 4.0;
