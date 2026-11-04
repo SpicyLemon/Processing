@@ -357,10 +357,10 @@ Splitter[] newSplitters() {
 Puddle[] newPuddles(Splitter s) {
   color[] pal = puddleColors[colorIndex.get(s.Parent.Col)];
   return new Puddle[]{
-    new Puddle(s.Path1A[s.Path1A.length-1], pal),
-    new Puddle(s.Path1B[s.Path1B.length-1], pal),
-    new Puddle(s.Path2A[s.Path2A.length-1], pal),
-    new Puddle(s.Path2B[s.Path2B.length-1], pal),
+    new Puddle(s.Path1A[s.Path1A.length-1], pal, 1),
+    new Puddle(s.Path1B[s.Path1B.length-1], pal, -1),
+    new Puddle(s.Path2A[s.Path2A.length-1], pal, -1),
+    new Puddle(s.Path2B[s.Path2B.length-1], pal, 1),
   };
 }
 
