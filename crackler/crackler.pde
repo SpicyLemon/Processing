@@ -6,16 +6,16 @@ ArrayList<Zapper> zappers;
 float xLimMin, xLimMax, yLimMin, yLimMax;
 float offsetHighlightMid, offsetHighlightMain;
 color[] baseColors = new color[]{
-  #FF0000, // Red
-  #FFFF00, // Yellow
-  #00FF00, // Green
-  #00FFFF, // Cyan
-  #0000FF, // Blue
-  #FF00FF, // Magenta
-  //#FF00FF, // Magenta
-  //#FFAA00, // Orange
   //#FF0000, // Red
-  //#AA00FF, // Purple
+  //#FFFF00, // Yellow
+  //#00FF00, // Green
+  //#00FFFF, // Cyan
+  //#0000FF, // Blue
+  //#FF00FF, // Magenta
+  #FF00FF, // Magenta
+  #FFAA00, // Orange
+  #FF0000, // Red
+  #AA00FF, // Purple
 };
 color[] colors;
 color[] colorHighlights;
@@ -44,7 +44,7 @@ float lineWeight = 10.0;
 float lineHighlightMidWeight = 4.0;
 float lineHighlightMainWeight = 1.0;
 color lineHighlightColor = #FFFFFF;
-int maxLines = 8;
+int maxLines = 1;
 int newLineChances = 5;
 float newLineOdds = 30;
 
@@ -73,6 +73,7 @@ boolean DEBUG = false;
 boolean showFPS = false;
 
 static float PI_3_2 = HALF_PI + PI;
+int lineCount = 0;
 
 void setup() {
   fullScreen();
@@ -175,6 +176,35 @@ void setup() {
 void draw() {
   background(backgroundColor);
   
+  switch (lineCount) {
+    case 0:
+    case 1:
+    case 2: maxLines = 1; break;
+    case 3: 
+    case 4:
+    case 5:
+    case 6: maxLines = 3; break;
+    case 7: 
+    case 8:
+    case 9:
+    case 10:
+    case 11:
+    case 12:
+    case 13:
+    case 14:
+    case 15:
+    case 16:
+    case 17:
+    case 18:
+    case 19: maxLines = 5; break;
+    default: maxLines = 8; break;
+  }
+  
+  if (lineCount >= 50) {
+    lineCount = 0;
+    maxLines = 1;
+  }
+  
   for (Line line : lines) {
     line.Move();
   }
@@ -188,10 +218,12 @@ void draw() {
   for (int i = 1; i <= newLineChances && lines.size() < maxLines; i++) {
     if (int(random(newLineOdds)) == 0) {
       lines.add(newLine());
+      lineCount++;
     }
   }
-  if (lines.size() == 0) {
+  if (lines.size() == 0 && maxLines > 0) {
     lines.add(newLine());
+    lineCount++;
   }
   
   for (Puddle puddle : puddles) {
@@ -309,7 +341,7 @@ void mousePressed() {
 }
 
 void drawFPS() {
-  String txt = nf(frameRate, 0, 1) + " fps";
+  String txt = nf(frameRate, 0, 1) + " fps: " + lineCount;
   textSize(16);
   float pad = 4;
   float w = textWidth(txt) + 2*pad;
