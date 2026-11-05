@@ -1,3 +1,11 @@
+import gifAnimation.*;
+
+GifMaker gifExport;
+int gifFrameStart = 0;
+int gifFrameStop = 750;
+int gifFrameRate = 25; // fps
+boolean saveGif = false;
+
 ArrayList<Line> lines;
 ArrayList<Splitter> splitters;
 ArrayList<Pinwheel> pinwheels;
@@ -78,6 +86,13 @@ int lineCount = 0;
 void setup() {
   fullScreen();
   frameRate(25);
+
+  // Set up the gif exporter.
+  if (saveGif) {
+    gifExport = new GifMaker(this, "crackler.gif");
+    gifExport.setRepeat(0); // Loop forever.
+    gifExport.setDelay(1000/gifFrameRate);
+  }
 
   lines = new ArrayList<>();
   splitters = new ArrayList<>();
@@ -316,6 +331,20 @@ void draw() {
 
   for (Line line : lines) {
     line.DrawShort();
+  }
+
+  if (saveGif) {
+    // Add this frame to the gif.
+    if (frameCount >= gifFrameStart) {
+      gifExport.addFrame();
+    }
+
+    // Finish and save.
+    if (frameCount >= gifFrameStop) {
+      gifExport.finish();
+      println("GIF saved!");
+      exit();
+    }
   }
 
   if (showFPS) {
