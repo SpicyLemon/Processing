@@ -6,16 +6,16 @@ ArrayList<Zapper> zappers;
 float xLimMin, xLimMax, yLimMin, yLimMax;
 float offsetHighlightMid, offsetHighlightMain;
 color[] baseColors = new color[]{
-  //#FF0000, // Red
-  //#FFFF00, // Yellow
-  //#00FF00, // Green
-  //#00FFFF, // Cyan
-  //#0000FF, // Blue
-  //#FF00FF, // Magenta
-  #FF00FF, // Magenta
-  #FFAA00, // Orange
   #FF0000, // Red
-  #AA00FF, // Purple
+  #FFFF00, // Yellow
+  #00FF00, // Green
+  #00FFFF, // Cyan
+  #0000FF, // Blue
+  #FF00FF, // Magenta
+  //#FF00FF, // Magenta
+  //#FFAA00, // Orange
+  //#FF0000, // Red
+  //#AA00FF, // Purple
 };
 color[] colors;
 color[] colorHighlights;
@@ -38,7 +38,7 @@ float offDirMin = 25;
 float offDirMax = 100;
 float minLength = 200;
 float maxLength = 400;
-float minSpeed = 10;
+float minSpeed = 15;
 float maxSpeed = 25;
 float lineWeight = 10.0;
 float lineHighlightMidWeight = 4.0;
@@ -239,7 +239,7 @@ void draw() {
   }
   
   for (Splitter splitter : splitters) {
-    if (splitter.Age == 25) {
+    if (splitter.Age == 3) {
       for (Pinwheel pinwheel : newPinwheels(splitter)) {
         pinwheels.add(pinwheel);
       }
@@ -278,9 +278,9 @@ void draw() {
     pinwheel.Draw();
   }
   
-  for (Splitter splitter : splitters) {
-    splitter.Draw();
-  }
+  //for (Splitter splitter : splitters) {
+  //  splitter.Draw();
+  //}
 
   for (Line line : lines) {
     line.DrawShort();
@@ -410,10 +410,11 @@ Splitter[] newSplitters() {
 Pinwheel[] newPinwheels(Splitter s) {
   color[] pal = pinwheelColors[colorIndex.get(s.Parent.Col)];
   return new Pinwheel[]{
-    new Pinwheel(s.Path1A[s.Path1A.length-1], pal, 0),
+    new Pinwheel(s.LastSplit1, pal, 0),
+    new Pinwheel(s.Split, pal, 0),
     //new Pinwheel(s.Path1B[s.Path1B.length-1], pal, 0),
     //new Pinwheel(s.Path2A[s.Path2A.length-1], pal, 0),
-    new Pinwheel(s.Path2B[s.Path2B.length-1], pal, 0),
+    new Pinwheel(s.LastSplit2, pal, 0),
   };
 }
 
