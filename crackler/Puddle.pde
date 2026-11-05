@@ -124,19 +124,24 @@ class Zapper {
   }
   
   boolean IsDead() {
-    return this.Age >= this.Points.length;
+    // The last segment is gone once minI (in Draw) passes it.
+    return this.Age >= 2 * (this.Points.length - 1) - 1;
   }
-  
+
   void Draw() {
+    // Segment i goes from Points[i-1] to Points[i]. One is added per age until the last point
+    // is reached (Age = steps-1), then one is removed from the start per age.
+    int steps = this.Points.length - 1;
+    int maxI = min(this.Age+1, steps);
+    int minI = max(1, this.Age - steps + 2);
     strokeWeight(1.5);
     stroke(pinwheelHighlights[0]);
-    int maxI = min(this.Age+1, this.Points.length-1);
-    for (int i = 1; i <= maxI; i++) {
+    for (int i = minI; i <= maxI; i++) {
       line(this.Points[i-1].x, this.Points[i-1].y, this.Points[i].x, this.Points[i].y);
     }
     strokeWeight(1);
     stroke(this.Col);
-    for (int i = 1; i <= maxI; i++) {
+    for (int i = minI; i <= maxI; i++) {
       line(this.Points[i-1].x, this.Points[i-1].y, this.Points[i].x, this.Points[i].y);
     }
   }
