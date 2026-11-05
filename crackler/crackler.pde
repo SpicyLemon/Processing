@@ -2,7 +2,7 @@ import gifAnimation.*;
 
 GifMaker gifExport;
 int gifFrameRate = 20; // fps
-boolean saveGif = true;
+boolean saveGif = false;
 
 ArrayList<Line> lines;
 ArrayList<Splitter> splitters;
@@ -83,7 +83,7 @@ int lineCount = 0;
 int starts = 0;
 
 void setup() {
-  size(1024, 768);
+  fullScreen();
   frameRate(20);
 
   // Set up the gif exporter.
@@ -216,7 +216,7 @@ void draw() {
     default: maxLines = 8; break;
   }
   
-  if (lineCount >= 20) {
+  if (lineCount >= 30) {
     lineCount = 0;
     maxLines = 1;
     starts++;
