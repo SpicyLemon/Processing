@@ -123,17 +123,21 @@ class Zapper {
     this.Age++;
   }
   
+  // The max number of segments visible at once.
+  static final int VISIBLE_SEGMENTS = 4;
+
   boolean IsDead() {
     // The last segment is gone once minI (in Draw) passes it.
-    return this.Age >= 2 * (this.Points.length - 1) - 1;
+    int steps = this.Points.length - 1;
+    return this.Age >= steps + min(VISIBLE_SEGMENTS, steps) - 1;
   }
 
   void Draw() {
-    // Segment i goes from Points[i-1] to Points[i]. One is added per age until the last point
-    // is reached (Age = steps-1), then one is removed from the start per age.
+    // Segment i goes from Points[i-1] to Points[i] and is visible while Age is in
+    // [i-1, i-2+VISIBLE_SEGMENTS]. Once the last point is reached, the rest disappear one per age.
     int steps = this.Points.length - 1;
     int maxI = min(this.Age+1, steps);
-    int minI = max(1, this.Age - steps + 2);
+    int minI = max(1, this.Age - min(VISIBLE_SEGMENTS, steps) + 2);
     strokeWeight(1.5);
     stroke(pinwheelHighlights[0]);
     for (int i = minI; i <= maxI; i++) {

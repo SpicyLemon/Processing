@@ -44,7 +44,7 @@ float lineWeight = 10.0;
 float lineHighlightMidWeight = 4.0;
 float lineHighlightMainWeight = 1.0;
 color lineHighlightColor = #FFFFFF;
-int maxLines = 5;
+int maxLines = 8;
 int newLineChances = 5;
 float newLineOdds = 30;
 
@@ -428,7 +428,7 @@ float[] zapperMainDirs = new float[]{
 Zapper[] newZappers(Pinwheel pinwheel) {
   Zapper[] rv = new Zapper[4];
   for (int i = 0; i < 4; i++) {
-    rv[i] = new Zapper(pinwheel.Corners[i][0], zapperMainDirs[i], 5, pinwheel.Pal[0]);
+    rv[i] = new Zapper(pinwheel.Corners[i][0], zapperMainDirs[i], 7, pinwheel.Pal[0]);
   }
   return rv;
 }
