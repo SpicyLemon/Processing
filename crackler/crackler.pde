@@ -37,6 +37,7 @@ PVector[][] pinwheelCorners;
 float border = 25;
 float borderWeight = 2;
 color borderColor = #FFFFFF;
+float offscreenDist = 20;
 
 float mainDirMin = 200;
 float mainDirMax = 500;
@@ -403,18 +404,18 @@ Line newLine() {
   switch (mainDir) {
     case Up:
       x = random(xLimMin, xLimMax);
-      y = height + 5;
+      y = height + offscreenDist;
       break;
     case Down:
       x = random(xLimMin, xLimMax);
-      y = -5;
+      y = -offscreenDist;
       break;
     case Left:
-      x = width + 5;
+      x = width + offscreenDist;
       y = random(yLimMin, yLimMax);
       break;
     case Right:
-      x = -5;
+      x = -offscreenDist;
       y = random(yLimMin, yLimMax);
       break;
   }
@@ -439,16 +440,16 @@ Line newLine() {
 
   switch (mainDir) {
     case Up:
-      rv.SetLast(cur.x, -5);
+      rv.SetLast(cur.x, -offscreenDist);
       break;
     case Down:
-      rv.SetLast(cur.x, height+5);
+      rv.SetLast(cur.x, height+offscreenDist);
       break;
     case Left:
-      rv.SetLast(-5, cur.y);
+      rv.SetLast(-offscreenDist, cur.y);
       break;
     case Right:
-      rv.SetLast(width+5, cur.y);
+      rv.SetLast(width+offscreenDist, cur.y);
       break;
   }
 
