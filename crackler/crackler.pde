@@ -1,10 +1,8 @@
 import gifAnimation.*;
 
 GifMaker gifExport;
-int gifFrameStart = 0;
-int gifFrameStop = 750;
-int gifFrameRate = 25; // fps
-boolean saveGif = false;
+int gifFrameRate = 20; // fps
+boolean saveGif = true;
 
 ArrayList<Line> lines;
 ArrayList<Splitter> splitters;
@@ -82,10 +80,11 @@ boolean showFPS = false;
 
 static float PI_3_2 = HALF_PI + PI;
 int lineCount = 0;
+int starts = 0;
 
 void setup() {
-  fullScreen();
-  frameRate(25);
+  size(1024, 768);
+  frameRate(20);
 
   // Set up the gif exporter.
   if (saveGif) {
@@ -186,6 +185,8 @@ void setup() {
     pinwheelCorners[2][i] = new PVector(s, s);
     pinwheelCorners[3][i] = new PVector(-s, s);
   }
+  
+  starts = 1;
 }
 
 void draw() {
@@ -197,27 +198,28 @@ void draw() {
     case 2: maxLines = 1; break;
     case 3: 
     case 4:
-    case 5:
-    case 6: maxLines = 3; break;
+    case 5: maxLines = 3; break;
+    case 6: 
     case 7: 
     case 8:
     case 9:
     case 10:
     case 11:
     case 12:
-    case 13:
+    case 13: maxLines = 5; break;
     case 14:
-    case 15:
+    case 15: 
     case 16:
     case 17:
     case 18:
-    case 19: maxLines = 5; break;
+    case 19:
     default: maxLines = 8; break;
   }
   
-  if (lineCount >= 50) {
+  if (lineCount >= 20) {
     lineCount = 0;
     maxLines = 1;
+    starts++;
   }
   
   for (Line line : lines) {
@@ -335,12 +337,10 @@ void draw() {
 
   if (saveGif) {
     // Add this frame to the gif.
-    if (frameCount >= gifFrameStart) {
-      gifExport.addFrame();
-    }
+    gifExport.addFrame();
 
     // Finish and save.
-    if (frameCount >= gifFrameStop) {
+    if (starts >= 2 && lineCount >= 1) {
       gifExport.finish();
       println("GIF saved!");
       exit();
