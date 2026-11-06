@@ -120,7 +120,7 @@ class Line {
   
   void DrawFull() {
     float sw = this.Points.size()*2 + 1;
-    stroke(this.Col);
+    pg.stroke(this.Col);
     PVector p1 = null;
     PVector p2 = this.Points.get(0);
     if (DEBUG) {
@@ -132,46 +132,46 @@ class Line {
       if (DEBUG) {
         println(i + ": (" + p2.x + ", " + p2.y + ")");
       }
-      strokeWeight(sw);
-      line(p1.x, p1.y, p2.x, p2.y);
+      pg.strokeWeight(sw);
+      pg.line(p1.x, p1.y, p2.x, p2.y);
       sw -= 2;
     }
     
     PVector head = this.GetPoint(this.Head);
     PVector tail = this.GetPoint(this.Tail);
-    stroke(#FFFFFF);
-    strokeWeight(lineWeight);
-    point(head.x, head.y);
-    point(tail.x, tail.y);
+    pg.stroke(#FFFFFF);
+    pg.strokeWeight(lineWeight);
+    pg.point(head.x, head.y);
+    pg.point(tail.x, tail.y);
   }
   
   void DrawShort() {
-    stroke(this.Col);
-    strokeWeight(lineWeight);
+    pg.stroke(this.Col);
+    pg.strokeWeight(lineWeight);
     PVector p0;
     PVector p1 = this.Visible.get(0);
     for (int i = 1; i < this.Visible.size(); i++) {
       p0 = p1;
       p1 = this.Visible.get(i);
-      line(p0.x, p0.y, p1.x, p1.y);
+      pg.line(p0.x, p0.y, p1.x, p1.y);
     }
 
-    stroke(this.HighlightMid);
-    strokeWeight(lineHighlightMidWeight);
+    pg.stroke(this.HighlightMid);
+    pg.strokeWeight(lineHighlightMidWeight);
     p1 = this.Visible.get(0);
     for (int i = 1; i < this.Visible.size(); i++) {
       p0 = p1;
       p1 = this.Visible.get(i);
-      line(p0.x-offsetHighlightMid, p0.y-offsetHighlightMid, p1.x-offsetHighlightMid, p1.y-offsetHighlightMid);
+      pg.line(p0.x-offsetHighlightMid, p0.y-offsetHighlightMid, p1.x-offsetHighlightMid, p1.y-offsetHighlightMid);
     }
 
-    stroke(this.HighlightMain);
-    strokeWeight(lineHighlightMainWeight);
+    pg.stroke(this.HighlightMain);
+    pg.strokeWeight(lineHighlightMainWeight);
     p1 = this.Visible.get(0);
     for (int i = 1; i < this.Visible.size(); i++) {
       p0 = p1;
       p1 = this.Visible.get(i);
-      line(p0.x-offsetHighlightMain, p0.y-offsetHighlightMain, p1.x-offsetHighlightMain, p1.y-offsetHighlightMain);
+      pg.line(p0.x-offsetHighlightMain, p0.y-offsetHighlightMain, p1.x-offsetHighlightMain, p1.y-offsetHighlightMain);
     }
   }
 }

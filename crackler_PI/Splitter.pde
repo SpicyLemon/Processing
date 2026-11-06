@@ -36,17 +36,17 @@ class Splitter {
   }
   
   void Draw() {
-    strokeWeight(splitterStartWeight);
-    stroke(this.Pal[2]);
-    line(this.Corner1.x, this.Corner1.y, this.LastSplit1.x, this.LastSplit1.y);
-    line(this.Corner2.x, this.Corner2.y, this.LastSplit2.x, this.LastSplit2.y);
+    pg.strokeWeight(splitterStartWeight);
+    pg.stroke(this.Pal[2]);
+    pg.line(this.Corner1.x, this.Corner1.y, this.LastSplit1.x, this.LastSplit1.y);
+    pg.line(this.Corner2.x, this.Corner2.y, this.LastSplit2.x, this.LastSplit2.y);
 
-    stroke(this.Pal[1]);
-    line(this.Split.x, this.Split.y, this.Corner1.x, this.Corner1.y);
-    line(this.Split.x, this.Split.y, this.Corner2.x, this.Corner2.y);
+    pg.stroke(this.Pal[1]);
+    pg.line(this.Split.x, this.Split.y, this.Corner1.x, this.Corner1.y);
+    pg.line(this.Split.x, this.Split.y, this.Corner2.x, this.Corner2.y);
 
-    stroke(this.Pal[0]);
-    line(this.Start.x, this.Start.y, this.Split.x, this.Split.y);
+    pg.stroke(this.Pal[0]);
+    pg.line(this.Start.x, this.Start.y, this.Split.x, this.Split.y);
   }
 }
 

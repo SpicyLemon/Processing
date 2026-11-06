@@ -23,16 +23,16 @@ class Puddle {
     int shapes = this.Pal.length;  // == Corners[0].length - 1 (the last entry is the center).
     int colorAge = min(this.Age, shapes - 1);
     int minS = max(0, this.Age - (shapes - 1)) / SHRINK_FRAMES;
-    noStroke();
+    pg.noStroke();
     // Outer-most first so inner shapes are drawn on top.
     for (int s = min(this.Age, shapes - 1); s >= minS; s--) {
       int ring = shapes - 1 - s;  // Index into Corners[j][...]; 0 is outer-most.
-      fill(this.Pal[shapes - 1 - (colorAge - s)]);
-      beginShape();
+      pg.fill(this.Pal[shapes - 1 - (colorAge - s)]);
+      pg.beginShape();
       for (int j = 0; j < this.Corners.length; j++) {
-        vertex(this.Corners[j][ring].x, this.Corners[j][ring].y);
+        pg.vertex(this.Corners[j][ring].x, this.Corners[j][ring].y);
       }
-      endShape(CLOSE);
+      pg.endShape(CLOSE);
     }
   }
 }
@@ -82,22 +82,22 @@ class Pinwheel {
     int maxIdx = this.Pal.length-1;
     int first = max(0, this.Age - VISIBLE_SEGMENTS + 1);
     int last = min(maxIdx, this.Age);
-    strokeWeight(1.5);
+    pg.strokeWeight(1.5);
     for (int k = first; k <= last; k++) {
       int i = maxIdx - k;
-      stroke(pinwheelHighlights[i]);
+      pg.stroke(pinwheelHighlights[i]);
       for (int j = 0; j < this.Corners.length; j++) {
         int j2 = (j + this.Corners.length + this.DSpin) % this.Corners.length;
-        line(this.Corners[j][i+1].x, this.Corners[j][i+1].y, this.Corners[j2][i].x, this.Corners[j2][i].y);
+        pg.line(this.Corners[j][i+1].x, this.Corners[j][i+1].y, this.Corners[j2][i].x, this.Corners[j2][i].y);
       }
     }
-    strokeWeight(1);
+    pg.strokeWeight(1);
     for (int k = first; k <= last; k++) {
       int i = maxIdx - k;
-      stroke(this.Pal[i]);
+      pg.stroke(this.Pal[i]);
       for (int j = 0; j < this.Corners.length; j++) {
         int j2 = (j + this.Corners.length + this.DSpin) % this.Corners.length;
-        line(this.Corners[j][i+1].x, this.Corners[j][i+1].y, this.Corners[j2][i].x, this.Corners[j2][i].y);
+        pg.line(this.Corners[j][i+1].x, this.Corners[j][i+1].y, this.Corners[j2][i].x, this.Corners[j2][i].y);
       }
     }
   }
@@ -138,15 +138,15 @@ class Zapper {
     int steps = this.Points.length - 1;
     int maxI = min(this.Age+1, steps);
     int minI = max(1, this.Age - min(VISIBLE_SEGMENTS, steps) + 2);
-    strokeWeight(1.5);
-    stroke(pinwheelHighlights[0]);
+    pg.strokeWeight(1.5);
+    pg.stroke(pinwheelHighlights[0]);
     for (int i = minI; i <= maxI; i++) {
-      line(this.Points[i-1].x, this.Points[i-1].y, this.Points[i].x, this.Points[i].y);
+      pg.line(this.Points[i-1].x, this.Points[i-1].y, this.Points[i].x, this.Points[i].y);
     }
-    strokeWeight(1);
-    stroke(this.Col);
+    pg.strokeWeight(1);
+    pg.stroke(this.Col);
     for (int i = minI; i <= maxI; i++) {
-      line(this.Points[i-1].x, this.Points[i-1].y, this.Points[i].x, this.Points[i].y);
+      pg.line(this.Points[i-1].x, this.Points[i-1].y, this.Points[i].x, this.Points[i].y);
     }
   }
 }

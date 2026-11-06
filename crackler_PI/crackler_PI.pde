@@ -4,6 +4,7 @@ GifMaker gifExport;
 int gifFrameRate = 20; // fps
 boolean saveGif = false;
 
+PGraphics pg;
 ArrayList<Line> lines;
 ArrayList<Splitter> splitters;
 ArrayList<Pinwheel> pinwheels;
@@ -81,6 +82,7 @@ int starts = 0;
 void setup() {
   fullScreen();
   frameRate(20);
+  pg = createGraphics(width/2, height/2);
 
   // Set up the gif exporter.
   if (saveGif) {
@@ -97,8 +99,8 @@ void setup() {
   
   xLimMin = border;
   yLimMin = border;
-  xLimMax = width-border;
-  yLimMax = height-border;
+  xLimMax = pg.width-border;
+  yLimMax = pg.height-border;
   
   offsetHighlightMain = max(lineWeight/2-1, 1);
   offsetHighlightMid = max(lineWeight/2-2, 2);
@@ -186,7 +188,8 @@ void setup() {
 }
 
 void draw() {
-  background(backgroundColor);
+  pg.beginDraw();
+  pg.background(backgroundColor);
   
   switch (lineCount) {
     case 0:
@@ -352,6 +355,9 @@ void draw() {
   if (DEBUG) {
     println(getFPSText());
   }
+  
+  pg.endDraw();
+  image(pg, 0, 0, width, height);
 }
 
 void keyPressed() {
@@ -373,16 +379,16 @@ void mousePressed() {
 
 void drawFPS() {
   String txt = getFPSText();
-  textSize(16);
+  pg.textSize(16);
   float pad = 4;
-  float w = textWidth(txt) + 2*pad;
-  float h = textAscent() + textDescent() + 2*pad;
-  noStroke();
-  fill(0, 160);
-  rect(0, height - h, w, h);
-  fill(255);
-  textAlign(LEFT, BOTTOM);
-  text(txt, pad, height - pad);
+  float w = pg.textWidth(txt) + 2*pad;
+  float h = pg.textAscent() + pg.textDescent() + 2*pad;
+  pg.noStroke();
+  pg.fill(0, 160);
+  pg.rect(0, pg.height - h, w, h);
+  pg.fill(255);
+  pg.textAlign(LEFT, BOTTOM);
+  pg.text(txt, pad, pg.height - pad);
 }
 
 String getFPSText() {
@@ -390,12 +396,12 @@ String getFPSText() {
 }
 
 void drawBorder() {
-  strokeWeight(borderWeight);
-  stroke(borderColor);
-  line(xLimMin, yLimMin, xLimMin, yLimMax);
-  line(xLimMin, yLimMax, xLimMax, yLimMax);
-  line(xLimMax, yLimMax, xLimMax, yLimMin);
-  line(xLimMax, yLimMin, xLimMin, yLimMin);
+  pg.strokeWeight(borderWeight);
+  pg.stroke(borderColor);
+  pg.line(xLimMin, yLimMin, xLimMin, yLimMax);
+  pg.line(xLimMin, yLimMax, xLimMax, yLimMax);
+  pg.line(xLimMax, yLimMax, xLimMax, yLimMin);
+  pg.line(xLimMax, yLimMin, xLimMin, yLimMin);
 }
 
 color randomColor() {
@@ -409,14 +415,14 @@ Line newLine() {
   switch (mainDir) {
     case Up:
       x = random(xLimMin, xLimMax);
-      y = height + offscreenDist;
+      y = pg.height + offscreenDist;
       break;
     case Down:
       x = random(xLimMin, xLimMax);
       y = -offscreenDist;
       break;
     case Left:
-      x = width + offscreenDist;
+      x = pg.width + offscreenDist;
       y = random(yLimMin, yLimMax);
       break;
     case Right:
@@ -448,13 +454,13 @@ Line newLine() {
       rv.SetLast(cur.x, -offscreenDist);
       break;
     case Down:
-      rv.SetLast(cur.x, height+offscreenDist);
+      rv.SetLast(cur.x, pg.height+offscreenDist);
       break;
     case Left:
       rv.SetLast(-offscreenDist, cur.y);
       break;
     case Right:
-      rv.SetLast(width+offscreenDist, cur.y);
+      rv.SetLast(pg.width+offscreenDist, cur.y);
       break;
   }
 
