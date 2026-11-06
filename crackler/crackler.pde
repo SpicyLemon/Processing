@@ -2,7 +2,7 @@ import gifAnimation.*;
 
 GifMaker gifExport;
 int gifFrameRate = 20; // fps
-boolean saveGif = false;
+boolean saveGif = true;
 
 ArrayList<Line> lines;
 ArrayList<Splitter> splitters;
@@ -79,7 +79,7 @@ int lineCount = 0;
 int starts = 0;
 
 void setup() {
-  fullScreen();
+  size(1024, 768);
   frameRate(20);
 
   // Set up the gif exporter.
@@ -190,9 +190,9 @@ void draw() {
   
   switch (lineCount) {
     case 0:
-    case 1:
-    case 2: maxLines = 1; break;
-    case 3: 
+    case 1: maxLines = 1; break;
+    case 2: 
+    case 3: maxLines = 2; break;
     case 4:
     case 5: maxLines = 3; break;
     case 6: 
@@ -200,9 +200,9 @@ void draw() {
     case 8:
     case 9:
     case 10:
-    case 11:
-    case 12:
-    case 13: maxLines = 5; break;
+    case 11: maxLines = 5; break;
+    case 12: 
+    case 13: 
     case 14:
     case 15: 
     case 16:
@@ -212,10 +212,13 @@ void draw() {
     default: maxLines = 8; break;
   }
   
-  if (lineCount >= 30) {
+  if (lineCount >= 17) {
     lineCount = 0;
     maxLines = 1;
     starts++;
+  }
+  if (saveGif && starts >= 2) {
+    maxLines = 0;
   }
   
   for (Line line : lines) {
@@ -302,10 +305,10 @@ void draw() {
   }
   
   for (int i = 1; i <= newSplitterChances && splitters.size() < maxSplitters; i++) {
-    if (int(random(newSplitterOdds)) == 0) {
-      Splitter[] ns = newSplitters();
-      splitters.add(ns[0]);
-      splitters.add(ns[1]);
+    if (int(random(newSplitterOdds)) == 0 && lines.size() > 0) {
+      for (Splitter splitter : newSplitters()) {
+        splitters.add(splitter);
+      }
     }
   }
   
@@ -336,7 +339,7 @@ void draw() {
     gifExport.addFrame();
 
     // Finish and save.
-    if (starts >= 2 && lineCount >= 1) {
+    if (starts >= 2 && lines.size() == 0 && pinwheels.size() == 0 && zappers.size() == 0 && puddles.size() == 0) {
       gifExport.finish();
       println("GIF saved!");
       exit();
@@ -366,7 +369,7 @@ void mousePressed() {
 }
 
 void drawFPS() {
-  String txt = nf(frameRate, 0, 1) + " fps: " + lineCount;
+  String txt = nf(frameRate, 0, 1) + " fps: " + lineCount + ": " + lines.size() + "/" + maxLines;
   textSize(16);
   float pad = 4;
   float w = textWidth(txt) + 2*pad;
