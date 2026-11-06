@@ -349,6 +349,9 @@ void draw() {
   if (showFPS) {
     drawFPS();
   }
+  if (DEBUG) {
+    println(getFPSText());
+  }
 }
 
 void keyPressed() {
@@ -369,7 +372,7 @@ void mousePressed() {
 }
 
 void drawFPS() {
-  String txt = nf(frameRate, 0, 1) + " fps: " + lineCount + ": " + lines.size() + "/" + maxLines;
+  String txt = getFPSText();
   textSize(16);
   float pad = 4;
   float w = textWidth(txt) + 2*pad;
@@ -380,6 +383,10 @@ void drawFPS() {
   fill(255);
   textAlign(LEFT, BOTTOM);
   text(txt, pad, height - pad);
+}
+
+String getFPSText() {
+  return nf(frameRate, 0, 1) + " fps: " + lines.size() + "/" + maxLines + " = " + lineCount;
 }
 
 void drawBorder() {
