@@ -80,9 +80,9 @@ int lineCount = 0;
 int starts = 0;
 
 void setup() {
-  fullScreen();
+  fullScreen(P2D);
   frameRate(20);
-  pg = createGraphics(width/2, height/2);
+  pg = createGraphics(width, height, P2D);
 
   // Set up the gif exporter.
   if (saveGif) {
