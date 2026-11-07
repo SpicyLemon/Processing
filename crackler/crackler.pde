@@ -304,7 +304,7 @@ void draw() {
     }
   }
   
-  for (int i = 1; i <= newSplitterChances && splitters.size() < maxSplitters; i++) {
+  for (int i = 1; i <= (newSplitterChances + lines.size()) && splitters.size() < maxSplitters; i++) {
     if (int(random(newSplitterOdds)) == 0 && lines.size() > 0) {
       for (Splitter splitter : newSplitters()) {
         splitters.add(splitter);
