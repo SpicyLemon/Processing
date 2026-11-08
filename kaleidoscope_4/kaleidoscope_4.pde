@@ -33,13 +33,17 @@ color[] backColors = new color[]{
   #00FFFF, // Cyan
   #0000FF, // Blue
   #FF00FF, // Magenta
+  #FFAA00, // Orange
+  #FF0000, // Red
+  #AA00FF, // Purple
+  #FF00FF, // Magenta
 };
 float dBackPalI = 0.1;
-int entriesPerBackPal = 25;
+int entriesPerBackPal = 15;
 
 // Values governing the background ovals.
 int divs = 9;
-float dOffsetMax = 0.03;
+float dOffsetMax = 0.02;
 float ddOffsetMax = 0.0005;
 float backOvalBorder = 2.0;
 float backOvalOffsetMax = 150;
