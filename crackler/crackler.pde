@@ -12,16 +12,16 @@ ArrayList<Zapper> zappers;
 float xLimMin, xLimMax, yLimMin, yLimMax;
 float offsetHighlightMid, offsetHighlightMain;
 color[] baseColors = new color[]{
-  //#FF0000, // Red
-  //#FFFF00, // Yellow
-  //#00FF00, // Green
-  //#00FFFF, // Cyan
-  //#0000FF, // Blue
-  //#FF00FF, // Magenta
+  #FF0000, // Red
+  #FFFF00, // Yellow
+  #00FF00, // Green
+  #00FFFF, // Cyan
+  #0000FF, // Blue
   #FF00FF, // Magenta
   #FFAA00, // Orange
   #FF0000, // Red
   #AA00FF, // Purple
+  #FF00FF, // Magenta
 };
 color[] colors;
 color[] colorHighlights;
