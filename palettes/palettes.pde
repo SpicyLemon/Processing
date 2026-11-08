@@ -52,7 +52,7 @@ void setup() {
     new DrawPal(10, new Palette(5, #FFFF00, #FF9900)
             .Append(new Palette(11, #FF9900, #FF00FF))),
     // Orange to Red to Purple to Magenta and back.
-    new DrawPal(10, new Palette(5, #FFAA00, #FF0000)
+    new DrawPal(10, new Palette(6, #FFAA00, #FF0000)
             .Append(new Palette(6, #FF0000, #AA00FF))
             .Append(new Palette(6, #AA00FF, #FF00FF))
             .AppendLoop(4)),
