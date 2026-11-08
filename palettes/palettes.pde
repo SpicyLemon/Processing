@@ -15,29 +15,29 @@ void setup() {
   Palette p4 = new Palette(#F03838, #EA6D24, #FC9E38, #F7D211, #717136, #303030);
 
   DrawPal[] toDraw = new DrawPal[]{
-    new DrawPal(50, p1),
+    new DrawPal(10, p1),
     new DrawPal(10, p2),
-    new DrawPal(15, p3),
-    new DrawPal(75, new Palette(p1, p2, p3, p4)),
+    new DrawPal(10, p3),
+    new DrawPal(10, new Palette(p1, p2, p3, p4)),
     // 10 colors because first color of append equals last of base.
-    new DrawPal(50, new Palette(6, #00A71D, #4F4FFF)
+    new DrawPal(10, new Palette(6, #00A71D, #4F4FFF)
             .Append(new Palette(5, #4F4FFF, #FFFFFF))),
     // 11 colors because first color of append is not the same as the last of the base.
-    new DrawPal(50, new Palette(6, #00A71D, #4F4FFF)
+    new DrawPal(10, new Palette(6, #00A71D, #4F4FFF)
             .Append(new Palette(5, #4F50FF, #FFFFFF))),
     // Dark-Red to Blue.
-    new DrawPal(25, new Palette(20, #AA0000, #0000FF)),
+    new DrawPal(10, new Palette(20, #AA0000, #0000FF)),
     // Green to teal to magenta:
-    new DrawPal(25, new Palette(10, #81FF5F, #04B4BC)
+    new DrawPal(10, new Palette(10, #81FF5F, #04B4BC)
             .Append(new Palette(11, #04B4BC, #EA24DE))),
     // Red to Yellow.
-    new DrawPal(25, new Palette(17, #FF0000, #FFFF00)
+    new DrawPal(10, new Palette(17, #FF0000, #FFFF00)
             .Append(new Palette(4, #FFFF00, #F0FF00))),
     // Yellow, Orange, Red, Purple, Blue.
-    new DrawPal(25, new Palette(10, #FFFF00, #FF0000)
+    new DrawPal(10, new Palette(10, #FFFF00, #FF0000)
             .Append(new Palette(11, #FF0000, #0000FF))),
     // Forrest.
-    new DrawPal(25, new Palette(7, #0FB7A7, #387627)
+    new DrawPal(10, new Palette(7, #0FB7A7, #387627)
             .Append(new Palette(8, #387627, #AAAA45))
             .Append(new Palette(7, #AAAA45, #93601C))),
     // Red to black to red, fading out at the end.
@@ -52,7 +52,7 @@ void setup() {
     new DrawPal(10, new Palette(5, #FFFF00, #FF9900)
             .Append(new Palette(11, #FF9900, #FF00FF))),
     // Orange to Red to Purple to Magenta and back.
-    new DrawPal(10, new Palette(6, #FFAA00, #FF0000)
+    new DrawPal(75, new Palette(6, #FFAA00, #FF0000)
             .Append(new Palette(6, #FF0000, #AA00FF))
             .Append(new Palette(6, #AA00FF, #FF00FF))
             .AppendLoop(4)),
