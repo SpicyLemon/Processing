@@ -65,6 +65,9 @@ void setup() {
   
   rotR = new Palette(10, #00FF00, #FF0000);
   rotL = new Palette(16).Append(new Palette(16, #FFFFFF, #000000));
+  
+  // Log the colors of the last palette entry.
+  toDraw[toDraw.length-1].Pal.Log("pal");
 }
 
 void draw() {

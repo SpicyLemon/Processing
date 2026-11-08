@@ -172,4 +172,14 @@ class Palette {
     }
     return this;
   }
+
+  // Log writes each entry of this palette to the log in the format <name>[<i>] = #<hex>.
+  // Indexes match those used by Get and Set (i.e. any rotation is applied).
+  void Log(String name) {
+    for (int i = 0; i < this.Colors.length; i++) {
+      // If you want the alpha, change this hex(..., 6) to just hex(...).
+      // It'll then output as #aarrggbb.
+      println(name + "[" + i + "] = #" + hex(this.Get(i).Value, 6));
+    }
+  }
 }
