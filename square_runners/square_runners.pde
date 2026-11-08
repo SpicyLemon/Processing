@@ -28,7 +28,7 @@ color[] dotColors = new color[]{
   #AA00FF, // Purple
   #FF00FF, // Magenta
 };
-color runnerEndColor = #000000;
+color runnerEndColor = #FFFFFF;
 int dotSize = 15;
 int dotSpace = 20;
 int trailLength = 8;
