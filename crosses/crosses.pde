@@ -9,11 +9,16 @@ float xLimMin, xLimMax, yLimMin, yLimMax;
 Cross[] crosses;
 int palLen = 16;
 Palette[] crossPals = new Palette[]{
-  new Palette(palLen, #FF00AA, #000000), // Pink
-  new Palette(palLen, #00FF00, #000000), // Green
-  new Palette(palLen, #AA00FF, #000000), // Purple
-  new Palette(palLen, #FFFF00, #000000), // Yellow
-  new Palette(palLen, #00FFFF, #000000), // Cyan
+  //new Palette(palLen, #FF00AA, #000000), // Pink
+  //new Palette(palLen, #00FF00, #000000), // Green
+  //new Palette(palLen, #AA00FF, #000000), // Purple
+  //new Palette(palLen, #FFFF00, #000000), // Yellow
+  //new Palette(palLen, #00FFFF, #000000), // Cyan
+  new Palette(palLen, #FFAA00, #000000), // Orange
+  new Palette(palLen, #FF0000, #000000), // Red
+  new Palette(palLen, #FF00FF, #000000), // Magenta
+  new Palette(palLen, #FF4499, #000000), // Solid Pink
+  new Palette(palLen, #CC0099, #000000), // Bright Purple
 };
 
 float edgeLim = 0.05;
