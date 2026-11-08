@@ -63,6 +63,10 @@ void setup() {
       #FFAA00, #AAFF00, #FF00AA, #AA00FF, #00FFAA, #00AAFF),
     // [6]: Pink to Orange to Yellow.
     new Palette(10, #FFAA00, #FF00AA).Append(new Palette(11, #FF00AA, #FFFF00)),
+    // [7]: Orange to Red To Purple to Magenta
+    new Palette(5, #FFAA00, #FF0000).Append(new Palette(6, #FF0000, #AA00FF))
+                                    .Append(new Palette(6, #AA00FF, #FF00FF))
+                                    .AppendLoop(4),
   };
   freshTracers();
   

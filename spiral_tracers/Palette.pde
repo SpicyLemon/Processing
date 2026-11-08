@@ -179,6 +179,18 @@ class Palette {
     return this;
   }
   
+  Palette AppendLoop(int toAdd) {
+    Palette loopPal = new Palette(toAdd+2, this.Colors[this.Colors.length-1].Value, this.Colors[0].Value);
+    int curLen = this.Colors.length;
+    int newSize = curLen + toAdd;
+    this.Colors = (Color[])expand(this.Colors, newSize);
+    int di = curLen;
+    for (int i = 0; i < toAdd; i++) {
+      this.Colors[di+i] = new Color(loopPal.Colors[i+1].Value);
+    }
+    return this;
+  }
+  
   // WithAlphaGradient sets the alpha of each color to a gradient as provided.
   Palette WithAlphaGradient(int zerothValue, int lastValue) {
     float mult = ((float)lastValue - (float)zerothValue)/(float)this.Colors.length;
