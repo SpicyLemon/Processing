@@ -73,7 +73,7 @@ float runnerSize = 25;
 
 void setup() {
   fullScreen();
-  frameRate(30);
+  frameRate(20);
   
   // Calculate some screen bounds.
   xMax = width/2;
