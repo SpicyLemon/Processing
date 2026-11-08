@@ -86,9 +86,13 @@ int dropletAlphaStop = 5;
 int dropletMaxFrames = 5;
 
 color[] colors = new color[]{#FFFFFF, // White first for easier random control.
-  #FF0000, #0000FF, #00FF00, #FFFF00, #FF00FF, #00FFFF,
-  #FFAA00, #AAFF00, #FF00AA, #AA00FF, #00FFAA, #00AAFF,
-  #AA0000, #0000AA, #00AA00, #AAAA00, #AA00AA, #00AAAA,
+  //#FF0000, #0000FF, #00FF00, #FFFF00, #FF00FF, #00FFFF,
+  //#FFAA00, #AAFF00, #FF00AA, #AA00FF, #00FFAA, #00AAFF,
+  //#AA0000, #0000AA, #00AA00, #AAAA00, #AA00AA, #00AAAA,
+  #FFAA00, #FF8800, #FF6600, #FF4400, #FF2200,
+  #FF0000, #EE0033, #DD0066, #CC0099, #BB00CC,
+  #AA00FF, #BB00FF, #CC00FF, #DD00FF, #EE00FF,
+  #FF00FF, #FF22CC, #FF4499, #FF6666, #FF8833,
   #000000, // Black last for easier random control.
 };
 
