@@ -72,13 +72,17 @@ int bubbleShrinkSpeed = 2;
 int bubbleChances = 5;
 int bubbleOdds = 5;
 
-int colorsBetweenBases = 1;
+int colorsBetweenBases = 3;
 color[] baseColors = new color[]{
+  //#FF0000, // Red
+  //#FFFF00, // Yellow
+  //#00FF00, // Green
+  //#00FFFF, // Cyan
+  //#0000FF, // Blue
+  //#FF00FF, // Magenta
+  #FFAA00, // Orange
   #FF0000, // Red
-  #FFFF00, // Yellow
-  #00FF00, // Green
-  #00FFFF, // Cyan
-  #0000FF, // Blue
+  #AA00FF, // Purple
   #FF00FF, // Magenta
 };
 boolean loopBaseColors = true;
