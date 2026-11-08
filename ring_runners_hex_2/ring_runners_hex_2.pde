@@ -21,36 +21,16 @@ static float PI_5_3 = PI * 5 / 3; // upper right inteersection angle.
 
 boolean drawCircles = false;
 color[] tracerColors = new color[]{
-  //#FF0000, // Red 
-  //#00FF00, // Green
-  //#FF00FF, // Magenta
-  //#00FFFF, // Cyan
-  //#FFFF00, // Yellow
-  //#AA00FF, // Purple
-  //#FFAA00, // Orange
-  #FFAA00, // Orange <===========
-  #FF8800, // Oranger
-  #FF6600, // reddish orange
-  #FF4400, // orangish red
-  #FF2200, // light red
-  #FF0000, // Red <==============
-  #EE0033, // dark red
-  #DD0066, // neon purple
-  #CC0099, // bright purple <----
-  #BB00CC, // solid purple
-  #AA00FF, // Purple <==========
-  #BB00FF, // light purple
-  #CC00FF, // lighter purple
-  #DD00FF, // darker magenta
-  #EE00FF, // dark magenta
-  #FF00FF, // Magenta <=========
-  #FF22CC, // hot pink
-  #FF4499, // solid pink <------
-  #FF6666, // peach
-  #FF8833, // light orange
+  #FF0000, // Red 
+  #00FF00, // Green
+  #FF00FF, // Magenta
+  #00FFFF, // Cyan
+  #FFFF00, // Yellow
+  #AA00FF, // Purple
+  #FFAA00, // Orange
 };
 color tracerColorEnd = #FFFFFF;
-int tracersPerColor = 1;
+int tracersPerColor = 3;
 int changeOdds = 2;
 float radius = 80;
 float speedDiv = 18.0; // Must be divisible by 6.
