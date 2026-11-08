@@ -17,11 +17,15 @@ Runner[] runners;
 ArrayList<Runner> roaming = new ArrayList<>();
 Palette dotPal;
 color[] dotColors = new color[]{
+  //#FF0000, // Red
+  //#FFFF00, // Yellow
+  //#00FF00, // Green
+  //#00FFFF, // Cyan
+  //#0000FF, // Blue
+  //#FF00FF, // Magenta
+  #FFAA00, // Orange
   #FF0000, // Red
-  #FFFF00, // Yellow
-  #00FF00, // Green
-  #00FFFF, // Cyan
-  #0000FF, // Blue
+  #AA00FF, // Purple
   #FF00FF, // Magenta
 };
 color runnerEndColor = #000000;
