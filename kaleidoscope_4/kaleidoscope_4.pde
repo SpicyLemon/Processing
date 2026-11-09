@@ -27,19 +27,19 @@ boolean mouseWasPressed = false;
 
 // Define the key colors used to rotate through.
 color[] backColors = new color[]{
-  #FF0000, // Red
-  #FFFF00, // Yellow
-  #00FF00, // Green
-  #00FFFF, // Cyan
-  #0000FF, // Blue
-  #FF00FF, // Magenta
+  //#FF0000, // Red
+  //#FFFF00, // Yellow
+  //#00FF00, // Green
+  //#00FFFF, // Cyan
+  //#0000FF, // Blue
+  //#FF00FF, // Magenta
   #FFAA00, // Orange
   #FF0000, // Red
   #AA00FF, // Purple
   #FF00FF, // Magenta
 };
 float dBackPalI = 0.1;
-int entriesPerBackPal = 15;
+int entriesPerBackPal = 30;
 
 // Values governing the background ovals.
 int divs = 9;
