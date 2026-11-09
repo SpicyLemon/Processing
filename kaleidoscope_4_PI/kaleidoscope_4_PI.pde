@@ -24,15 +24,19 @@ boolean mouseWasPressed = false;
 
 // Define the key colors used to rotate through.
 color[] backColors = new color[]{
+  //#FF0000, // Red
+  //#FFFF00, // Yellow
+  //#00FF00, // Green
+  //#00FFFF, // Cyan
+  //#0000FF, // Blue
+  //#FF00FF, // Magenta
+  #FFAA00, // Orange
   #FF0000, // Red
-  #FFFF00, // Yellow
-  #00FF00, // Green
-  #00FFFF, // Cyan
-  #0000FF, // Blue
+  #AA00FF, // Purple
   #FF00FF, // Magenta
 };
 float dBackPalI = 0.1;
-int entriesPerBackPal = 25;
+int entriesPerBackPal = 30;
 
 // Values governing the background ovals.
 int divs = 9;
@@ -66,6 +70,7 @@ float runnerSize = 10;
 
 void setup() {
   fullScreen(P2D);
+  frameRate(20);
   pg = createGraphics(width/2, height/2);
   
   // Calculate some screen bounds.
